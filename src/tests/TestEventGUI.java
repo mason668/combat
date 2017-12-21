@@ -7,8 +7,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import models.EventQueue;
-import tests.TestEventGuiOld.RunSim;
 import utils.Tracer;
 import view.ClockView;
 import view.CommandView;
@@ -69,7 +67,8 @@ public class TestEventGUI {
 		@Override
 		public void run() {
 			Tracer.write("running");
-			testEvent.runTest();
+//			testEvent.runTest();
+			testEvent.test(testName);
 		}
 		
 	}

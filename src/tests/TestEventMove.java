@@ -19,8 +19,9 @@ public class TestEventMove extends TestEvent {
 	public static void main(String[] args){
 		TestEventMove test = new TestEventMove(args);
 		if (args.length<=0){
-			test.getInterpreter().interpret("load test_move.txt");
+			test.getInterpreter().interpret("load scripts/test_move.txt");
 		}
+		test.scenario.getParameters().setRealTimeSynch(false);
 		test.test(name);
 	}
 }

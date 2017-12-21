@@ -26,11 +26,12 @@ public class TestEvent {
 
 	public static void main(String[] args){
 		TestEvent test = new TestEvent(args);
+		test.scenario.getParameters().setRealTimeSynch(false);
 		test.test(name);
 	}
 	
 	public TestEvent(String[] args){
-		interpreter.setTrace(true);
+		//interpreter.setTrace(true);
 		interpreter.interpret(args);
 	}
 	
@@ -66,11 +67,10 @@ public class TestEvent {
 		populateQueue();
 		Tracer.write("start time " + scenario.getClock());
 		Tracer.write("end time   " + scenario.getParameters().getEndTime());
-		scenario.getParameters().setRealTimeSynch(false);
 		runTest();
 	}
 	
-	protected void runTest(){
+	private void runTest(){
 		Tracer.write("running test now");
 		while (scenario.getClock() < scenario.getParameters().getEndTime()){
 			queue.doEvents(scenario.getClock());
