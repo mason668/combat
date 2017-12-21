@@ -1,0 +1,95 @@
+# this creates two new weapons called weapon1 and weapon2
+new weapon weapon1
+new weapon weapon2
+
+# this creates a new platform called platform1
+new platform platform1
+
+# setup some attributes for the platform
+platform platform1 foot
+#platform platform1 track
+#platform platform1 wheel
+platform platform1 speed 5.0
+platform platform1 road_speed 6.0
+platform platform1 run_speed 8.0
+platform platform1 reverse_speed 2.0
+platform platform1 crawl_speed 1.2
+platform platform1 suppression_factor_move 0.5
+
+# this creates a new entity called mover 
+# and defines it as platform type platform1
+new entity mover platform1
+
+# define some extra entities for other options
+new entity bridge platform1
+new entity carrier platform1
+
+# turn tracing on for this entity so we see the output
+entity mover trace on
+
+# this defines a new force called blue and assigns entity mover to that force
+new force blue
+force blue speed 1.0
+entity mover force blue
+
+# set some scenario parameters that affect the test
+scenario start_time 60.0
+scenario move_cycle 10.0
+scenario end_time 120.0
+
+# where can the entity move to
+entity mover location 1.2 2.5
+entity mover move_to 1.5 1.5
+#entity mover add_node 1.5 1.5 
+#entity mover radius 0.1
+#entity mover circle 1.5 1.5
+#entity mover circle_time 120.0
+
+# reasons not able to move
+#entity mover elements 0
+#entity mover delay 73.0
+#entity mover fired 59.9
+#entity mover fuel 0
+#entity mover nonmovers 1
+#entity mover inoperative no
+#entity mover inoperative
+#entity mover inoperative atropine
+#entity mover inoperative control
+#entity mover inoperative dose
+#entity mover inoperative detector
+#entity mover upload_time 120
+#entity mover inoperative heat
+
+new entity test1 platform1
+
+# define the move mode (normal is the default)
+#entity mover normal
+#entity mover advance
+#entity mover assault
+#entity mover cautious
+#entity mover crawl
+#entity mover group
+#entity mover reverse
+#entity mover run
+#entity mover rush
+#entity mover command_speed 0.5
+
+# stop does not stop move_to
+#entity mover stop
+#entity mover hold 62.0
+
+entity mover suppression 0.5
+
+#entity mover cbr on
+#entity mover cbr setup
+#entity mover cbr packed
+#entity mover cbrtime 94.0
+
+scenario start
+
+#entity mover mount carrier
+#entity mover carrier carrier
+#entity mover mount
+
+
+
