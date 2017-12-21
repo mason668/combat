@@ -1,0 +1,5 @@
+ranges 0.0 0.1 0.3 0.5 1.0
+posture kdf 0.5 0.5 0.5 0.5 0.5
+posture kdh 0.5 0.5 0.5 0.5 0.5
+posture kef 0.5 0.5 0.5 0.5 0.5
+posture keh 0.5 0.5 0.5 0.5 0.5

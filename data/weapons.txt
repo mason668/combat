@@ -1,0 +1,2 @@
+new weapon rifle
+new weapon lmg

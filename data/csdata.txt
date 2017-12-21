@@ -1,0 +1,5 @@
+load data/phtables.txt
+load data/pktables.txt
+load data/weapons.txt
+load data/platforms.txt
+

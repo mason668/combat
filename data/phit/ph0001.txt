@@ -1,0 +1,18 @@
+ranges 0.0 0.1 0.3 0.5 1.0
+posture ssdf 0.5 0.5 0.5 0.5 0.5
+posture ssdh 0.5 0.5 0.5 0.5 0.5
+posture ssef 0.5 0.5 0.5 0.5 0.5
+posture sseh 0.5 0.5 0.5 0.5 0.5
+posture smdf 0.5 0.5 0.5 0.5 0.5
+posture smdh 0.5 0.5 0.5 0.5 0.5
+posture smef 0.5 0.5 0.5 0.5 0.5
+posture smeh 0.5 0.5 0.5 0.5 0.5
+
+posture msdf 0.5 0.5 0.5 0.5 0.5
+posture msdh 0.5 0.5 0.5 0.5 0.5
+posture msef 0.5 0.5 0.5 0.5 0.5
+posture mseh 0.5 0.5 0.5 0.5 0.5
+posture mmdf 0.5 0.5 0.5 0.5 0.5
+posture mmdh 0.5 0.5 0.5 0.5 0.5
+posture mmef 0.5 0.5 0.5 0.5 0.5
+posture mmeh 0.5 0.5 0.5 0.5 0.5

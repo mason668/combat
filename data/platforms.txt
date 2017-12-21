@@ -1,0 +1,2 @@
+new platform soldier
+new platform gunner
