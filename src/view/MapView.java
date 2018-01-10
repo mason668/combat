@@ -14,13 +14,17 @@ import data.map.Map;
 import interpreter.MapInterpreter;
 import utils.Logger;
 
-public class MapView extends JPanel {
+public class MapView extends JPanel implements Runnable{
 	private static final long serialVersionUID = 1L;
 	private JPanel mapArea = new JPanel();
 //	private JScrollPane mapPane = new JScrollPane(mapArea);
 	private JPanel zoomArea = new JPanel();
 	private JPanel menuArea = new JPanel();
 	private Map myMap;
+	
+	private Thread animator;
+	private volatile boolean running = false;
+	private volatile boolean gameOver = false;
 
 	public static void main(String[] args){
 		Map map = new Map();
@@ -83,6 +87,41 @@ public class MapView extends JPanel {
 	private void drawMap(){
 		screenx = mapArea.getWidth();
 		screeny = mapArea.getHeight();
+	}
+	
+	
+	public void addNotify(){
+		super.addNotify();
+		startGame();
+	}
+	
+	private void startGame(){
+		if (animator == null || !running){
+			animator = new Thread(this);
+			animator.start();
+		}
+	}
+	
+	public void run(){
+		running = true;
+		while (running){
+			//gameUpdate();
+			//gameRender();
+			//repaint();
+			try{
+				Thread.sleep(20);
+			} catch (Exception e){}
+		}
+	}
+	
+	private void gameUpdate(){
+		if (!gameOver){
+			// update
+		}
+	}
+	
+	public void stopGmae(){
+		running = false;
 	}
 	
 }
