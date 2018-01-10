@@ -1,6 +1,12 @@
 package data.map;
 
 public class Map {
+	
+	private String mapName = "test_map";
+	public String getName(){return mapName.substring(0);}
+	public void setName(String name){
+		this.mapName = name.substring(0);
+	}
 
 	public double getElevation(Coordinate c){
 		return 0.1;

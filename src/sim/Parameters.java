@@ -55,6 +55,15 @@ public class Parameters {
 	public double getEndTime(){return endTime;}
 	public void setEndTime(double time){endTime = time;} // TODO format time
 	
+	// time to increment clock each time through the loop
+	private double epoch = 0.1; // seconds
+	public double getIncrementAmount(){return epoch;}
+	public void setIncrementAmount (double time){
+		if (time > 0.0){
+			epoch = time;
+		}
+	}
+	
 	/*
 	 * Screen 2
 	 */

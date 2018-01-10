@@ -48,7 +48,7 @@ public class TestEvent {
 		}
 	}
 	
-	protected void test(String testName){
+	public void test(String testName){
 		Tracer.setEcho(true);
 		Tracer.write("Running test");
 		

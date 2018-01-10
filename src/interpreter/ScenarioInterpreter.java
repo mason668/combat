@@ -211,6 +211,14 @@ public class ScenarioInterpreter extends Interpreter{
 			} catch (Exception e){
 				Logger.err(this,0, "invalid start_time");
 			}
+		} else if (command.compareToIgnoreCase("time_step") == 0){
+			String arg = vector.remove(0);
+			try{
+				double clock = Double.parseDouble(arg); //TODO parse time
+				myScenario.getParameters().setIncrementAmount(clock);
+			} catch (Exception e){
+				Logger.err(this,0, "invalid time_step");
+			}
 		} else if (command.compareToIgnoreCase("weather_speed") == 0){
 			String arg = vector.remove(0);
 			try{

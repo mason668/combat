@@ -7,14 +7,18 @@ import java.util.Vector;
 import data.managers.EntityList;
 import data.managers.ForceList;
 import data.map.Map;
+import models.Event;
 import models.EventQueue;
 import models.detection.AcquisitionMatrix;
+import models.movement.MoveEvent;
 import sim.entity.DetectedEntity;
+import sim.entity.Entity;
 import sim.entity.MoverEntity;
 import sim.entity.ObserverEntity;
 import sim.forces.Force;
 import sim.postp.PostProcessor;
 import utils.Logger;
+import utils.Parser;
 import utils.Tracer;
 import view.ClockListener;
 
@@ -26,6 +30,7 @@ public class Scenario {
 	
 	private boolean amIRunnable = true; // define whether the "start" option is available or not. 
 	//It is useful for some tests to have a non-running scenario
+	public void setRunabble(boolean b){amIRunnable = b;}
 	
 	public Scenario(){
 		init();
@@ -312,8 +317,8 @@ C------ User requested JANUS termination
 				deltaWall = System.currentTimeMillis() - then;
 			}
 		}
-		clock += time;
-		this.updateClockListeners();
+		double newTime = clock + time;
+		setClock(newTime);
 		setSynchPoint();
 	}
 	
@@ -329,17 +334,23 @@ C------ User requested JANUS termination
 					}
 				}
 				else if ( s.compareToIgnoreCase("fast") == 0){
+					getParameters().setRealTimeSynch(true);
 					double d = getParameters().getRealTimeRatio();
 					d = d * 0.667;
 					getParameters().setRealTimeRatio(d);
 				}
 				else if ( s.compareToIgnoreCase("slow") == 0){
+					getParameters().setRealTimeSynch(true);
 					double d = getParameters().getRealTimeRatio();
 					d = d * 1.5;
 					getParameters().setRealTimeRatio(d);
 				}
 				else if ( s.compareToIgnoreCase("1:1") == 0){
+					getParameters().setRealTimeSynch(true);
 					getParameters().setRealTimeRatio(1.0);
+				}
+				else if ( s.compareToIgnoreCase("no synch") == 0){
+					getParameters().setRealTimeSynch(false);
 				}
 			}
 		};
@@ -364,12 +375,25 @@ C------ User requested JANUS termination
 		}
 	}
 	
+	private void initQueue(){ //TODO add all the extra event types
+		Logger.say("initialising queues");
+		for (String entityName : this.getEntityList().keySet()){
+			Entity entity = this.getEntityList().getEntity(entityName);
+			//Logger.say("entity " + entityName);
+			double time = this.getParameters().getStartTime() + 
+					(Math.random() * this.getParameters().getMovementCycleTime());
+			Event moveEvent = new MoveEvent(time, this, entity);		
+			eventQueue.add(moveEvent);
+		}
+	}
+	
 	private boolean running = false; //TODO test doesn't seem to use this
 	public boolean isRunning(){return running;}
 	public void start(){
 		if (running) return;
 		if (!amIRunnable) return; // this is needed because the interpreter may issue the start command
-		Logger.say("starting scenario");
+		Logger.say("starting scenario " + name);
+		initQueue();
 		//TODO at this point the event queues should be initialised and data validated etc
 		running = true;
 		Runnable runnable = new RunSim(eventQueue, this);
@@ -391,10 +415,15 @@ C------ User requested JANUS termination
 		public void run() {
 			if (myScenario == null) return;
 			if (myQueue == null) return;
+			Logger.log("start time " + Parser.formatTime(myScenario.getParameters().getStartTime()));
+			myScenario.setClock(myScenario.getParameters().getStartTime());
+			Logger.log("scenario starting at " + Parser.formatTime(myScenario.getClock()));
+			Logger.log("until " + Parser.formatTime(myScenario.getParameters().getEndTime()));
 			while (myScenario.getClock() < myScenario.getParameters().getEndTime()){
 				myQueue.doEvents(myScenario.getClock());
-				myScenario.incrementClock(1.0);
+				myScenario.incrementClock(myScenario.getParameters().getIncrementAmount());
 			}
+			Logger.log("scenario ended at " + Parser.formatTime(myScenario.getClock()));
 		}
 	}
 

@@ -64,7 +64,7 @@ public class MoveEvent extends Event {
 	@Override
 	public Event doEvent(){
 		myClock = myScenario.getClock();
-		tracing = myEntity.isTracing();		
+		tracing = myEntity.isTracing();
 		nextMoveTime = this.getTime();
 		if (tracing){
 			Tracer.write(Tracer.MOVEMENT,0,"\nprocessing movement ");

@@ -34,7 +34,7 @@ import sim.route.NodeStop;
 import sim.route.Route;
 import utils.Logger;
 import utils.Tracer;
-import view.ScenarioView;
+import view.ScenarioViewOld;
 import view.TraceView;
 
 public class TestMoveEventOld {
@@ -120,7 +120,7 @@ public class TestMoveEventOld {
 		
 		tabbedPane.add("Output", view);
 		tabbedPane.add("Map", new JPanel());
-		tabbedPane.add("Scenario", new ScenarioView(this.scenario));
+		tabbedPane.add("Scenario", new ScenarioViewOld(this.scenario));
 		tabbedPane.add("Data", testView());
 		
 		frame.add(tabbedPane,BorderLayout.CENTER);

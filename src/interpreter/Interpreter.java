@@ -48,7 +48,7 @@ public class Interpreter {
 			String word = tokenizer.nextToken();
 			vector.addElement(word);
 		}
-		this.interpret(vector);
+		this.interpret( vector);
 	}
 	
 	public void interpret (String[] array){

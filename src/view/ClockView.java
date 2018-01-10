@@ -17,6 +17,7 @@ public class ClockView extends JPanel implements ClockListener{
 	private JButton fastBtn = new JButton("Fast");
 	private JButton slowBtn = new JButton("Slow");
 	private JButton oneBtn = new JButton("1:1");
+	private JButton synchBtn = new JButton("No Synch");
 
 	public ClockView(){
 		this.add(clockDisplay, BorderLayout.CENTER);
@@ -25,6 +26,7 @@ public class ClockView extends JPanel implements ClockListener{
 		controlPanel.add(fastBtn);
 		controlPanel.add(slowBtn);
 		controlPanel.add(oneBtn);
+		controlPanel.add(synchBtn);
 		this.add(controlPanel, BorderLayout.EAST);
 	}
 
@@ -38,6 +40,7 @@ public class ClockView extends JPanel implements ClockListener{
 		fastBtn.addActionListener(listener);
 		slowBtn.addActionListener(listener);
 		oneBtn.addActionListener(listener);
+		synchBtn.addActionListener(listener);
 	}
 
 }

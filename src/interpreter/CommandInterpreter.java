@@ -6,6 +6,7 @@ import data.CSData;
 import data.csd.Platform;
 import data.csd.Sensor;
 import data.csd.Weapon;
+import data.map.Map;
 import sim.Scenario;
 import sim.entity.Entity;
 import sim.forces.Force;
@@ -21,6 +22,7 @@ public class CommandInterpreter extends Interpreter{
 	private ForceInterpreter myForceInterpreter;
 	private SensorInterpreter mySensorInterpreter;
 	private WeaponInterpreter myWeaponInterpreter;
+	private MapInterpreter myMapInterpreter;
 	
 	public static void main(String args[]){
 		CommandInterpreter me = new CommandInterpreter(new CSData(), new Scenario());
@@ -56,6 +58,9 @@ public class CommandInterpreter extends Interpreter{
 		myPlatformInterpreter = new PlatformInterpreter(myData);
 		myScenarioInterpreter = new ScenarioInterpreter();
 		myForceInterpreter = new ForceInterpreter();
+		mySensorInterpreter = new SensorInterpreter();
+		myWeaponInterpreter = new WeaponInterpreter();
+		myMapInterpreter = new MapInterpreter();
 	}
 	
 	protected void doCommand(String command, Vector<String> vector){
@@ -75,6 +80,7 @@ public class CommandInterpreter extends Interpreter{
 		} else if (command.compareToIgnoreCase("load") == 0){
 			if (vector.isEmpty()) return;
 			String fileName = vector.remove(0);
+			Logger.err(Logger.INFO, "loading file " + fileName);
 			read(fileName);
 		} else if (command.compareToIgnoreCase("new")== 0){
 			doNew(vector);
@@ -83,9 +89,11 @@ public class CommandInterpreter extends Interpreter{
 		} else if (command.compareToIgnoreCase("scenario")== 0){
 			doScenario(vector);
 		} else if (command.compareToIgnoreCase("sensor")== 0){
-			doPlatform(vector);
+			doSensor(vector);
 		} else if (command.compareToIgnoreCase("weapon")== 0){
-			doPlatform(vector);
+			doWeapon(vector);
+		} else if (command.compareToIgnoreCase("map")== 0){
+			doMap(vector);
 		} else {
 			Logger.log("Commandinterpreter: unknown command: " + command + vector);
 		}
@@ -99,7 +107,9 @@ public class CommandInterpreter extends Interpreter{
 		} else if (command.compareToIgnoreCase("entity")==0){
 			String name = vector.remove(0);
 			String platformName = vector.remove(0);
-			Logger.log("creating new entity " + name + ":" + platformName);
+			if (trace){
+				Logger.log("creating new entity " + name + ":" + platformName);
+			}
 			Platform platform = myData.getPlatformList().getPlatform(platformName);
 			if (platform == null) {
 				Logger.err(Logger.WARNING, "platform " + platformName + " does not exist");
@@ -111,21 +121,29 @@ public class CommandInterpreter extends Interpreter{
 			}
 		} else if (command.compareToIgnoreCase("force")==0){
 			String name = vector.remove(0);
-			Logger.log("creating new force " + name);
+			if (trace){
+				Logger.log("creating new force " + name);
+			}
 			myScenario.addForce(name);
 		} else if (command.compareToIgnoreCase("platform")==0){
 			String name = vector.remove(0);
-			Logger.log("creating new platform " + name);
+			if (trace){
+				Logger.log("creating new platform " + name);
+			}
 			Platform platform = new Platform(name);
 			myData.getPlatformList().add(platform);
 		} else if (command.compareToIgnoreCase("sensor")==0){
 			String name = vector.remove(0);
-			Logger.log("creating new sensor " + name); //FIXME
+			if (trace){
+				Logger.log("creating new sensor " + name); //FIXME
+			}
 			Sensor sensor = new Sensor(name);
 			myData.getSensorList().add(sensor);
 		} else if (command.compareToIgnoreCase("weapon")==0){
 			String name = vector.remove(0);
-			Logger.log("creating new weapon " + name); //FIXME
+			if (trace){
+				Logger.log("creating new weapon " + name); //FIXME
+			}
 			Platform platform = new Platform(name);
 			myData.getPlatformList().add(platform);
 		}
@@ -182,4 +200,13 @@ public class CommandInterpreter extends Interpreter{
 		String command = vector.remove(0);
 		myScenarioInterpreter.doCommand(myScenario, command, vector);
 	}
+
+	private void doMap(Vector<String> vector){
+		if (vector.size()<2) return;
+		Map map = myScenario.getMap();
+		if (map == null) return;
+		String command = vector.remove(0);
+		myMapInterpreter.doCommand(map, command, vector);
+	}
+
 }
