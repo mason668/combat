@@ -3,6 +3,8 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Toolkit;
 
 import javax.swing.JFrame;
@@ -105,9 +107,9 @@ public class MapView extends JPanel implements Runnable{
 	public void run(){
 		running = true;
 		while (running){
-			//gameUpdate();
-			//gameRender();
-			//repaint();
+			gameUpdate();
+			gameRender();
+			repaint();
 			try{
 				Thread.sleep(20);
 			} catch (Exception e){}
@@ -122,6 +124,13 @@ public class MapView extends JPanel implements Runnable{
 	
 	public void stopGmae(){
 		running = false;
+	}
+	
+	private Graphics dbg;
+	private Image dbImage = null;
+	
+	private void gameRender(){
+		
 	}
 	
 }
