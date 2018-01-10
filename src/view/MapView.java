@@ -72,6 +72,8 @@ public class MapView extends JPanel implements Runnable{
 		this.add(zoomArea, BorderLayout.SOUTH);
 		menuArea.setBackground(Color.BLACK);
 		this.add(menuArea, BorderLayout.EAST);
+		
+		//TODO add mouselistener - see page 20
 	}
 	
 	public void setMap(Map map){
@@ -87,8 +89,12 @@ public class MapView extends JPanel implements Runnable{
 	private int screenx;
 	private int screeny;
 	private void drawMap(){
+		// assumes that dbg has been defined as Graphics
 		screenx = mapArea.getWidth();
 		screeny = mapArea.getHeight();
+		Logger.say("size " + screenx + " : " + screeny);
+		dbg.setColor(Color.BLACK);
+		dbg.drawLine(0, 0, screenx, screeny);
 	}
 	
 	
@@ -104,15 +110,27 @@ public class MapView extends JPanel implements Runnable{
 		}
 	}
 	
+	private final long period = 20;
+	
 	public void run(){
+		long beforeTime, timeDiff, sleepTime;
+		beforeTime = System.currentTimeMillis();
 		running = true;
 		while (running){
+			//TODO could add pausing here - see page 37
 			gameUpdate();
 			gameRender();
-			repaint();
+			paintScreen();
+			
+			timeDiff = System.currentTimeMillis() - beforeTime;
+			sleepTime = period - timeDiff;
+			if (sleepTime <=0){
+				sleepTime = 5;
+			}
 			try{
-				Thread.sleep(20);
+				Thread.sleep(sleepTime);
 			} catch (Exception e){}
+			beforeTime = System.currentTimeMillis();
 		}
 	}
 	
@@ -148,9 +166,11 @@ public class MapView extends JPanel implements Runnable{
 			dbImage = null;
 			return;
 		}
-		dbg.setColor(Color.WHITE);
+		dbg.setColor(Color.RED);
 		dbg.fillRect(0, 0, width, height);
-		// draw map
+		
+		drawMap();
+		
 		if (gameOver){
 			// display game over message
 		}
@@ -160,6 +180,20 @@ public class MapView extends JPanel implements Runnable{
 		super.paintComponent(g);
 		if (dbImage != null){
 			g.drawImage(dbImage,0,0,null);
+		}
+	}
+	
+	private void paintScreen(){
+		Graphics g;
+		try{
+			g = this.getGraphics();
+			if ((g!= null) && (dbImage != null)){
+				g.drawImage(dbImage,0,0,null);
+			}
+			Toolkit.getDefaultToolkit().sync();
+			g.dispose();
+		} catch (Exception e){
+			// TODO display error message
 		}
 	}
 	
