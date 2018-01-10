@@ -126,11 +126,41 @@ public class MapView extends JPanel implements Runnable{
 		running = false;
 	}
 	
-	private Graphics dbg;
+	private Graphics dbg=null;
 	private Image dbImage = null;
 	
 	private void gameRender(){
-		
+		int width = this.mapArea.getWidth();
+		int height = this.mapArea.getHeight();
+		if (width<= 0) return;
+		if (height<=0) return;
+		if (dbImage == null){
+			dbImage = createImage(width, height);
+			if (dbImage == null){
+				Logger.say("huh");
+				Logger.log(Logger.WARNING,"dbImage = null");
+				return;
+			}
+			dbg = dbImage.getGraphics();
+		} else {
+		}
+		if (dbg == null){
+			dbImage = null;
+			return;
+		}
+		dbg.setColor(Color.WHITE);
+		dbg.fillRect(0, 0, width, height);
+		// draw map
+		if (gameOver){
+			// display game over message
+		}
+	}
+	
+	public void paintComponent(Graphics g){
+		super.paintComponent(g);
+		if (dbImage != null){
+			g.drawImage(dbImage,0,0,null);
+		}
 	}
 	
 }
