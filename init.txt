@@ -1,0 +1,2 @@
+#load data/csdata.txt
+load tests/test_scenario.txt
