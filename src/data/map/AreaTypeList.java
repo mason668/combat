@@ -11,7 +11,6 @@ public class AreaTypeList extends ObjectList {
 	}
 	
 	public void add (AreaType item){
-		if ( !( item instanceof AreaType)) return;
 		String name = item.getName();
 		super.add(name, item);
 	}

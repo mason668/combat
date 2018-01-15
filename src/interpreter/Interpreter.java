@@ -37,8 +37,11 @@ public class Interpreter {
 	}
 	
 	protected void test(String [] args){
+		this.setTrace(true);
+		if (trace){
+			Tracer.write(this.getClass().getName() + " running test " );
+		}
 		this.interpret(args);
-		this.interpret(testData());
 	}
 	
 	public void interpret (String string){
@@ -105,11 +108,4 @@ public class Interpreter {
     	}
 	}
 	
-	protected Vector<String> testData(){
-		Vector<String> vector = new Vector<String>();
-		vector.add("line 1");
-		vector.add("line 2");
-		return vector;
-	}
-
 }

@@ -61,7 +61,7 @@ public class TestEventDetection extends TestEvent {
 			e.setLocation(new Coordinate(scenario.getMap().getLL().getX() + 
 					Math.random()*(scenario.getMap().getSizeX()),
 					scenario.getMap().getLL().getY() + 
-					Math.random()*(scenario.getMap().getSIzeY())));
+					Math.random()*(scenario.getMap().getSizeY())));
 		}
 	}
 }

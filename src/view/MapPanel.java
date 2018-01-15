@@ -6,11 +6,16 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Polygon;
 import java.awt.Toolkit;
+import java.util.Iterator;
 
 import javax.swing.JPanel;
 
+import data.map.Area;
 import data.map.Map;
+import data.map.MapTransposer;
+import interpreter.MapInterpreter;
 import utils.Logger;
 
 public class MapPanel extends JPanel implements Runnable{
@@ -21,8 +26,16 @@ public class MapPanel extends JPanel implements Runnable{
 	
 	public static void main(String[] args){
 		
+		Map testMap = new Map();
+		if (args.length<=0){
+			testMap.makeTestMap();
+		} else {
+			MapInterpreter interpreter = new MapInterpreter();
+			interpreter.setMap(testMap);
+			interpreter.interpret(args);
+		}
 		MapPanel view = new MapPanel();
-		view.setMap(new Map());
+		view.setMap(testMap);
 		view.setPreferredSize(new Dimension (500,500));
 		
 		FullFrame frame = new FullFrame("MapPanel");
@@ -34,6 +47,8 @@ public class MapPanel extends JPanel implements Runnable{
 		
 		//TODO add mouselistener - see page 20
 	}
+	
+	public void setMap(Map map){myMap = map;}
 	
 	public void addNotify(){
 		super.addNotify();
@@ -96,6 +111,7 @@ public class MapPanel extends JPanel implements Runnable{
 		renderMap(g);
 	}
 	
+	/*
 	private int map2screenX(double x){
 		double mapx = x;
 		mapx = mapx - viewOffsetX;
@@ -117,12 +133,16 @@ public class MapPanel extends JPanel implements Runnable{
 	}
 	private int screen2MapX(int x){return 0;}
 	private int screen2MapY(int x){return 0;}
+	*/
 	
 	private Map myMap;
-	public void setMap (Map map){myMap = map;}
 	public Map getMap(){return myMap;}
 	
+	private MapTransposer mapTransposer;
+	
 	private void calculateTranslation(){
+		mapTransposer = new MapTransposer(myMap,this.getWidth()-3,this.getHeight()-4);
+		/*
 		int panelWidth = this.getWidth()-3;
 		int panelHeight = this.getHeight()-4;
 		int screenWidth = panelWidth; //TODO adjust to centre image
@@ -159,20 +179,22 @@ public class MapPanel extends JPanel implements Runnable{
 //		System.out.println("ratio " + ratioX + " : " + viewWidth + " : " + screenWidth);
 		ratioY = screenHeight/ viewHeight;
 		System.out.println("ratio " + ratioY + " : " + viewHeight + " : " + screenHeight);
+		*/
 	}
 	
-	private double viewOffsetX;
-	private double viewOffsetY;
-	private double ratioX = 1.0;
-	private double ratioY = 1.0;
-	private int screenOffsetX = 1;
-	private int screenOffsetY = 1;
+//	private double viewOffsetX;
+//	private double viewOffsetY;
+//	private double ratioX = 1.0;
+//	private double ratioY = 1.0;
+//	private int screenOffsetX = 1;
+//	private int screenOffsetY = 1;
 	
 	private void renderMap(Graphics g){
 		if (myMap == null) return;
 		//Logger.say("valid map");
 		calculateTranslation();
 		drawBorder(g);
+		drawAreas(g);
 //		int xpoints[] = {1, width-2, width-2, 1};
 //	    int ypoints[] = {1, 1, height-1, height-1};
 //	    int npoints = 4;
@@ -182,20 +204,36 @@ public class MapPanel extends JPanel implements Runnable{
 	
 	private void drawBorder(Graphics g){
 		double mapx = myMap.getLL().getX();
-		int x1 = map2screenX(mapx);
+		int x1 = mapTransposer.map2screenX(mapx);
 		mapx = myMap.getUR().getX();
-		int x2 = map2screenX(mapx);
+		int x2 = mapTransposer.map2screenX(mapx);
 		int wide = x2 - x1;
 		double mapy = myMap.getUR().getY();
-		int y1 = map2screenY(mapy);
+		int y1 = mapTransposer.map2screenY(mapy);
 		mapy = myMap.getLL().getY();
-		int y2 = map2screenY(mapy);
+		int y2 = mapTransposer.map2screenY(mapy);
 		int high = y2-y1;
 //		high = -100;
 		g.setColor(Color.black);
 		g.drawRect(x1, y1, wide, high);
 		
 	}
+	
+	private void drawAreas(Graphics g){
+		Iterator<Area> iterator = myMap.getAreaIterator();
+		int count = 0;
+		while (iterator.hasNext()){
+			count++;
+			Area area = iterator.next();
+			Polygon p = area.getPolygon(mapTransposer);
+			if (p.npoints>0){
+				Logger.say("drawing " + count + " : " + p.npoints);
+				g.setColor(area.getType().getColor());
+				g.fillPolygon(p);
+			}
+		}
+	}
+
 	
 
 	private Graphics graphics=null;
