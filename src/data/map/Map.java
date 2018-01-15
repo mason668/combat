@@ -297,22 +297,27 @@ public class Map {
 		Tracer.write("road types: " + this.roadTypeList.getSize());
 		for (String s: this.roadTypeList.keySet()){
 			RoadType roadType = this.roadTypeList.getRoadType(s);
-			Tracer.write("    " + roadType.getName() );
+			Tracer.write("    " + roadType.getName() + " : " + roadType.getColor() );
 		}
 		Tracer.write("river types: " + this.riverTypeList.getSize());
 		for (String s: this.riverTypeList.keySet()){
 			RiverType riverType = this.riverTypeList.getRiverType(s);
-			Tracer.write("    " + riverType.getName() );
+			Tracer.write("    " + riverType.getName() + " : " + riverType.getColor() );
 		}
 		Tracer.write("wall types: " + this.wallTypeList.getSize());
 		for (String s: this.wallTypeList.keySet()){
 			WallType wallType = this.wallTypeList.getWallType(s);
-			Tracer.write("    " + wallType.getName() );
+			Tracer.write("    " + wallType.getName() + " : " + wallType.getColor() );
 		}
 		Tracer.write("building types: " + this.buildingTypeList.getSize());
 		for (String s: this.buildingTypeList.keySet()){
 			BuildingType buildingType = this.buildingTypeList.getBuildingType(s);
-			Tracer.write("    " + buildingType.getName() );
+			Tracer.write("    " + buildingType.getName() + " : " + buildingType.getColor() );
+		}
+		Tracer.write("wall types: " + this.wallTypeList.getSize());
+		for (String s: this.wallTypeList.keySet()){
+			WallType wallType = this.wallTypeList.getWallType(s);
+			Tracer.write("    " + wallType.getName() + " : " + wallType.getColor() );
 		}
 
 		Tracer.write("areas: " + this.areaList.size());
