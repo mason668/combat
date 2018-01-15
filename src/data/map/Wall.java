@@ -1,6 +1,6 @@
 package data.map;
 
-public class Wall extends Feature{
+public class Wall extends LinearFeature{
 	
 
 }

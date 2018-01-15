@@ -13,8 +13,14 @@ import java.util.Iterator;
 import javax.swing.JPanel;
 
 import data.map.Area;
+import data.map.AreaFeature;
+import data.map.Building;
+import data.map.Coordinate;
+import data.map.Feature;
 import data.map.Map;
 import data.map.MapTransposer;
+import data.map.River;
+import data.map.Road;
 import interpreter.MapInterpreter;
 import utils.Logger;
 
@@ -195,6 +201,9 @@ public class MapPanel extends JPanel implements Runnable{
 		calculateTranslation();
 		drawBorder(g);
 		drawAreas(g);
+		drawBuildings(g);
+		drawRoads(g);
+		drawRivers(g);
 //		int xpoints[] = {1, width-2, width-2, 1};
 //	    int ypoints[] = {1, 1, height-1, height-1};
 //	    int npoints = 4;
@@ -220,12 +229,14 @@ public class MapPanel extends JPanel implements Runnable{
 	}
 	
 	private void drawAreas(Graphics g){
-		Iterator<Area> iterator = myMap.getAreaIterator();
+		Iterator<Area> areaIterator = myMap.getAreaIterator();
 		int count = 0;
-		while (iterator.hasNext()){
+		while (areaIterator.hasNext()){
 			count++;
-			Area area = iterator.next();
-			Polygon p = area.getPolygon(mapTransposer);
+			Area area = areaIterator.next();
+			Iterator<Coordinate> coordinateIterator = area.getCoordinates().iterator();
+			Polygon p = makePolygon(coordinateIterator, area);
+
 			if (p.npoints>0){
 				Logger.say("drawing " + count + " : " + p.npoints);
 				g.setColor(area.getType().getColor());
@@ -233,8 +244,109 @@ public class MapPanel extends JPanel implements Runnable{
 			}
 		}
 	}
-
 	
+	private void drawBuildings(Graphics g){
+		Iterator<Building> buildingIterator = myMap.getBuildingIterator();
+		int count = 0;
+		while (buildingIterator.hasNext()){
+			count++;
+			Building building = buildingIterator.next();
+			Iterator<Coordinate> coordinateIterator = building.getCoordinates().iterator();
+			Polygon p = makePolygon(coordinateIterator, building);
+
+			if (p.npoints>0){
+				Logger.say("drawing " + count + " : " + p.npoints);
+				g.setColor(building.getType().getColor());
+				g.fillPolygon(p);
+			}
+		}
+	}
+	
+	private void drawRoads(Graphics g){
+		Iterator<Road> roadIterator = myMap.getRoadIterator();
+		int count = 0;
+		while (roadIterator.hasNext()){
+			count++;
+			Road road = roadIterator.next();
+			Iterator<Coordinate> coordinateIterator = road.getCoordinates().iterator();
+			int arrayX[] = new int[road.getCoordinates().size()];
+			int arrayY[] = new int[road.getCoordinates().size()];
+			int coordinateCounter = 0;
+			while (coordinateIterator.hasNext()){
+				Coordinate c = coordinateIterator.next();
+				double x = c.getX();
+				arrayX[coordinateCounter] = mapTransposer.map2screenX(x);
+				double y = c.getY();
+				arrayY[coordinateCounter] = mapTransposer.map2screenY(y);
+				coordinateCounter++;
+			}
+
+			if (coordinateCounter>0){
+				Logger.say("drawing " + count + " : " + coordinateCounter);
+				g.setColor(road.getType().getColor());
+				g.drawPolyline(arrayX, arrayY, coordinateCounter);
+			}
+		}
+	}
+	
+	private void drawRivers(Graphics g){
+		Iterator<River> riverIterator = myMap.getRiverIterator();
+		int count = 0;
+		while (riverIterator.hasNext()){
+			count++;
+			River river = riverIterator.next();
+			Iterator<Coordinate> coordinateIterator = river.getCoordinates().iterator();
+			int arrayX[] = new int[river.getCoordinates().size()];
+			int arrayY[] = new int[river.getCoordinates().size()];
+			int coordinateCounter = 0;
+			while (coordinateIterator.hasNext()){
+				Coordinate c = coordinateIterator.next();
+				double x = c.getX();
+				arrayX[coordinateCounter] = mapTransposer.map2screenX(x);
+				double y = c.getY();
+				arrayY[coordinateCounter] = mapTransposer.map2screenY(y);
+				coordinateCounter++;
+			}
+
+			if (coordinateCounter>0){
+				Logger.say("drawing " + count + " : " + coordinateCounter);
+				g.setColor(river.getType().getColor());
+				g.drawPolyline(arrayX, arrayY, coordinateCounter);
+			}
+		}
+	}
+	
+	private Polygon makePolygon(Iterator<Coordinate> coordinateIterator, Feature area){
+		int arrayX[] = new int[area.getCoordinates().size()];
+		int arrayY[] = new int[area.getCoordinates().size()];
+		int coordinateCounter = 0;
+		while (coordinateIterator.hasNext()){
+			Coordinate c = coordinateIterator.next();
+			double x = c.getX();
+			arrayX[coordinateCounter] = mapTransposer.map2screenX(x);
+			double y = c.getY();
+			arrayY[coordinateCounter] = mapTransposer.map2screenY(y);
+			coordinateCounter++;
+		}
+		Polygon p = new Polygon(arrayX, arrayY, coordinateCounter);
+		return p;
+	}
+
+	private Polygon makePolygon(Iterator<Coordinate> coordinateIterator, AreaFeature area){
+		int arrayX[] = new int[area.getCoordinates().size()];
+		int arrayY[] = new int[area.getCoordinates().size()];
+		int coordinateCounter = 0;
+		while (coordinateIterator.hasNext()){
+			Coordinate c = coordinateIterator.next();
+			double x = c.getX();
+			arrayX[coordinateCounter] = mapTransposer.map2screenX(x);
+			double y = c.getY();
+			arrayY[coordinateCounter] = mapTransposer.map2screenY(y);
+			coordinateCounter++;
+		}
+		Polygon p = new Polygon(arrayX, arrayY, coordinateCounter);
+		return p;
+	}
 
 	private Graphics graphics=null;
 	private Image image = null;

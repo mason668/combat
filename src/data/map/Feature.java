@@ -1,10 +1,6 @@
 package data.map;
 
-import java.awt.Polygon;
-import java.util.Iterator;
 import java.util.Vector;
-
-import utils.Logger;
 
 public class Feature {
 	
@@ -17,5 +13,7 @@ public class Feature {
 	public int getSize(){
 		return coordinates.size();
 	}
+	
+	protected double xmin, xmax, ymin, ymax;
 	
 }

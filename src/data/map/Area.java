@@ -6,7 +6,7 @@ import java.util.Vector;
 
 import utils.Logger;
 
-public class Area {
+public class Area extends AreaFeature{
 	
 	private AreaType areaType;
 	
@@ -17,17 +17,8 @@ public class Area {
 		return areaType;
 	}
 	
-	private Vector<Coordinate> coordinates = new Vector<Coordinate>();
-	public Vector<Coordinate> getCoordinates(){return coordinates;}
-	
-	public void addNode(Coordinate node){
-		coordinates.add(node);
-	}
-	public int getSize(){
-		return coordinates.size();
-	}
-	
-	public Polygon getPolygon(MapTransposer mapTransposer){
+	/*
+	public Polygon getPolygon(MapTransposer mapTransposer){ //FIXME not needed
 		int arrayX[] = new int[coordinates.size()];
 		int arrayY[] = new int[coordinates.size()];
 		Iterator<Coordinate> itr = coordinates.iterator();
@@ -43,5 +34,6 @@ public class Area {
 		Polygon p = new Polygon(arrayX, arrayY, count);
 		return p;
 	}
+	*/
 
 }

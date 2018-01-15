@@ -343,10 +343,7 @@ public class MoveEvent extends Event {
 		Building b = this.myEntity.getBuilding();
 		int numFloors = 0;
 		if (b != null){
-			if (tracing){
-				Tracer.write(Tracer.MOVEMENT,4,"in building " + 
-						b.getName());
-			}
+			//TODO report which building
 		} else {
 			b = this.myEntity.getRoof();
 			if ( b== null){
@@ -356,10 +353,7 @@ public class MoveEvent extends Event {
 				}
 				return false;
 			}
-			if (tracing){
-				Tracer.write(Tracer.MOVEMENT,4,"on roof " + 
-						b.getName());
-			}
+			// TODO report which building
 		}
 		numFloors = b.getFloors();
 		if (tracing){
@@ -445,10 +439,7 @@ public class MoveEvent extends Event {
 		if (building != null){
 			this.myEntity.setRoof(building);
 			zf = building.getHeight();
-			if (tracing){
-				Tracer.write(Tracer.MOVEMENT,4,"flying over building " +
-						building.getName()); 
-			}
+			//TODO report which building
 		} else {
 			zf = this.myScenario.getMap().getAreaHeight(this.newLocation);
 		}

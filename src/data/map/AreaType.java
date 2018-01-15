@@ -1,20 +1,24 @@
 package data.map;
 
-import java.awt.Color;
-
-public class AreaType {
+public class AreaType extends FeatureType{
 	
 	public AreaType (String name){
-		areaName = name.substring(0); //TODO should remove spaces
+		super.setName(name);
 	}
 	
-	private String areaName = "generic_area";
+	/*
+	 * 
+	BYTE	   KTREEDGRAD(NUMMOVTYPES,NUMTREETYPES)	! Speed degradation factors
+						!  (percent), by mover type:
+					        ! 1=wheeled, 2=tracked, 3=footed
+	BYTE	   KCITYDGRAD(NUMMOVTYPES,NUMCITYTYPES)	! Speed degradation factors
+						!  (percent), by mover type:
+					        ! 1=wheeled, 2=tracked, 3=footed
+	 */
 	
 	public double getSpeedReduction (int moverType){ // TODO validate mover type
+		// ktreedgrad, kcitydgrad
 		return 1.0;
-	}
-	public String getName(){
-		return areaName.substring(0);
 	}
 	
 	private boolean isWater = false;
@@ -23,21 +27,8 @@ public class AreaType {
 		return isWater;
 	}
 	
-	private Color myColor = Color.GREEN;
-	public Color getColor(){
-		return myColor;
-	}
-	public void setColor (Color c){
-		myColor = c;
-	}
-	public void setColor (int red, int green, int blue){
-		if (red <0) return;
-		if (red > 255) return;
-		if (green <0) return;
-		if (green > 255) return;
-		if (blue <0) return;
-		if (blue > 255) return;
-		myColor = new Color(red, green, blue);
-	}
-
+	private double featureHeight = 1.0; // metres globtrrn.ktreehei, kcityhei
+	private double plos = 1.0; // globtrrn.treeplos, cityplos
+	// fill pattern ktreepattern, citypattern
+	
 }

@@ -3,7 +3,14 @@ package data.map;
 import java.awt.Color;
 
 public class FeatureType {
+
+	protected String myName = "generic_feature";
 	
+	public String getName(){
+		return myName.substring(0);
+	}
+	public void setName(String name){myName = name.substring(0);}
+
 	private Color myColor = Color.GRAY;
 	public Color getColor(){
 		return myColor;
@@ -20,5 +27,8 @@ public class FeatureType {
 		if (blue > 255) return;
 		myColor = new Color(red, green, blue);
 	}
+	
+	// INTEGER*2 KRIVERPATTERN(NUMRIVERTYPES)	!
+
 
 }
