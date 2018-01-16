@@ -68,6 +68,7 @@ public class MapPanel extends JPanel implements Runnable{
 		}
 	}
 	
+//	private final long period = 1000; // miliseconds
 	private final long period = 1000;
 	
 	public void run(){
@@ -238,7 +239,7 @@ public class MapPanel extends JPanel implements Runnable{
 			Polygon p = makePolygon(coordinateIterator, area);
 
 			if (p.npoints>0){
-				Logger.say("drawing " + count + " : " + p.npoints);
+				//Logger.say("drawing " + count + " : " + p.npoints);
 				g.setColor(area.getType().getColor());
 				g.fillPolygon(p);
 			}
@@ -255,7 +256,7 @@ public class MapPanel extends JPanel implements Runnable{
 			Polygon p = makePolygon(coordinateIterator, building);
 
 			if (p.npoints>0){
-				Logger.say("drawing " + count + " : " + p.npoints);
+				//Logger.say("drawing " + count + " : " + p.npoints);
 				g.setColor(building.getType().getColor());
 				g.fillPolygon(p);
 			}
@@ -282,7 +283,7 @@ public class MapPanel extends JPanel implements Runnable{
 			}
 
 			if (coordinateCounter>0){
-				Logger.say("drawing " + count + " : " + coordinateCounter);
+				//Logger.say("drawing " + count + " : " + coordinateCounter);
 				g.setColor(road.getType().getColor());
 				g.drawPolyline(arrayX, arrayY, coordinateCounter);
 			}
@@ -309,7 +310,7 @@ public class MapPanel extends JPanel implements Runnable{
 			}
 
 			if (coordinateCounter>0){
-				Logger.say("drawing " + count + " : " + coordinateCounter);
+				//Logger.say("drawing " + count + " : " + coordinateCounter);
 				g.setColor(river.getType().getColor());
 				g.drawPolyline(arrayX, arrayY, coordinateCounter);
 			}

@@ -45,7 +45,7 @@ public class MapTransposer {
 		ratioX = screenWidth/ viewWidth;
 //		System.out.println("ratio " + ratioX + " : " + viewWidth + " : " + screenWidth);
 		ratioY = screenHeight/ viewHeight;
-		System.out.println("ratio " + ratioY + " : " + viewHeight + " : " + screenHeight);
+		//System.out.println("ratio " + ratioY + " : " + viewHeight + " : " + screenHeight);
 		
 	}
 
@@ -64,7 +64,7 @@ public class MapTransposer {
 		mapy = mapy - viewOffsetY;
 		double screenY = mapy * ratioY;
 		screenY = screenOffsetY - screenY;
-		System.out.println("calc " + viewOffsetY + " : " + mapy + " : " + screenY);
+		//System.out.println("calc " + viewOffsetY + " : " + mapy + " : " + screenY);
 		int iy = (int) screenY;
 		return iy;
 	}

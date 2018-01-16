@@ -81,6 +81,10 @@ public class Map {
 		return upperRight.getY() - lowerLeft.getY();
 	}
 	
+	//TODO can we just use one featureTypeList?
+	// How to we track numroads etc?
+	// ie, make roadTypeList a FeatureTypeList - then we can make iterators generic etc.
+	// move make polygon to list class etc.
 	private RoadTypeList roadTypeList = new RoadTypeList();
 	public void addRoadType(RoadType roadType){
 		roadTypeList.add(roadType);
@@ -88,6 +92,7 @@ public class Map {
 	public RoadType getRoadType(String name){
 		return roadTypeList.getRoadType(name);
 	}
+	//TOOD same here, can we make this a vector<feature>?
 	private Vector<Road> roadList = new Vector<Road>();
 	public void addRoad(Road item){
 		roadList.add(item);
