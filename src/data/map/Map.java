@@ -73,11 +73,11 @@ public class Map {
 		upperRight.setY(d);
 	}
 	
-	public double getSizeX(){
+	public double getWidth(){
 		return upperRight.getX() - lowerLeft.getX();
 	}
 	
-	public double getSizeY(){
+	public double getHeight(){
 		return upperRight.getY() - lowerLeft.getY();
 	}
 	
@@ -85,96 +85,150 @@ public class Map {
 	// How to we track numroads etc?
 	// ie, make roadTypeList a FeatureTypeList - then we can make iterators generic etc.
 	// move make polygon to list class etc.
-	private RoadTypeList roadTypeList = new RoadTypeList();
+	
+	/*
+	 * Data for roads
+	 */
+	
+	private FeatureTypeList roadTypeList = new FeatureTypeList();
 	public void addRoadType(RoadType roadType){
 		roadTypeList.add(roadType);
 	}
 	public RoadType getRoadType(String name){
-		return roadTypeList.getRoadType(name);
+		return (RoadType) roadTypeList.getFeatureType(name);
 	}
+	
 	//TOOD same here, can we make this a vector<feature>?
-	private Vector<Road> roadList = new Vector<Road>();
+	private Vector<Feature> roadList = new Vector<Feature>(); //TODO should change this to a FeatureList
 	public void addRoad(Road item){
 		roadList.add(item);
 	}
 	public int getNumRoads(){
 		return roadList.size();
 	}
-	public Iterator<Road> getRoadIterator(){
+	public Iterator<Feature> getRoadIterator(){
 		return roadList.iterator();
 	}
+	
+	/*
+	 * Data for rivers
+	 */
 
-	private RiverTypeList riverTypeList = new RiverTypeList();
+	private FeatureTypeList riverTypeList = new FeatureTypeList();
 	public void addRiverType(RiverType riverType){
 		riverTypeList.add(riverType);
 	}
 	public RiverType getRiverType(String name){
-		return riverTypeList.getRiverType(name);
+		return (RiverType) riverTypeList.getFeatureType(name);
 	}
-	private Vector<River> riverList = new Vector<River>();
+	private Vector<Feature> riverList = new Vector<Feature>();
 	public void addRiver(River item){
 		riverList.add(item);
 	}
 	public int getNumRiverss(){
 		return riverList.size();
 	}
-	public Iterator<River> getRiverIterator(){
+	public Iterator<Feature> getRiverIterator(){
 		return riverList.iterator();
 	}
 	
-	private WallTypeList wallTypeList = new WallTypeList();
+	/*
+	 * Data for walls and fences
+	 */
+	
+	private FeatureTypeList wallTypeList = new FeatureTypeList();
 	public void addWallType(WallType wallType){
 		wallTypeList.add(wallType);
 	}
 	public WallType getWallType(String name){
-		return wallTypeList.getWallType(name);
+		return (WallType) wallTypeList.getFeatureType(name);
 	}
-	private Vector<Wall> wallList = new Vector<Wall>();
+	private Vector<Feature> wallList = new Vector<Feature>();
 	public void addWall(Wall item){
 		wallList.add(item);
 	}
 	public int getNumWalls(){
 		return wallList.size();
 	}
-	public Iterator<Wall> getWallIterator(){
+	public Iterator<Feature> getWallIterator(){
 		return wallList.iterator();
 	}
 
-	private BuildingTypeList buildingTypeList = new BuildingTypeList();
+	/*
+	 * Data for buildings 
+	 */
+	
+	private FeatureTypeList buildingTypeList = new FeatureTypeList();
 	public void addBuildingType(BuildingType buildingType){
 		buildingTypeList.add(buildingType);
 	}
 	public BuildingType getBuildingType(String name){
-		return buildingTypeList.getBuildingType(name);
+		return (BuildingType) buildingTypeList.getFeatureType(name);
 	}
-	private Vector<Building> buildingList = new Vector<Building>();
+	private Vector<Feature> buildingList = new Vector<Feature>();
 	public void addBuilding(Building item){
 		buildingList.add(item);
 	}
 	public int getNumBuildings(){
 		return buildingList.size();
 	}
-	public Iterator<Building> getBuildingIterator(){
+	public Iterator<Feature> getBuildingIterator(){
 		return buildingList.iterator();
 	}
 	
-	private AreaTypeList areaTypeList = new AreaTypeList();
+	/*
+	 * Data for areas
+	 */
+	
+	private FeatureTypeList areaTypeList = new FeatureTypeList();
 	public void addAreaType(AreaType areaType){
 		areaTypeList.add(areaType);
 	}
 	public AreaType getAreaType(String name){
-		return areaTypeList.getAreaType(name);
+		return (AreaType) areaTypeList.getFeatureType(name);
 	}
-	private Vector<Area> areaList = new Vector<Area>();
+	private Vector<Feature> areaList = new Vector<Feature>();
 	public void addArea(Area item){
 		areaList.add(item);
 	}
 	public int getNumAreas(){
 		return areaList.size();
 	}
-	public Iterator<Area> getAreaIterator(){
+	public Iterator<Feature> getAreaIterator(){
 		return areaList.iterator();
 	}
+	
+	/*
+		INTEGER*2  KRIVERXMIN(NUMFEATURES)
+		INTEGER*2  KRIVERXMAX(NUMFEATURES)
+		INTEGER*2  KRIVERYMIN(NUMFEATURES)
+		INTEGER*2  KRIVERYMAX(NUMFEATURES)
+		INTEGER*4  KNUMRIVERS
+
+		REAL*4		RPOLYXMIN(NUMFEATURES)
+		INTEGER*4	KPOLYXMIN(NUMFEATURES)
+		INTEGER*4	KNUMPOLYS
+		REAL*4		MAX_POLY_SIZE
+
+
+		CHARACTER*3	UTM_ZONE$	! the 3 char utm zone for the LL of the map eg 49J
+		CHARACTER*1	UTM_X$		! the alpha char for the X axis
+		CHARACTER*1	UTM_Y$		!
+
+		REAL		ZBX1, ZBX2, EZ, NZ, ZBM, ZBB
+
+		INTEGER*4	FEATS_PER_CELL
+		PARAMETER	(FEATS_PER_CELL = 20)
+
+		INTEGER*4	CELL_FEATURES
+		INTEGER*4	MAX_CELLS
+		PARAMETER (MAX_CELLS = (MAPGRIDX/10)*(MAPGRIDX/10))
+
+	C-------------------------------------------------------------------------------
+
+	*/
+
+
 
 	// ***
 	/*
@@ -220,20 +274,20 @@ public class Map {
 		this.addWallType(new WallType("Hedge"));
 
 		//FIXME - don't use new color but just 3 values - as this validates it properly
-		this.areaTypeList.getAreaType("Light_veg").setColor(new Color(145,240,70));
-		this.areaTypeList.getAreaType("Medium_veg").setColor(new Color(70,180,70));
-		this.areaTypeList.getAreaType("Dense_veg").setColor(new Color(35,95,35));
-		this.areaTypeList.getAreaType("Lake").setColor(new Color(10,150,170));
-		this.riverTypeList.getRiverType("River").setColor(new Color(10,150,170));
-		this.riverTypeList.getRiverType("Creek").setColor(new Color(45,170,120));
-		this.roadTypeList.getRoadType("Highway").setColor(new Color(190,55,40));
-		this.roadTypeList.getRoadType("Road").setColor(new Color(250,250,30));
-		this.roadTypeList.getRoadType("Track").setColor(new Color(180,10,35));
-		this.buildingTypeList.getBuildingType("Brick_Building").setColor(new Color(240,135,130));
-		this.buildingTypeList.getBuildingType("Wood_Building").setColor(new Color(10,10,10));
-		this.wallTypeList.getWallType("Wall").setColor(new Color(10,10,10));
-		this.wallTypeList.getWallType("Fence").setColor(new Color(90,90,90));
-		this.wallTypeList.getWallType("Hedge").setColor(new Color(15,180,60));
+		this.areaTypeList.getFeatureType("Light_veg").setColor(new Color(145,240,70));
+		this.areaTypeList.getFeatureType("Medium_veg").setColor(new Color(70,180,70));
+		this.areaTypeList.getFeatureType("Dense_veg").setColor(new Color(35,95,35));
+		this.areaTypeList.getFeatureType("Lake").setColor(new Color(10,150,170));
+		this.riverTypeList.getFeatureType("River").setColor(new Color(10,150,170));
+		this.riverTypeList.getFeatureType("Creek").setColor(new Color(45,170,120));
+		this.roadTypeList.getFeatureType("Highway").setColor(new Color(190,55,40));
+		this.roadTypeList.getFeatureType("Road").setColor(new Color(250,250,30));
+		this.roadTypeList.getFeatureType("Track").setColor(new Color(180,10,35));
+		this.buildingTypeList.getFeatureType("Brick_Building").setColor(new Color(240,135,130));
+		this.buildingTypeList.getFeatureType("Wood_Building").setColor(new Color(10,10,10));
+		this.wallTypeList.getFeatureType("Wall").setColor(new Color(10,10,10));
+		this.wallTypeList.getFeatureType("Fence").setColor(new Color(90,90,90));
+		this.wallTypeList.getFeatureType("Hedge").setColor(new Color(15,180,60));
 		
 		Area area = new Area(this.getAreaType("Light_veg"));
 		area.addNode(new Coordinate(101.0,101.0));
@@ -283,48 +337,95 @@ public class Map {
 		river.addNode(new Coordinate(108.0,108.0));
 		river.addNode(new Coordinate(107.0,108.0));
 		this.addRiver(river);
-
-
 	}
-	
 	
 	public void trace(){
 		Tracer.write("report for map " + this.getName());
 		Tracer.write("lower left " + lowerLeft.toString());
 		Tracer.write("upper right " + upperRight.toString());
-		Tracer.write("width " + this.getSizeX());
-		Tracer.write("height " + this.getSizeY());
+		Tracer.write("width " + this.getWidth());
+		Tracer.write("height " + this.getHeight());
 		Tracer.write("area types: " + this.areaTypeList.getSize());
 		for (String s: this.areaTypeList.keySet()){
-			AreaType areaType = this.areaTypeList.getAreaType(s);
-			Tracer.write("    " + areaType.getName() + " : " + areaType.getColor());
+			AreaType areaType = (AreaType) this.areaTypeList.getFeatureType(s);
+			Iterator<Feature> iterator = this.getAreaIterator();
+			int count = 0;
+			while (iterator.hasNext()){
+				count++;
+				Area area = (Area) iterator.next();
+				if (area.getType() == areaType){
+					count++;
+				}
+			}
+			Tracer.write("    " + areaType.getName() + " : " + count
+					+ "\n        color : " + areaType.getColor()
+					+ "\n        height: " + areaType.getHeight()
+					+ "\n        water : " + areaType.getWater()
+					+ "\n        PLOS  : " + areaType.getPLOS()
+					);
 		}
 		Tracer.write("road types: " + this.roadTypeList.getSize());
 		for (String s: this.roadTypeList.keySet()){
-			RoadType roadType = this.roadTypeList.getRoadType(s);
-			Tracer.write("    " + roadType.getName() + " : " + roadType.getColor() );
+			RoadType roadType = (RoadType) this.roadTypeList.getFeatureType(s);
+			Iterator<Feature> iterator = this.getRoadIterator();
+			int count = 0;
+			while (iterator.hasNext()){
+				count++;
+				Road road = (Road) iterator.next();
+				if (road.getType() == roadType){
+					count++;
+				}
+			}
+			Tracer.write("    " + roadType.getName() + " : " + count +
+					" color " + roadType.getColor());
 		}
 		Tracer.write("river types: " + this.riverTypeList.getSize());
 		for (String s: this.riverTypeList.keySet()){
-			RiverType riverType = this.riverTypeList.getRiverType(s);
-			Tracer.write("    " + riverType.getName() + " : " + riverType.getColor() );
+			RiverType riverType = (RiverType) this.riverTypeList.getFeatureType(s);
+			Iterator<Feature> iterator = this.getRiverIterator();
+			int count = 0;
+			while (iterator.hasNext()){
+				count++;
+				River river = (River) iterator.next();
+				if (river.getType() == riverType){
+					count++;
+				}
+			}
+			Tracer.write("    " + riverType.getName() + " : " + count +
+					" color " + riverType.getColor());
 		}
 		Tracer.write("wall types: " + this.wallTypeList.getSize());
 		for (String s: this.wallTypeList.keySet()){
-			WallType wallType = this.wallTypeList.getWallType(s);
-			Tracer.write("    " + wallType.getName() + " : " + wallType.getColor() );
+			WallType wallType = (WallType) this.wallTypeList.getFeatureType(s);
+			Iterator<Feature> iterator = this.getWallIterator();
+			int count = 0;
+			while (iterator.hasNext()){
+				count++;
+				Wall wall = (Wall) iterator.next();
+				if (wall.getType() == wallType){
+					count++;
+				}
+			}
+			Tracer.write("    " + wallType.getName() + " : " + count +
+					" color " + wallType.getColor());
 		}
 		Tracer.write("building types: " + this.buildingTypeList.getSize());
 		for (String s: this.buildingTypeList.keySet()){
-			BuildingType buildingType = this.buildingTypeList.getBuildingType(s);
-			Tracer.write("    " + buildingType.getName() + " : " + buildingType.getColor() );
-		}
-		Tracer.write("wall types: " + this.wallTypeList.getSize());
-		for (String s: this.wallTypeList.keySet()){
-			WallType wallType = this.wallTypeList.getWallType(s);
-			Tracer.write("    " + wallType.getName() + " : " + wallType.getColor() );
+			BuildingType buildingType = (BuildingType) this.buildingTypeList.getFeatureType(s);
+			Iterator<Feature> iterator = this.getBuildingIterator();
+			int count = 0;
+			while (iterator.hasNext()){
+				count++;
+				Building building = (Building) iterator.next();
+				if (building.getType() == buildingType){
+					count++;
+				}
+			}
+			Tracer.write("    " + buildingType.getName() + " : " + count +
+					" color " + buildingType.getColor());
 		}
 
+		/*
 		Tracer.write("areas: " + this.areaList.size());
 		Iterator<Area> iterator = this.getAreaIterator();
 		int count = 0;
@@ -372,58 +473,7 @@ public class Map {
 				Tracer.write("    " + c);
 			}
 		}
+		*/
 	}
 }
 	
-/*
- * 
-C	Grid Cell data word, bit field definition:			C
-C									C
-C		Bits 0-15	Elevation (pentimeters)			C
-C		Bit  16 	Building present			C
-C		Bit  17		Fence present				C
-C		Bit  18 	Road present				C
-C		Bit  19 	River present				C
-C		Bit  20 	Vegetation present			C
-C		Bit  21		Urban area present			C
-C		Bit  22		Generic String present			C
-C		Bit  23		Generic Area present			C
-C		Bit  24		Obstacle present			C
-C		Bit  25		Minefield present			C
-C		Bit  26		Breach Lane present			C
-C		Bits 27-31	Not used				C
-C									C
-	INTEGER*4	MASKELEV, MASKBILD, MASKFENC, MASKROAD, MASKRIVER
-	INTEGER*4	MASKTREE, MASKCITY, MASKSTR, MASKAREA, MASKOBS
-	INTEGER*4	MASKMINE, MASKLANE, MASKNONE, MASKANY, MASKPOLY
-
-
-	INTEGER*2  KRIVERXMIN(NUMFEATURES)
-	INTEGER*2  KRIVERXMAX(NUMFEATURES)
-	INTEGER*2  KRIVERYMIN(NUMFEATURES)
-	INTEGER*2  KRIVERYMAX(NUMFEATURES)
-	INTEGER*4  KNUMRIVERS
-
-	REAL*4		RPOLYXMIN(NUMFEATURES)
-	INTEGER*4	KPOLYXMIN(NUMFEATURES)
-	INTEGER*4	KNUMPOLYS
-	REAL*4		MAX_POLY_SIZE
-
-
-	CHARACTER*3	UTM_ZONE$	! the 3 char utm zone for the LL of the map eg 49J
-	CHARACTER*1	UTM_X$		! the alpha char for the X axis
-	CHARACTER*1	UTM_Y$		!
-
-	REAL		ZBX1, ZBX2, EZ, NZ, ZBM, ZBB
-
-	INTEGER*4	FEATS_PER_CELL
-	PARAMETER	(FEATS_PER_CELL = 20)
-
-	INTEGER*4	CELL_FEATURES
-	INTEGER*4	MAX_CELLS
-	PARAMETER (MAX_CELLS = (MAPGRIDX/10)*(MAPGRIDX/10))
-
-C-------------------------------------------------------------------------------
-
-*/
-

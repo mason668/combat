@@ -14,6 +14,6 @@ public class Feature {
 		return coordinates.size();
 	}
 	
-	protected double xmin, xmax, ymin, ymax;
+	protected double xmin, xmax, ymin, ymax; //TODO add accessors
 	
 }
