@@ -52,14 +52,19 @@ public class Constants {
 	// How many relationship types a force can have
 	public static final int HOSTILITY_TYPES = 4;
 	
-	public static final int MOVER_TYPES = 3;
+	public static final int MOVER_TYPES = 9;
 	public static final int MOVER_NONE = 0;
 	public static final int MOVER_FOOT = 1;
 	public static final int MOVER_WHEEL = 2;
-	public static final int MOVER_TRACK = 3; //TODO add more movertypes
+	public static final int MOVER_TRACK = 3;
+	public static final int MOVER_TOWED = 4;
+	public static final int MOVER_SHIP = 5;
+	public static final int MOVER_BOAT = 6;
+	public static final int MOVER_CRAFT = 7;
+	public static final int MOVER_HOVER = 8;
 	public static final String MOVER_TYPE[] = {
 			"static", "foot", "wheel", "track", "towed", 
-			"marine 1", "marine 2", "hover"
+			"ship", "boat", "craft", "hover"
 	};
 	
 	public static final double NEVER = 60*60*24*99; // 99 days

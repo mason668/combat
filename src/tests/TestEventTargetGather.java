@@ -58,9 +58,9 @@ public class TestEventTargetGather extends TestEvent {
 		for (String name: scenario.getEntityList().keySet()){
 			Entity e = scenario.getEntityList().getEntity(name);
 			e.setLocation(new Coordinate(scenario.getMap().getLL().getX() + 
-					Math.random()*(scenario.getMap().getSizeX()),
+					Math.random()*(scenario.getMap().getWidth()),
 					scenario.getMap().getLL().getY() + 
-					Math.random()*(scenario.getMap().getSizeY())));
+					Math.random()*(scenario.getMap().getHeight())));
 		}
 	}
 }

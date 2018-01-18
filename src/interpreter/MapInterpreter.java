@@ -8,6 +8,8 @@ import java.util.Vector;
 import data.map.Area;
 import data.map.AreaType;
 import data.map.Coordinate;
+import data.map.Feature;
+import data.map.FeatureType;
 import data.map.Map;
 import data.map.River;
 import data.map.RiverType;
@@ -57,11 +59,11 @@ public class MapInterpreter extends Interpreter{
 				myMap.addAreaType(areaType);
 			}
 			this.doAreaType(areaType, vector);
-		} else if (command.compareToIgnoreCase("areas") == 0){
+		} else if (command.compareToIgnoreCase("areas") == 0){ //FIXME should say data or something generic
 			if (vector.isEmpty()) return;
 			String fileName = vector.remove(0);
 			Logger.err(Logger.INFO, "loading area file " + fileName);
-			readAreas(fileName);
+			readFeatures(fileName);
 		} else if (command.compareToIgnoreCase("load") == 0){
 			if (vector.isEmpty()) return;
 			String fileName = vector.remove(0);
@@ -80,11 +82,6 @@ public class MapInterpreter extends Interpreter{
 				myMap.addRiverType(riverType);
 			}
 			this.doRiverType(riverType, vector);
-		} else if (command.compareToIgnoreCase("rivers") == 0){
-			if (vector.isEmpty()) return;
-			String fileName = vector.remove(0);
-			Logger.err(Logger.INFO, "loading river file " + fileName);
-			readRivers(fileName);
 		} else if (command.compareToIgnoreCase("road_type") == 0){
 			if (vector.isEmpty()) return;
 			String string = vector.remove(0);
@@ -94,11 +91,6 @@ public class MapInterpreter extends Interpreter{
 				myMap.addRoadType(roadType);
 			}
 			this.doRoadType(roadType, vector);
-		} else if (command.compareToIgnoreCase("roads") == 0){
-			if (vector.isEmpty()) return;
-			String fileName = vector.remove(0);
-			Logger.err(Logger.INFO, "loading road file " + fileName);
-			readRoads(fileName);
 		} else if (command.compareToIgnoreCase("xll") == 0){
 			if (vector.isEmpty()) return;
 			try{
@@ -148,19 +140,19 @@ public class MapInterpreter extends Interpreter{
 		}
 	}
 	
-	protected void readAreas(String fileName){
+	protected void readFeatures(String fileName){
 		if (trace){
-			Tracer.write("Interpreter: reading from area file " + fileName);
+			Tracer.write("Interpreter: reading from feature file " + fileName);
 		}
     	BufferedReader b = null;
     	try {
     		b = new BufferedReader(new FileReader(fileName));
     		String record = null;
-    		Area area = null;
+    		Feature area = null;
     		int nodes = 0;
     		while ((record=b.readLine()) != null){
     			if (trace){
-        			Tracer.write("read " + record);
+//        			Tracer.write("read " + record);
     			}
     			if (record.compareTo("")==0 ) continue;
     			if (record.startsWith("#")) continue;
@@ -172,20 +164,43 @@ public class MapInterpreter extends Interpreter{
     				vector.addElement(word);
     			}
     			if (area == null){
-        			if (vector.size()>1){
+        			if (vector.size()>2){
+        				String type = vector.remove(0);
         				String string = vector.remove(0);
         				String number = vector.remove(0);
         				try{
         					nodes = Integer.parseInt(number);
         				} catch (Exception e){}
-            			AreaType areaType = myMap.getAreaType(string);
-            			if (areaType != null){
-                			if (trace){
-                    			Tracer.write("new area " + areaType.getName() + " : " + nodes);
+        				if (type.compareToIgnoreCase("")== 0){
+        				} else if (type.compareToIgnoreCase("area")== 0){
+                			FeatureType areaType = myMap.getAreaType(string);
+                			if (areaType != null){
+                    			if (trace){
+//                        			Tracer.write("new area " + areaType.getName() + " : " + nodes);
+                    			}
+                    			area = new Area((AreaType) areaType);
+                    			this.myMap.addArea((Area) area);
                 			}
-                			area = new Area(areaType);
-                			this.myMap.addArea(area);
-            			}
+        				} else if (type.compareToIgnoreCase("river")== 0){
+                			FeatureType areaType = myMap.getRiverType(string);
+                			if (areaType != null){
+                    			if (trace){
+//                        			Tracer.write("new river " + areaType.getName() + " : " + nodes);
+                    			}
+                    			area = new River((RiverType) areaType);
+                    			this.myMap.addRiver((River) area);
+                			}
+        				} else if (type.compareToIgnoreCase("road")== 0){
+                			FeatureType areaType = myMap.getRoadType(string);
+                			if (areaType != null){
+                    			if (trace){
+//                        			Tracer.write("new road " + areaType.getName() + " : " + nodes);
+                    			}
+                    			area = new Road((RoadType) areaType);
+                    			this.myMap.addRoad((Road) area);
+                			}
+        				} else {
+        				}
         			}
     			} else { // area != null
         			if (vector.size()>1){
@@ -231,67 +246,6 @@ public class MapInterpreter extends Interpreter{
 		}
 	}
 	
-	protected void readRoads(String fileName){
-		if (trace){
-			Tracer.write("Interpreter: reading from road file " + fileName);
-		}
-    	BufferedReader b = null;
-    	try {
-    		b = new BufferedReader(new FileReader(fileName));
-    		String record = null;
-    		Road road = null;
-    		int nodes = 0;
-    		while ((record=b.readLine()) != null){
-    			if (trace){
-        			Tracer.write("read " + record);
-    			}
-    			if (record.compareTo("")==0 ) continue;
-    			if (record.startsWith("#")) continue;
-    			if (record.startsWith("!")) continue;
-    			Vector<String> vector = new Vector<String>();
-    			StringTokenizer tokenizer = new StringTokenizer(record);
-    			while (tokenizer.hasMoreTokens()){
-    				String word = tokenizer.nextToken();
-    				vector.addElement(word);
-    			}
-    			if (road == null){
-        			if (vector.size()>1){
-        				String string = vector.remove(0);
-        				String number = vector.remove(0);
-        				try{
-        					nodes = Integer.parseInt(number);
-        				} catch (Exception e){}
-            			RoadType roadType = myMap.getRoadType(string);
-            			if (roadType != null){
-                			if (trace){
-                    			Tracer.write("new road " + roadType.getName() + " : " + nodes);
-                			}
-                			road = new Road(roadType);
-                			this.myMap.addRoad(road);
-            			}
-        			}
-    			} else { // area != null
-        			if (vector.size()>1){
-        				String stringx = vector.remove(0);
-        				String stringy = vector.remove(0);
-        				try{
-        					double x = Double.parseDouble(stringx);
-        					double y = Double.parseDouble(stringy);
-        					nodes--;
-        					Coordinate c = new Coordinate(x,y);
-        					road.addNode(c);
-        					if (nodes <= 0) road=null;
-        				} catch (Exception e){}
-        			}
-    			}
-    			//this.interpret(record);
-    		}
-            b.close();
-    	} catch (Exception e) {
-    		Logger.err(Logger.WARNING, "Unable to open file " + fileName);
-    	}
-	}
-
 	private void doRiverType(RiverType riverType, Vector<String> vector){
 		if (vector.size()<=0) return;
 		String command = vector.remove(0);
@@ -313,68 +267,5 @@ public class MapInterpreter extends Interpreter{
 			} catch (Exception e){}
 		}
 	}
-	
-	protected void readRivers(String fileName){
-		if (trace){
-			Tracer.write("Interpreter: reading from river file " + fileName);
-		}
-    	BufferedReader b = null;
-    	try {
-    		b = new BufferedReader(new FileReader(fileName));
-    		String record = null;
-    		River river = null;
-    		int nodes = 0;
-    		while ((record=b.readLine()) != null){
-    			if (trace){
-        			Tracer.write("read " + record);
-    			}
-    			if (record.compareTo("")==0 ) continue;
-    			if (record.startsWith("#")) continue;
-    			if (record.startsWith("!")) continue;
-    			Vector<String> vector = new Vector<String>();
-    			StringTokenizer tokenizer = new StringTokenizer(record);
-    			while (tokenizer.hasMoreTokens()){
-    				String word = tokenizer.nextToken();
-    				vector.addElement(word);
-    			}
-    			if (river == null){
-        			if (vector.size()>1){
-        				String string = vector.remove(0);
-        				String number = vector.remove(0);
-        				try{
-        					nodes = Integer.parseInt(number);
-        				} catch (Exception e){}
-            			RiverType riverType = myMap.getRiverType(string);
-            			if (riverType != null){
-                			if (trace){
-                    			Tracer.write("new area " + riverType.getName() + " : " + nodes);
-                			}
-                			river = new River(riverType);
-                			this.myMap.addRiver(river);
-            			}
-        			}
-    			} else { // area != null
-        			if (vector.size()>1){
-        				String stringx = vector.remove(0);
-        				String stringy = vector.remove(0);
-        				try{
-        					double x = Double.parseDouble(stringx);
-        					double y = Double.parseDouble(stringy);
-        					nodes--;
-        					Coordinate c = new Coordinate(x,y);
-        					river.addNode(c);
-        					if (nodes <= 0) river=null;
-        				} catch (Exception e){}
-        			}
-    			}
-    			//this.interpret(record);
-    		}
-            b.close();
-    	} catch (Exception e) {
-    		Logger.err(Logger.WARNING, "Unable to open file " + fileName);
-    	}
-	}
-
-
 	
 }

@@ -1021,7 +1021,7 @@ public class MoveEvent extends Event {
 				Tracer.write(Tracer.MOVEMENT,4,"area type " + areaType.getName());
 				Tracer.write(Tracer.MOVEMENT,4,"speed reduction factor = " + reduction );
 			}
-			if (areaType.isWater()){
+			if (areaType.getWater()){
 				if (tracing){
 					Tracer.write(Tracer.MOVEMENT,4,"terrain is water" );
 				}

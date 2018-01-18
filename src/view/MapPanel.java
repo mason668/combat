@@ -8,6 +8,9 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Polygon;
 import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.Iterator;
 
 import javax.swing.JPanel;
@@ -43,6 +46,7 @@ public class MapPanel extends JPanel implements Runnable{
 		MapPanel view = new MapPanel();
 		view.setMap(testMap);
 		view.setPreferredSize(new Dimension (500,500));
+		view.addMouseListener(view.new Listener());
 		
 		FullFrame frame = new FullFrame("MapPanel");
 
@@ -145,49 +149,7 @@ public class MapPanel extends JPanel implements Runnable{
 	private Map myMap;
 	public Map getMap(){return myMap;}
 	
-	private MapTransposer mapTransposer;
-	
-	private void calculateTranslation(){
-		mapTransposer = new MapTransposer(myMap,this.getWidth()-3,this.getHeight()-4);
-		/*
-		int panelWidth = this.getWidth()-3;
-		int panelHeight = this.getHeight()-4;
-		int screenWidth = panelWidth; //TODO adjust to centre image
-		int screenHeight = panelHeight;
-		double mapWidth = myMap.getSizeX();
-		double mapHeight = myMap.getSizeY();
-		double viewWidth = mapWidth;// TODO should account for zooming
-		double viewHeight = mapHeight;
-		double mapXll = myMap.getLL().getX();
-		double mapYll = myMap.getLL().getY();
-		double mapXur = myMap.getUR().getX();
-		double mapYur = myMap.getUR().getY();
-		double viewXll = mapXll;
-		double viewYll = mapYll;
-		double viewXur = mapXur;
-		double viewYur = mapYur;
-		
-		screenOffsetX = 1;
-		screenOffsetY = screenHeight;
-		
-		if (screenWidth < screenHeight){
-			//
-		} else {
-			//
-		}
-		double screenXll = 1;
-		double screenYll = screenHeight;
-		double screenXur = screenWidth;
-		double screenYur = 1;
-		
-		viewOffsetX = viewXll;
-		viewOffsetY = viewYll;
-		ratioX = screenWidth/ viewWidth;
-//		System.out.println("ratio " + ratioX + " : " + viewWidth + " : " + screenWidth);
-		ratioY = screenHeight/ viewHeight;
-		System.out.println("ratio " + ratioY + " : " + viewHeight + " : " + screenHeight);
-		*/
-	}
+	private MapTransposer mapTransposer = new MapTransposer();
 	
 //	private double viewOffsetX;
 //	private double viewOffsetY;
@@ -199,7 +161,7 @@ public class MapPanel extends JPanel implements Runnable{
 	private void renderMap(Graphics g){
 		if (myMap == null) return;
 		//Logger.say("valid map");
-		calculateTranslation();
+		mapTransposer.update(myMap,this.getWidth()-3,this.getHeight()-4);
 		drawBorder(g);
 		drawAreas(g);
 		drawBuildings(g);
@@ -230,11 +192,11 @@ public class MapPanel extends JPanel implements Runnable{
 	}
 	
 	private void drawAreas(Graphics g){
-		Iterator<Area> areaIterator = myMap.getAreaIterator();
+		Iterator<Feature> areaIterator = myMap.getAreaIterator();
 		int count = 0;
 		while (areaIterator.hasNext()){
 			count++;
-			Area area = areaIterator.next();
+			Area area = (Area) areaIterator.next();
 			Iterator<Coordinate> coordinateIterator = area.getCoordinates().iterator();
 			Polygon p = makePolygon(coordinateIterator, area);
 
@@ -247,11 +209,11 @@ public class MapPanel extends JPanel implements Runnable{
 	}
 	
 	private void drawBuildings(Graphics g){
-		Iterator<Building> buildingIterator = myMap.getBuildingIterator();
+		Iterator<Feature> buildingIterator = myMap.getBuildingIterator();
 		int count = 0;
 		while (buildingIterator.hasNext()){
 			count++;
-			Building building = buildingIterator.next();
+			Building building = (Building) buildingIterator.next();
 			Iterator<Coordinate> coordinateIterator = building.getCoordinates().iterator();
 			Polygon p = makePolygon(coordinateIterator, building);
 
@@ -264,11 +226,11 @@ public class MapPanel extends JPanel implements Runnable{
 	}
 	
 	private void drawRoads(Graphics g){
-		Iterator<Road> roadIterator = myMap.getRoadIterator();
+		Iterator<Feature> roadIterator = myMap.getRoadIterator();
 		int count = 0;
 		while (roadIterator.hasNext()){
 			count++;
-			Road road = roadIterator.next();
+			Road road = (Road) roadIterator.next();
 			Iterator<Coordinate> coordinateIterator = road.getCoordinates().iterator();
 			int arrayX[] = new int[road.getCoordinates().size()];
 			int arrayY[] = new int[road.getCoordinates().size()];
@@ -291,11 +253,11 @@ public class MapPanel extends JPanel implements Runnable{
 	}
 	
 	private void drawRivers(Graphics g){
-		Iterator<River> riverIterator = myMap.getRiverIterator();
+		Iterator<Feature> riverIterator = myMap.getRiverIterator();
 		int count = 0;
 		while (riverIterator.hasNext()){
 			count++;
-			River river = riverIterator.next();
+			River river = (River) riverIterator.next();
 			Iterator<Coordinate> coordinateIterator = river.getCoordinates().iterator();
 			int arrayX[] = new int[river.getCoordinates().size()];
 			int arrayY[] = new int[river.getCoordinates().size()];
@@ -389,6 +351,52 @@ public class MapPanel extends JPanel implements Runnable{
 		} catch (Exception e){
 			// TODO display error message
 		}
+	}
+	
+	private class Listener implements MouseListener, MouseMotionListener{
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			// TODO Auto-generated method stub
+//			System.out.println("clicked");
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			int x = e.getX();
+			int y = e.getY();
+			double mapX = mapTransposer.screen2MapX(x);
+			double mapY = mapTransposer.screen2MapY(y);
+			System.out.println("pressed ( " + mapX + " , " + mapY);
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+//			System.out.println("released");
+		}
+
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent e) {
+			// TODO Auto-generated method stub
+		}
+		
 	}
 
 }
