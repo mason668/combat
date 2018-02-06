@@ -8,6 +8,7 @@ import java.util.Vector;
 import data.map.Area;
 import data.map.AreaType;
 import data.map.Coordinate;
+import data.map.ElevationModel;
 import data.map.Feature;
 import data.map.FeatureType;
 import data.map.Map;
@@ -29,7 +30,7 @@ public class MapInterpreter extends Interpreter{
 		Map map = new Map();
 		me.setMap(map);
 		me.test(args);
-		map.trace();
+		//map.trace();
 	}
 	
 	public void setMap(Map map){
@@ -59,11 +60,16 @@ public class MapInterpreter extends Interpreter{
 				myMap.addAreaType(areaType);
 			}
 			this.doAreaType(areaType, vector);
-		} else if (command.compareToIgnoreCase("areas") == 0){ //FIXME should say data or something generic
+		} else if (command.compareToIgnoreCase("areas") == 0){
 			if (vector.isEmpty()) return;
 			String fileName = vector.remove(0);
 			Logger.err(Logger.INFO, "loading area file " + fileName);
 			readFeatures(fileName);
+		} else if (command.compareToIgnoreCase("heights") == 0){
+			if (vector.isEmpty()) return;
+			String fileName = vector.remove(0);
+			Logger.err(Logger.INFO, "loading height file " + fileName);
+			readHeights(fileName);
 		} else if (command.compareToIgnoreCase("load") == 0){
 			if (vector.isEmpty()) return;
 			String fileName = vector.remove(0);
@@ -132,8 +138,8 @@ public class MapInterpreter extends Interpreter{
 				string = vector.remove(0);
 				int blue = Integer.parseInt(string);
 				if (trace){
-					Tracer.write(this.getClass().getName() + "setting color to " + red + " " +
-							green + " " + blue);
+					//Tracer.write(this.getClass().getName() + "setting color to " + red + " " +
+					//		green + " " + blue);
 				}
 				areaType.setColor(red, green, blue);
 			} catch (Exception e){}
@@ -142,7 +148,7 @@ public class MapInterpreter extends Interpreter{
 	
 	protected void readFeatures(String fileName){
 		if (trace){
-			Tracer.write("Interpreter: reading from feature file " + fileName);
+			//Tracer.write("Interpreter: reading from feature file " + fileName);
 		}
     	BufferedReader b = null;
     	try {
@@ -238,8 +244,8 @@ public class MapInterpreter extends Interpreter{
 				string = vector.remove(0);
 				int blue = Integer.parseInt(string);
 				if (trace){
-					Tracer.write(this.getClass().getName() + "setting color to " + red + " " +
-							green + " " + blue);
+					//Tracer.write(this.getClass().getName() + "setting color to " + red + " " +
+					//		green + " " + blue);
 				}
 				roadType.setColor(red, green, blue);
 			} catch (Exception e){}
@@ -260,12 +266,58 @@ public class MapInterpreter extends Interpreter{
 				string = vector.remove(0);
 				int blue = Integer.parseInt(string);
 				if (trace){
-					Tracer.write(this.getClass().getName() + "setting color to " + red + " " +
-							green + " " + blue);
+					//Tracer.write(this.getClass().getName() + "setting color to " + red + " " +
+					//		green + " " + blue);
 				}
 				riverType.setColor(red, green, blue);
 			} catch (Exception e){}
 		}
 	}
 	
+	protected void readHeights(String fileName){
+		if (trace){
+			Tracer.write("Interpreter: reading from height file " + fileName);
+		}
+    	BufferedReader b = null;
+    	try {
+    		b = new BufferedReader(new FileReader(fileName));
+    		String record = null;
+    		record=b.readLine();
+    		
+			Vector<String> vector = new Vector<String>();
+			StringTokenizer tokenizer = new StringTokenizer(record);
+			while (tokenizer.hasMoreTokens()){
+				String word = tokenizer.nextToken();
+				vector.addElement(word);
+			}
+			if (vector.size()<2) {
+				b.close();
+				return;
+			}
+			int width, height;
+			try{
+				width = Integer.parseInt(vector.remove(0));
+				height = Integer.parseInt(vector.remove(0));
+			} catch (Exception e){
+				b.close();
+				return;
+			}
+			if (trace){
+				Tracer.write("Interpreter: width " + width + " height " + height);
+			}
+			myMap.createElevationModel(width, height);
+			ElevationModel model = myMap.getElevationModel();
+			for (int i=0;i<width;i++){
+				for (int j=0;j<height;j++){
+		    		record=b.readLine();
+					double elevation = Double.parseDouble(record);
+					model.setElevationM(i, j, elevation);
+				}
+			}
+
+            b.close();
+    	} catch (Exception e) {
+    		Logger.err(Logger.WARNING, "Unable to open file " + fileName);
+    	}
+	}
 }

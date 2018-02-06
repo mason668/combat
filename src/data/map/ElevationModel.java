@@ -225,5 +225,29 @@ public class ElevationModel {
 			}
 		}
 	}
+	
+	public double getHighestM(){
+		double max = -5000.0;
+		for (int i=0;i<this.mapWidth;i++){
+			for (int j=0;j<this.mapWidth;j++){
+				if (this.array[i][j] > max){
+					max = this.array[i][j];
+				}
+			}
+		}
+		return max;
+	}
+
+	public double getLowestM(){
+		double min = 5000.0;
+		for (int i=0;i<this.mapWidth;i++){
+			for (int j=0;j<this.mapWidth;j++){
+				if (this.array[i][j] < min){
+					min = this.array[i][j];
+				}
+			}
+		}
+		return min;
+	}
 
 }

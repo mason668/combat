@@ -36,11 +36,12 @@ public class Map {
 	 * Private members
 	 */
 	
+	private ElevationModel elevationModel = new ElevationModel(100);
 	private FeatureList areaList = new FeatureList();
 	private FeatureTypeList areaTypeList = new FeatureTypeList();
 	private FeatureList buildingList = new FeatureList();
 	private FeatureTypeList buildingTypeList = new FeatureTypeList();
-	private double cellSize = 0.1;
+	private double cellSize = 0.1; //FIXME how do we define cell size?
 	private Coordinate lowerLeft = new Coordinate(100.0,100.0);
 	private String mapName = "test_map"; // globtrrn.terrainame$
 	private double maxStepSize = 0.05;
@@ -53,6 +54,15 @@ public class Map {
 	private FeatureTypeList wallTypeList = new FeatureTypeList();
 	private double windDirection = 0.0;
 	private double windSpeed = 0.0;
+
+	public void createElevationModel(int x, int y){
+		if ( x < 1) return; //TODO should do some error reporting
+		if ( y < 1) return;
+		elevationModel = new ElevationModel(x,y);
+	}
+	public ElevationModel getElevationModel(){
+		return elevationModel; // FIXME really should not expose this
+	}
 	
 	public double getCellSize(){
 		return cellSize;
@@ -506,8 +516,25 @@ c	ENDIF
 		 * 
 		 */
 	}
+	public int getCellX(Coordinate c){
+		double x = c.getX();
+		x = x - this.lowerLeft.getX();
+		x = x / cellSize;
+		int cellx = (int) x;
+		return cellx;
+	}
+	public int getCellY(Coordinate c){
+		double y = c.getY();
+		y = y - this.lowerLeft.getY();
+		y = y / cellSize;
+		int celly = (int) y;
+		return celly;
+	}
 	public double getElevationM(Coordinate c){
-		return 1.0; // TODO
+		int cellx = this.getCellX(c);
+		int celly = this.getCellY(c);
+		double elevation = this.elevationModel.getElevationM(cellx, celly);
+		return elevation; // TODO this needs to interpolate
 		/*
 	REAL FUNCTION TRRNELEV ( X,Y)	! returns metres
 
@@ -2794,8 +2821,8 @@ C ----- RETURN to calling routine.
 		Tracer.write("report for map " + this.getName());
 		Tracer.write("lower left " + lowerLeft.toString());
 		Tracer.write("upper right " + upperRight.toString());
-		Tracer.write("width " + this.getWidth());
-		Tracer.write("height " + this.getHeight());
+		Tracer.write("width " + this.getWidth()+"km");
+		Tracer.write("height " + this.getHeight()+"km");
 		Tracer.write("area types: " + this.areaTypeList.getSize());
 		for (String s: this.areaTypeList.keySet()){
 			AreaType areaType = (AreaType) this.areaTypeList.getFeatureType(s);
@@ -2925,6 +2952,10 @@ C ----- RETURN to calling routine.
 			}
 		}
 		*/
+		Tracer.write("elevation model " + elevationModel.getWidth() +
+				" cells wide and " + elevationModel.getHeight() + " cells high");
+		Tracer.write("highest point " + elevationModel.getHighestM()+"m");
+		Tracer.write(" lowest point " + elevationModel.getLowestM()+"m");
 	}
 }
 	

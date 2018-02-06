@@ -14,7 +14,7 @@ public class MapTransposer {
 	
 	public void update(Map myMap, int panelWidth, int panelHeight) { 
 		int imageWidth = panelWidth;
-		int imageHeight = panelHeight;
+		int imageHeight = panelHeight-3;
 		if ( imageWidth > imageHeight ) imageWidth = imageHeight;
 		if ( imageHeight > imageWidth ) imageHeight = imageWidth;
 
