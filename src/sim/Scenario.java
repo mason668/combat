@@ -2,6 +2,8 @@ package sim;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Vector;
 
 import data.managers.EntityList;
@@ -379,12 +381,47 @@ C------ User requested JANUS termination
 		Logger.say("initialising queues");
 		for (String entityName : this.getEntityList().keySet()){
 			Entity entity = this.getEntityList().getEntity(entityName);
-			//Logger.say("entity " + entityName);
-			double time = this.getParameters().getStartTime() + 
-					(Math.random() * this.getParameters().getMovementCycleTime());
-			Event moveEvent = new MoveEvent(time, this, entity);		
-			eventQueue.add(moveEvent);
+			Logger.log(this, "entity " + entityName);
+			addMoveEvent(entity);
 		}
+	}
+	
+	private void addMoveEvent(Entity entity) {
+		Class<?> eventClass = makeEventClass(entity.getMovementModel());
+		if (eventClass == null) return;
+		double time = this.getParameters().getStartTime() + 
+				(Math.random() * this.getParameters().getMovementCycleTime());
+		try{
+			Constructor<?> con = eventClass.getConstructor(double.class, 
+					Scenario.class, 
+					MoverEntity.class);
+			Object o = con.newInstance(time, this, entity);
+			if (!(o instanceof MoveEvent)) return;
+			Logger.log("made object");
+			Event event = (MoveEvent) o;
+			eventQueue.add(event);
+			Logger.log("added event");
+		} catch (NoSuchMethodException e){
+			Logger.err(this, Logger.ERROR, "NoSuchMethodException");
+		} catch (InvocationTargetException e){
+			Logger.err(this, Logger.ERROR, "InvocationTargetException");
+		} catch (InstantiationException e){
+			Logger.err(this, Logger.ERROR, "InstantiationException");
+		} catch (IllegalAccessException e){
+			Logger.err(this, Logger.ERROR, "IllegalAccessException");
+		}
+	}
+	
+	private Class<?> makeEventClass(String modelName){
+		if (modelName == null) return null;
+		if (modelName.compareTo("")== 0) return null;
+		Class<?> eventClass = null;
+		try{
+			eventClass = Class.forName(modelName);
+		} catch (ClassNotFoundException e){
+			Logger.err(this, Logger.ERROR, "ClassNotFoundException");
+		}
+		return eventClass;
 	}
 	
 	private boolean running = false; //TODO test doesn't seem to use this
@@ -448,8 +485,11 @@ C------ User requested JANUS termination
 		}
 	}
 	
-	private Map map = new Map();
-	public Map getMap(){return map;}
+	private Map scenarioMap = new Map();
+	public Map getMap(){return scenarioMap;}
+	public void setMap(Map map){
+		this.scenarioMap = map;
+	}
 	
 	public int getHostility(ObserverEntity observer, DetectedEntity target){ //TODO need to compare forces etc
 		return Constants.HOSTILITY_ENEMY;

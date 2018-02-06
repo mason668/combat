@@ -423,4 +423,55 @@ public class Parameters {
 		return s;
 	}
 	
+	/*
+	 * fromm trrnlib
+
+	 * 	SUBROUTINE GET_HELP_FLAG ( IFLAG )
+
+	include 'global.f'
+
+	IFLAG = 0
+
+	IF ( DOHELP_MENU ) IFLAG = 1
+
+	RETURN
+	END
+
+	SUBROUTINE GET_HETERO_FLAG ( IFLAG )
+
+	include 'global.f'
+
+	IFLAG = 0
+
+	IF ( DOHETERO .GT. 0) IFLAG = 1
+
+	RETURN
+	END
+
+	SUBROUTINE GET_DF_SUPPR_FLAG ( IFLAG )
+
+	include 'global.f'
+
+	IFLAG = 0
+
+	IF ( DO_DF_SUPPR ) IFLAG = 1
+
+	RETURN
+	END
+
+
+	SUBROUTINE GET_MAP_FLAG ( IFLAG )
+
+	include 'global.f'
+
+	IFLAG = 0
+
+	IF ( WHITE_MAP .GT. 0 ) IFLAG = 1
+
+	RETURN
+	END
+
+
+	 */
+	
 }

@@ -2,6 +2,10 @@ package models;
 
 import utils.Logger;
 
+/**
+ * 
+ *
+ */
 public class Event {
 	/***************** 
 	 * internal attributes

@@ -3,12 +3,8 @@ package data.map;
 public class Building extends AreaFeature{
 	
 	public Building(BuildingType type){
-		super();
-		buildingType = type;
+		super(type);
 	}
-	
-	private BuildingType buildingType;
-	public BuildingType getType(){return buildingType;}
 	
 	public int getFloors(){return 3;}
 	public double getHeight(){return 0.02;}

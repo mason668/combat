@@ -18,10 +18,19 @@ import sim.route.Node;
 import sim.route.Route;
 import utils.Logger;
 
-public class Entity implements ObserverEntity, FirerEntity, 
-	MoverEntity, TargetEntity, 
-	BridgeEntity, CarrierEntity, DetectedEntity
+public class Entity implements ObserverEntity, 
+	FirerEntity, 
+	MoverEntity, 
+	TargetEntity, 
+	BridgeEntity, 
+	CarrierEntity, 
+	DetectedEntity
 	{
+	
+	private String movementModel = "models.movement.MoveEvent";
+	public String getMovementModel(){
+		return movementModel.substring(0);
+	}
 	
 	private Platform myPlatform; // globunits.ksystyp, kcsdtyp
 	public Platform getPlatform(){return myPlatform;}

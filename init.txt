@@ -1,2 +1,3 @@
 #load data/csdata.txt
+map load data/maps/pucka_120.txt
 load tests/test_scenario.txt

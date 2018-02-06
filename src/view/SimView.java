@@ -4,15 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import data.CSData;
 import interpreter.CommandInterpreter;
 import sim.Scenario;
 import sim.Simulation;
-import tests.TestEvent;
 import utils.Logger;
 import utils.Tracer;
 import view.ClockView;
@@ -20,7 +20,7 @@ import view.CommandView;
 import view.FullFrame;
 import view.TraceView;
 
-public class SimView {
+public class SimView implements ChangeListener{
 	
 	private static String label = "Simulation";
 	private static String testName = "TestMoveEvent";
@@ -28,7 +28,11 @@ public class SimView {
 	private CSData myData = new CSData();
 	private CommandInterpreter myInterpreter = new CommandInterpreter(myData, myScenario);
 	
-	private MapView mapView = new MapView();
+	private MapView mapView;// = new MapView();
+	private JTabbedPane tabbedPane;
+	private final int TRACE_PANE = 0;
+	private final int MAP_PANE = 1;
+	private final int DATA_PANE = 2;
 
 	public static void main(String[] args){
 		SimView test = new SimView(label, testName, args);
@@ -42,6 +46,8 @@ public class SimView {
 			myInterpreter.interpret(args);
 		}
 		mapView.setMap(myScenario.getMap());
+//		myScenario.getMap().makeTestMap();
+//		myScenario.getMap().trace();
 	}
 
 	protected void makeFrame(String label){
@@ -73,15 +79,19 @@ public class SimView {
 		controlPanel.add(startBtn, BorderLayout.WEST);
 		frame.add(controlPanel,BorderLayout.NORTH);
 		
-		JTabbedPane tabbedPane = new JTabbedPane();
+		tabbedPane = new JTabbedPane();
+		tabbedPane.addChangeListener(this);
 		
 		TraceView traceView = new TraceView();
 		Tracer.addListener(traceView);
-		tabbedPane.add(traceView,"Trace");
 		
-		tabbedPane.add(mapView,"Map");
+		JPanel dataView = new JPanel();
 		
-		tabbedPane.add(new JPanel(),"Data");
+		mapView = new MapView(myScenario.getMap());
+		
+		tabbedPane.insertTab("Log", null, traceView, "Display log data", TRACE_PANE);
+		tabbedPane.insertTab("Map", null, mapView, "Display map", MAP_PANE);
+		tabbedPane.insertTab("Data", null, dataView, "Display data", DATA_PANE);
 
 		frame.add(tabbedPane,BorderLayout.CENTER);
 		
@@ -102,5 +112,15 @@ public class SimView {
 //			testEvent.runTest();
 //			testEvent.test(testName);
 		}
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent arg0) {
+		if (tabbedPane.getSelectedIndex() == MAP_PANE){
+			mapView.makeVisible(true);
+		} else {
+			mapView.makeVisible(false);
+		}
+		
 	}
 }

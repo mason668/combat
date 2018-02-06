@@ -14,7 +14,8 @@ public class FullFrame extends JFrame {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int height = screenSize.height;
 		int width = screenSize.width;
-		this.setPreferredSize(new Dimension(width, height));
+		//this.setPreferredSize(new Dimension(width, height)); //FIXME reset full frame to full screen
+		this.setPreferredSize(new Dimension(500, 300));
 		this.setMinimumSize(new Dimension(100,100));
 	}
 

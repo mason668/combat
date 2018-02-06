@@ -398,7 +398,7 @@ public class MoveEvent extends Event {
 			Tracer.write(Tracer.MOVEMENT,4,"altitude " +
 					altitude*1000 + "m"); 
 			Tracer.write(Tracer.MOVEMENT,4,"elevation " + 
-					this.myScenario.getMap().getElevation(this.myEntity.getLocation())); 
+					this.myScenario.getMap().getElevationKM(this.myEntity.getLocation())); 
 			Tracer.write(Tracer.MOVEMENT,4,"objective " + objective ); 
 			Tracer.write(Tracer.MOVEMENT,4,"distance to objective " + 
 					distance + "km"); 
@@ -433,7 +433,7 @@ public class MoveEvent extends Event {
 		}
 		// Even if flier didn't move, must recalculate altitude because it could have changed altitude.
 		
-		double zt = this.myScenario.getMap().getElevation(this.newLocation);
+		double zt = this.myScenario.getMap().getElevationKM(this.newLocation);
 		Building building = this.myScenario.getMap().inBuilding(this.newLocation);
 		double zf = 0.0;
 		if (building != null){
@@ -638,7 +638,7 @@ public class MoveEvent extends Event {
 			return false;
 		}
 		newLocation = new Coordinate(moveObjective);
-		double elev = this.myScenario.getMap().getElevation(newLocation);
+		double elev = this.myScenario.getMap().getElevationKM(newLocation);
 		if (tracing){
 			Tracer.write(Tracer.MOVEMENT,3,"elevation at new location " +
 					elev + "km" );

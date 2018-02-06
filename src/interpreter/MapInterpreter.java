@@ -211,7 +211,7 @@ public class MapInterpreter extends Interpreter{
         					double y = Double.parseDouble(stringy);
         					nodes--;
         					Coordinate c = new Coordinate(x,y);
-        					area.addNode(c);
+        					area.getCoordinateList().addCoordinate(c);
         					if (nodes <= 0) area=null;
         				} catch (Exception e){}
         			}

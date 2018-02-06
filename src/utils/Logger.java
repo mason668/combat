@@ -118,6 +118,12 @@ public class Logger {
 		log(message);
 	}
 	
+	public static void log(Object object, String message){
+		if (object != null){
+			log(object.getClass().getName() + ": " + message);
+		}
+	}
+	
 	public static void setLevel(int level){
 		if (level < COURSEST) return;
 		if (level > FINEST) return;
