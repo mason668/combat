@@ -11,6 +11,7 @@ import javax.swing.event.ChangeListener;
 
 import data.CSData;
 import interpreter.CommandInterpreter;
+import sim.GameClock;
 import sim.Scenario;
 import sim.Simulation;
 import utils.Logger;
@@ -23,29 +24,30 @@ import view.TraceView;
 public class SimView implements ChangeListener{
 	
 	private static String label = "Simulation";
-	private static String testName = "TestMoveEvent";
-	private Scenario myScenario = new Scenario("sim gui", false);
-	private CSData myData = new CSData();
-	private CommandInterpreter myInterpreter = new CommandInterpreter(myData, myScenario);
+	private Simulation mySimulation = new Simulation();
 	
 	private MapView mapView;// = new MapView();
 	private JTabbedPane tabbedPane;
 	private final int TRACE_PANE = 0;
 	private final int MAP_PANE = 1;
 	private final int DATA_PANE = 2;
+	
+	private SpriteManager spriteManager = new SpriteManager();
 
 	public static void main(String[] args){
-		SimView test = new SimView(label, testName, args);
+		SimView test = new SimView(label, args);
 	}
 
-	public SimView(String label, String testName, String[] args) {
+	public SimView(String label, String[] args) {
 		makeFrame(label);
+		mySimulation.getInterpreter().setTrace(true);
 		if (args.length<=0){
-			myInterpreter.interpret("load init.txt");
+			mySimulation.getInterpreter().interpret("load tests/test_move.txt");
+//			mySimulation.init(new String[] {"--load init.txt"});
 		} else {
-			myInterpreter.interpret(args);
+			mySimulation.init(args);
 		}
-		mapView.setMap(myScenario.getMap());
+		//mapView.setMap(mySimulation.getScenario().getMap()); // TODO done twice?
 //		myScenario.getMap().makeTestMap();
 //		myScenario.getMap().trace();
 	}
@@ -57,20 +59,20 @@ public class SimView implements ChangeListener{
 		controlPanel.setLayout(new BorderLayout());
 
 		CommandView commandView = new CommandView();
-		commandView.setInterpreter(myInterpreter);
+		commandView.setInterpreter(mySimulation.getInterpreter());
 		controlPanel.add(commandView,BorderLayout.CENTER);
 
 		ClockView clockView = new ClockView();
-		myScenario.addClockListener(clockView);
-		clockView.addActionListener(myScenario.getClockController());
+		mySimulation.getGameClock().addClockListener(clockView);
+		clockView.addActionListener(mySimulation.getGameClock().getClockController());
 		controlPanel.add(clockView, BorderLayout.SOUTH);
 		
 		JButton startBtn = new JButton("Start");
 		startBtn.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				Tracer.write("hit start");
-				myScenario.setRunabble(true);
-				myScenario.start();
+				//myScenario.setRunabble(true);
+				mySimulation.startSimulation();
 				//Runnable runnable = new RunSim();
 				//Thread thread = new Thread(runnable);
 				//thread.start();
@@ -87,7 +89,7 @@ public class SimView implements ChangeListener{
 		
 		JPanel dataView = new JPanel();
 		
-		mapView = new MapView(myScenario.getMap());
+		mapView = new MapView(mySimulation.getScenario().getMap()); //TODO this appears to be done twice
 		
 		tabbedPane.insertTab("Log", null, traceView, "Display log data", TRACE_PANE);
 		tabbedPane.insertTab("Map", null, mapView, "Display map", MAP_PANE);
@@ -99,19 +101,6 @@ public class SimView implements ChangeListener{
 		frame.setVisible(true);
 		frame.pack();
 		frame.validate();
-	}
-
-	class RunSim implements Runnable{
-		
-		public RunSim(){
-		}
-
-		@Override
-		public void run() {
-			Tracer.write("running");
-//			testEvent.runTest();
-//			testEvent.test(testName);
-		}
 	}
 
 	@Override

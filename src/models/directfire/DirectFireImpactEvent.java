@@ -20,7 +20,7 @@ public class DirectFireImpactEvent extends Event {
 			Weapon weapon,
 			int rounds,
 			double range){
-		setTime(time);
+		super(time);
 		myFirer = e1;
 		myTarget = e2;
 		myRounds = rounds;

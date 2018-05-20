@@ -3,16 +3,19 @@ package interpreter;
 import java.util.Vector;
 
 import sim.Constants;
+import sim.GameClock;
 import sim.Scenario;
 import utils.Logger;
 import utils.Tracer;
 
 public class ScenarioInterpreter extends Interpreter{
 	private Scenario myScenario;
+	private GameClock gameClock;
 	
-	public void doCommand(Scenario scenario, String command, Vector<String> vector){
+	public void doCommand(Scenario scenario, GameClock clock, String command, Vector<String> vector){
 		if (scenario == null) return;
 		myScenario = scenario;
+		gameClock = clock;
 		doCommand(command, vector);
 		myScenario = null;
 	}
@@ -173,13 +176,13 @@ public class ScenarioInterpreter extends Interpreter{
 			} else if (arg.compareToIgnoreCase("yes")==0){
 				myScenario.getParameters().setRealTimeSynch(true);
 				myScenario.getParameters().setRealTimeRatio(1.0);
-				myScenario.setSynchPoint();
+				gameClock.setSynchPoint();
 			} else {
 				try{
 					double ratio = Double.parseDouble(arg);
 					myScenario.getParameters().setRealTimeRatio(ratio);
 					myScenario.getParameters().setRealTimeSynch(true);
-					myScenario.setSynchPoint();
+					gameClock.setSynchPoint();
 				} catch (Exception e){
 					Logger.err(this,0, "invalid real_time");
 				}
@@ -200,9 +203,6 @@ public class ScenarioInterpreter extends Interpreter{
 			} else if (arg.compareToIgnoreCase("batch")==0){
 				myScenario.getParameters().setRunType(Constants.RUN_TYPE_NON_INTERACTIVE_BATCH);
 			}
-		} else if (command.compareToIgnoreCase("start") == 0){
-			if (myScenario.isRunning()) return;
-			myScenario.start();
 		} else if (command.compareToIgnoreCase("start_time") == 0){
 			String arg = vector.remove(0);
 			try{

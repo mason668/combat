@@ -1,7 +1,6 @@
-package view;
+package sim.entity;
 
 import data.map.Coordinate;
-import sim.entity.Entity;
 
 public interface EntityListener {
 	

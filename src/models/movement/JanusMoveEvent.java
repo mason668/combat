@@ -7,11 +7,15 @@ import data.map.Building;
 import data.map.Coordinate;
 import data.map.RoadType;
 import models.Event;
+import models.MoveEvent;
 import sim.Constants;
+import sim.GameClock;
 import sim.obstacles.Pit;
 import sim.Scenario;
+import sim.Simulation;
 import sim.entity.BridgeEntity;
 import sim.entity.CarrierEntity;
+import sim.entity.Entity;
 import sim.entity.EntityWeapon;
 import sim.entity.MoverEntity;
 import sim.obstacles.Obstacle;
@@ -23,12 +27,13 @@ import utils.Tracer;
 /**
  * Perform a move event.
  */
-public class JanusMoveEvent extends Event {
+public class JanusMoveEvent extends MoveEvent {
 
 	// class variables to keep hold of the firing entity and 
 	// the current simulation time
 	private Scenario myScenario;
 	private MoverEntity myEntity;
+	private GameClock gameClock;
 	private double myClock; // the simulation clock (external)
 	private double nextMoveTime;
 	private double newSpeed = 0;
@@ -51,11 +56,11 @@ public class JanusMoveEvent extends Event {
 	 * @param scenario The scenario containing data and runtime parameters.
 	 * @param entity The entity to be moved.
 	 */
-	public JanusMoveEvent(double eventTime, 
-			Scenario scenario, MoverEntity entity){
-		myScenario = scenario;
-		myEntity = entity;
-		super.setTime(eventTime);
+	public JanusMoveEvent(double eventTime, Entity entity, Simulation sim){
+		super(eventTime, entity, sim);
+		myScenario = sim.getScenario();
+		myEntity = (MoverEntity) entity;
+		gameClock = sim.getGameClock();
 	}
 
 	/**
@@ -63,7 +68,7 @@ public class JanusMoveEvent extends Event {
 	 */
 	@Override
 	public Event doEvent(){
-		myClock = myScenario.getClock();
+		myClock = gameClock.getClock();
 		tracing = myEntity.isTracing();
 		nextMoveTime = this.getTime();
 		if (tracing){

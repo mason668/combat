@@ -23,7 +23,6 @@ import data.csd.Weapon;
 import data.csd.WeaponChoice;
 import data.map.Coordinate;
 import data.view.MenuPanel;
-import models.directfire.TargetSelectionEvent;
 import sim.Constants;
 import sim.Scenario;
 import sim.entity.Entity;
@@ -385,8 +384,8 @@ public class MenuPanelModelTargetSelection extends MenuPanel implements ActionLi
 		Entity e = scenario.getEntityList().getEntity(name);
 		e.setUploadTime(uploadTime);
 		Scenario scenario = new Scenario(); // TODO set the time
-		TargetSelectionEvent event = new TargetSelectionEvent(time, scenario, e);
-		event.doEvent();
+		//FIXME TargetSelectionEvent event = new TargetSelectionEvent(time, scenario, e);
+		//FIXME event.doEvent();
 		e.setLastTarget(e.getMyTarget());
 		e.setLastWeapon(e.getMyWeapon());
 	}

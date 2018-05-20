@@ -57,7 +57,7 @@ public class EventQueue {
 	 */
 	public double nextTime(){
 		if (this.isEmpty()){
-			return Constants.NEVER;
+			return Constants.NEVER; // FIXME needs to be greater than never
 		} else {
 			return queue.peek().getTime();
 		}
@@ -101,7 +101,7 @@ public class EventQueue {
 	 * @param time
 	 */
 	public void doEvents(double time){
-		while (this.nextTime() <= time ){
+		while (this.nextTime() <= time  && !this.isEmpty()){
 			Event event = nextEvent();
 			if ( event != null){
 				event = event.doEvent();
@@ -165,8 +165,7 @@ public class EventQueue {
 		Logger.say("start " + startTime);
 		Event[] array = new Event[numEvents];
 		for (int i=0;i<numEvents;i++){
-			array[i] = new Event("event" + Parser.pad(Integer.toString(i+1),4,"0"));
-			array[i].setTime(Math.random());
+			array[i] = new Event(Math.random());
 			this.add(array[i]);
 		}
 		this.doEvents(clock);

@@ -8,6 +8,7 @@ import data.managers.SortedList;
 import data.map.Coordinate;
 import models.Event;
 import sim.Constants;
+import sim.GameClock;
 import sim.Scenario;
 import sim.entity.DetectedEntity;
 import sim.entity.Entity;
@@ -27,12 +28,14 @@ public class TargetGatherEvent extends Event{
 	
 	private Scenario myScenario;
 	private ObserverEntity myEntity;
+	private GameClock gameClock;
 
 	public TargetGatherEvent(double eventTime, 
-			Scenario scenario, ObserverEntity entity){
+			Scenario scenario, GameClock clock, ObserverEntity entity){
+		super(eventTime);
 		myScenario = scenario;
 		myEntity = entity;
-		super.setTime(eventTime);
+		gameClock = clock;
 	}
 
 	/**
@@ -47,8 +50,8 @@ public class TargetGatherEvent extends Event{
 			Tracer.write(Tracer.DETECTION,0,"event time: " + 
 					Parser.formatTime(this.getTime()) + "  " + this.getTime());
 			Tracer.write(Tracer.DETECTION,0,"game clock: " + 
-					Parser.formatTime(this.myScenario.getClock()) + 
-					"  " + this.myScenario.getClock());
+					Parser.formatTime(gameClock.getClock()) + 
+					"  " + gameClock.getClock());
 		}
 		if (this.myEntity.getForce() == null){
 			if (tracing){

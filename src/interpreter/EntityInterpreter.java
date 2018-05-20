@@ -5,6 +5,7 @@ import java.util.Vector;
 import data.csd.Sensor;
 import data.map.Coordinate;
 import sim.Constants;
+import sim.GameClock;
 import sim.Scenario;
 import sim.entity.Entity;
 import sim.forces.Force;
@@ -20,12 +21,15 @@ import utils.Tracer;
 public class EntityInterpreter extends Interpreter{
 	private Entity myEntity;
 	private Scenario myScenario;
+	private GameClock gameClock;
 	
-	public void doCommand(Scenario scenario, Entity entity, String command, Vector<String> vector){
+	public void doCommand(Scenario scenario, GameClock clock, Entity entity, String command, Vector<String> vector){
 		if (entity == null) return;
 		if (scenario == null) return;
+		if ( clock == null) return;
 		myEntity = entity;
 		myScenario = scenario;
+		gameClock = clock;
 		doCommand(command, vector);
 		myEntity = null;
 		myScenario = null;
@@ -66,7 +70,7 @@ public class EntityInterpreter extends Interpreter{
 		} else if (command.compareToIgnoreCase("cbrtime")==0){
 			if (vector.isEmpty()) return;
 			try{
-				double time = Parser.parseTime(myScenario.getClock(), 
+				double time = Parser.parseTime(gameClock.getClock(), 
 						vector.remove(0));
 				myEntity.setCBRTime(time);
 			} catch (Exception e){
@@ -81,7 +85,7 @@ public class EntityInterpreter extends Interpreter{
 		} else if (command.compareToIgnoreCase("circle_time")==0){
 			if (vector.isEmpty()) return;
 			try{
-				double time = Parser.parseTime(myScenario.getClock(), 
+				double time = Parser.parseTime(gameClock.getClock(), 
 						vector.remove(0));
 				myEntity.setCircleTime(time);
 			} catch (Exception e){
@@ -101,7 +105,7 @@ public class EntityInterpreter extends Interpreter{
 		} else if (command.compareToIgnoreCase("delay")==0){
 			if (vector.isEmpty()) return;
 			try{
-				double time = Parser.parseTime(myScenario.getClock(), 
+				double time = Parser.parseTime(gameClock.getClock(), 
 						vector.remove(0)); 
 				myEntity.setDelay(time);
 			} catch (Exception e){
@@ -119,7 +123,7 @@ public class EntityInterpreter extends Interpreter{
 		} else if (command.compareToIgnoreCase("fired")==0){
 			if (vector.isEmpty()) return;
 			try{
-				double time = Parser.parseTime(myScenario.getClock(), 
+				double time = Parser.parseTime(gameClock.getClock(), 
 						vector.remove(0)); 
 				myEntity.setLastFire(time);
 			} catch (Exception e){
@@ -142,7 +146,7 @@ public class EntityInterpreter extends Interpreter{
 		} else if (command.compareToIgnoreCase("hold")==0){
 			if (vector.isEmpty()) return;
 			try{
-				double time = Parser.parseTime(myScenario.getClock(), 
+				double time = Parser.parseTime(gameClock.getClock(), 
 						vector.remove(0)); 
 				myEntity.setHold(time);
 			} catch (Exception e){
@@ -192,11 +196,11 @@ public class EntityInterpreter extends Interpreter{
 				String s = vector.remove(0);
 				Entity carrier = myScenario.getEntityList().getEntity(s);
 				if ( carrier == null) return;
-				if (myScenario.isRunning()){
+				//if (myScenario.isRunning()){ //FIXME
 					myEntity.setCommandMount(carrier);
-				} else {
-					myEntity.mount(carrier);
-				}
+				//} else {
+					//myEntity.mount(carrier);
+				//}
 			}
 		} else if (command.compareToIgnoreCase("nonmovers")==0){
 			if (vector.size()<1) return;
@@ -250,7 +254,7 @@ public class EntityInterpreter extends Interpreter{
 		} else if (command.compareToIgnoreCase("upload_time")==0){
 			if (vector.isEmpty()) return;
 			try{
-				double time = Parser.parseTime(myScenario.getClock(), 
+				double time = Parser.parseTime(gameClock.getClock(), 
 						vector.remove(0)); 
 				myEntity.setUploadTime(time);
 			} catch (Exception e){

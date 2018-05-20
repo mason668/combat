@@ -417,6 +417,13 @@ public class Parameters {
 		this.checkPointFrequency = time;
 	}
 	
+	private double cloudUpdateTime = 12.0; // globmain.dtclouds set to 12 sec
+	public double getCloudUpdateTime(){return this.cloudUpdateTime;}
+	public void setCloudUpdateTime(double time){
+		if (time < 0.0) return;
+		this.cloudUpdateTime = time;
+	}
+	
 	public String list(){
 		String s = "";
 		s = s + "Scanrio Parameters";

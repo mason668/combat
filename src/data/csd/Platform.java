@@ -1002,10 +1002,6 @@ day/ night / dusk versions of speed
 	COMMON / PIT_DATA /
      *		PIT_TYPE, PIT_X, PIT_Y, PIT_FORCE, PIT_DETECTED, PIT_OCCUPANT,
      *		NUM_PITS, IN_PIT, INITIAL_PITS
-
-
-
-
 	 */
-
+	
 }

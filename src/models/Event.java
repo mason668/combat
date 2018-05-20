@@ -1,5 +1,7 @@
 package models;
 
+import sim.Scenario;
+import sim.entity.Entity;
 import utils.Logger;
 
 /**
@@ -14,30 +16,19 @@ public class Event {
 	/**
 	 * The simulation time for the event to occur (seconds)
 	 */
-	private double eventTime = 0.0;
+	protected double eventTime = 0.0;
 	
-	/**
-	 * Optional name for the event. This is really only used for testing.
-	 */
-	private String name = "";
-
 	/**
 	 * Local variable to indicate if tracing is being conducted.
 	 */
 	protected boolean tracing = false;
 	
 	/**
-	 * Constructor uses a name and random time.
-	 * @param string
+	 * Primary constructor sets the event time on creation.
 	 */
-	public Event (String string){
-		name = string.substring(0);
+	public Event(double time){
+		eventTime = time;
 	}
-	
-	/**
-	 * Default constructor does nothing, but is required for subclasses.
-	 */
-	public Event(){}
 	
 	/**************
 	 * Public methods
@@ -67,7 +58,7 @@ public class Event {
 	 * null is returned,nothing will be added to the queue. 
 	 */
 	public Event doEvent(){
-		Logger.say("doing event " + this.name + " at time " + eventTime);
+		Logger.say("doing event at time " + eventTime);
 		eventTime += (5.0 * Math.random());
 		return this;
 	}

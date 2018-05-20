@@ -27,7 +27,8 @@ public class Entity implements ObserverEntity,
 	DetectedEntity
 	{
 	
-	private String movementModel = "models.movement.MoveEvent";
+//	private String movementModel = "models.movement.MoveEvent";
+	private String movementModel = "";
 	public String getMovementModel(){
 		return movementModel.substring(0);
 	}
@@ -45,6 +46,12 @@ public class Entity implements ObserverEntity,
 		if (this.getPlatform().getSensorList().getSize()>0){
 			this.setCurrentSensor(this.getPlatform().getSensorList().getFirst());
 		}
+	}
+	
+	private Vector<EntityListener> entityListeners = new Vector<EntityListener>();
+	public void addEntityListener(EntityListener listener){
+		if (listener == null) return;
+		entityListeners.add(listener);
 	}
 
 	/*
@@ -99,7 +106,12 @@ public class Entity implements ObserverEntity,
 	
 	private Coordinate currentLocation = new Coordinate( 1.0, 1.0, 0.0); // globunits.xunit, yunit, zunit
 	public void setLocation(Coordinate c){
+		//update the entity's location
 		currentLocation = new Coordinate(c);
+		// let any listeners know the entity has moved
+		for (EntityListener listener: entityListeners){
+			listener.updateLocation(this, c);
+		}
 		/* TODO do we do this here? from set_xy
 		 * 
 	  IF ( CLOCK_TICKING ) THEN

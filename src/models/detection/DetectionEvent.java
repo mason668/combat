@@ -2,6 +2,7 @@ package models.detection;
 
 import data.csd.Sensor;
 import models.Event;
+import sim.GameClock;
 import sim.Scenario;
 import sim.entity.Entity;
 import sim.entity.ObserverEntity;
@@ -13,11 +14,13 @@ public class DetectionEvent extends Event{
 
 	private Scenario myScenario;
 	private ObserverEntity myEntity;
+	private GameClock gameClock;
 
-	public DetectionEvent(double eventTime, Scenario scenario, Entity entity) {
+	public DetectionEvent(double eventTime, Scenario scenario, GameClock clock, Entity entity) {
+		super(eventTime);
 		myScenario = scenario;
 		myEntity = entity;
-		super.setTime(eventTime);
+		gameClock = clock;
 	}
 
 	/**
@@ -32,8 +35,8 @@ public class DetectionEvent extends Event{
 			Tracer.write(Tracer.DETECTION,0,"event time: " + 
 					Parser.formatTime(this.getTime()) + "  " + this.getTime());
 			Tracer.write(Tracer.DETECTION,0,"game clock: " + 
-					Parser.formatTime(this.myScenario.getClock()) + 
-					"  " + this.myScenario.getClock());
+					Parser.formatTime(gameClock.getClock()) + 
+					"  " + gameClock.getClock());
 		}
 		if (this.myEntity.getForce() == null){
 			if (tracing){

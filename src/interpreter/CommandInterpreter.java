@@ -7,15 +7,20 @@ import data.csd.Platform;
 import data.csd.Sensor;
 import data.csd.Weapon;
 import data.map.Map;
+import sim.GameClock;
 import sim.Scenario;
+import sim.Simulation;
 import sim.entity.Entity;
 import sim.forces.Force;
 import utils.Logger; //TODO make logging optional
 import utils.Tracer;
 
 public class CommandInterpreter extends Interpreter{
+	private Simulation mySimulation;
+	
 	private CSData myData;
 	private Scenario myScenario;
+	private GameClock gameClock;
 	private EntityInterpreter myEntityInterpreter;
 	private PlatformInterpreter myPlatformInterpreter;
 	private ScenarioInterpreter myScenarioInterpreter;
@@ -25,35 +30,31 @@ public class CommandInterpreter extends Interpreter{
 	private MapInterpreter myMapInterpreter;
 	
 	public static void main(String args[]){
-		CommandInterpreter me = new CommandInterpreter(new CSData(), new Scenario());
-		me.test(args);
+		Simulation simulation = new Simulation();
+		CommandInterpreter me = new CommandInterpreter(simulation);
+		me.interpret(args);
+//		myData.log();
 	}
 	
-	protected void test(String [] args){
-		this.interpret(args);
-		myData.log();
-	}
-	
-	public void setTrace(boolean b){
-		trace = b;
-		this.myEntityInterpreter.setTrace(b);
-		this.myPlatformInterpreter.setTrace(b);
-		this.myScenarioInterpreter.setTrace(b);
-		this.myForceInterpreter.setTrace(b);
-	}
-	
-	public CommandInterpreter(CSData data, Scenario scenario){
+	public CommandInterpreter(Simulation simulation){
 		super();
-		if (data == null){
+		if (simulation == null){
 			Logger.err(Logger.WARNING, "CommandInterpreter: invalid data");
 			return;
 		}
-		if (scenario == null){
+		mySimulation = simulation;
+		myData = simulation.getCSData();
+		if (myData == null){
+			Logger.err(Logger.WARNING, "CommandInterpreter: invalid data");
+			return;
+		}
+		myScenario = simulation.getScenario();
+		if (myScenario == null){
 			Logger.err(Logger.WARNING, "CommandInterpreter: invalid scenario");
 			return;
 		}
-		myData = data;
-		myScenario = scenario;
+		gameClock = simulation.getGameClock();
+
 		myEntityInterpreter = new EntityInterpreter();
 		myPlatformInterpreter = new PlatformInterpreter(myData);
 		myScenarioInterpreter = new ScenarioInterpreter();
@@ -62,6 +63,15 @@ public class CommandInterpreter extends Interpreter{
 		myWeaponInterpreter = new WeaponInterpreter();
 		myMapInterpreter = new MapInterpreter();
 	}
+
+	public void setTrace(boolean b){
+		trace = b;
+		this.myEntityInterpreter.setTrace(b);
+		this.myPlatformInterpreter.setTrace(b);
+		this.myScenarioInterpreter.setTrace(b);
+		this.myForceInterpreter.setTrace(b);
+	}
+	
 	
 	protected void doCommand(String command, Vector<String> vector){
 		if (trace){
@@ -156,7 +166,7 @@ public class CommandInterpreter extends Interpreter{
 		Entity entity = myScenario.getEntityList().getEntity(name);
 		if (entity == null) return;
 		String command = vector.remove(0);
-		myEntityInterpreter.doCommand(myScenario, entity, command, vector);
+		myEntityInterpreter.doCommand(myScenario, gameClock, entity, command, vector);
 	}
 
 	private void doForce(Vector<String> vector){
@@ -198,7 +208,7 @@ public class CommandInterpreter extends Interpreter{
 	private void doScenario(Vector<String> vector){
 		if (vector.size()<1) return;
 		String command = vector.remove(0);
-		myScenarioInterpreter.doCommand(myScenario, command, vector);
+		myScenarioInterpreter.doCommand(myScenario, gameClock, command, vector);
 	}
 
 	private void doMap(Vector<String> vector){

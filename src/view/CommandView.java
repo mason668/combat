@@ -13,6 +13,7 @@ import javax.swing.JTextField;
 
 import data.CSData;
 import interpreter.CommandInterpreter;
+import sim.GameClock;
 import sim.Scenario;
 import utils.Tracer;
 
@@ -22,7 +23,8 @@ public class CommandView extends JPanel {
 
 	public static void main(String[] args){
 		CommandView view = new CommandView();
-		CommandInterpreter i = new CommandInterpreter(new CSData(), new Scenario());
+		Scenario scenario = new Scenario();
+		CommandInterpreter i = new CommandInterpreter(null); //FIXME
 		i.setTrace(true);
 		view.setInterpreter(i);
 		FullFrame frame = new FullFrame("CommandView");
@@ -37,7 +39,8 @@ public class CommandView extends JPanel {
 	}
 	
 	public CommandView(){
-		JTextField text = new JTextField(100);
+		JTextField text = new JTextField("                                "); //FIXME need to make this stay at its min size
+		text.setMinimumSize(new Dimension(50,10));
 		JButton testBtn = new JButton("Send");
 		testBtn.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
