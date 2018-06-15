@@ -35,8 +35,8 @@ public class DetectionEvent extends Event{
 			Tracer.write(Tracer.DETECTION,0,"event time: " + 
 					Parser.formatTime(this.getTime()) + "  " + this.getTime());
 			Tracer.write(Tracer.DETECTION,0,"game clock: " + 
-					Parser.formatTime(gameClock.getClock()) + 
-					"  " + gameClock.getClock());
+					Parser.formatTime(gameClock.getClockSecs()) + 
+					"  " + gameClock.getClockSecs());
 		}
 		if (this.myEntity.getForce() == null){
 			if (tracing){

@@ -150,7 +150,7 @@ public class Simulation {
 		Logger.log("starting simulation " + getScenario().getName());
 		Logger.log("start time " + Parser.formatTime(myScenario.getParameters().getStartTime()));
 		Logger.log("end time   " + Parser.formatTime(myScenario.getParameters().getEndTime()));
-		gameClock.setClock(myScenario.getParameters().getStartTime());
+		gameClock.setClockSecs(myScenario.getParameters().getStartTime());
 		battleMode = true;
 
 	}
@@ -197,13 +197,13 @@ public class Simulation {
 		}
 
 		// advance the clock
-		gameClock.updateClock(nextTime);
+		gameClock.updateClockSecs(nextTime);
 		
 		// do any events due at this time
-		eventQueue.doEvents(gameClock.getClock());
+		eventQueue.doEvents(gameClock.getClockSecs());
 		
 		// if we have reached the end of the simulation, signal a stop
-		if (gameClock.getClock() >= myScenario.getParameters().getEndTime()){
+		if (gameClock.getClockSecs() >= myScenario.getParameters().getEndTime()){
 			running = false;
 		}
 	}
@@ -224,7 +224,7 @@ public class Simulation {
 	}
 	public void updateClockListeners(){
 		for (ClockListener listener : clockListeners){
-			double clock = this.gameClock.getClock();
+			double clock = this.gameClock.getClockSecs();
 			listener.updateClock(clock);
 		}
 	}

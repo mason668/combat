@@ -29,7 +29,7 @@ public class EventFactory {
 			return null;
 		}
 		MoveEvent event = null;
-		double time = getTime(sim.getGameClock().getClock(),
+		double time = getTime(sim.getGameClock().getClockSecs(),
 				sim.getScenario().getParameters().getMovementCycleTime());
 		Object object = getObject(eventClass, time, entity, sim);
 		if (object instanceof MoveEvent){
@@ -69,7 +69,7 @@ public class EventFactory {
 		Class<?> eventClass = makeEventClass(getDetectEventName(entity, sim));
 		if (eventClass == null) return null;
 		DetectEvent event = null;
-		double time = getTime(sim.getGameClock().getClock(),
+		double time = getTime(sim.getGameClock().getClockSecs(),
 				sim.getScenario().getParameters().getMovementCycleTime());
 		Object object = getObject(eventClass, time, entity, sim);
 		if (object instanceof DetectEvent){
@@ -89,7 +89,7 @@ public class EventFactory {
 		Class<?> eventClass = makeEventClass(getScanEventName(entity, sim));
 		if (eventClass == null) return null;
 		ScanEvent event = null;
-		double time = getTime(sim.getGameClock().getClock(),
+		double time = getTime(sim.getGameClock().getClockSecs(),
 				sim.getScenario().getParameters().getMovementCycleTime());
 		Object object = getObject(eventClass, time, entity, sim);
 		if (object instanceof ScanEvent){
@@ -109,7 +109,7 @@ public class EventFactory {
 		Class<?> eventClass = makeEventClass(getShootEventName(entity, sim));
 		if (eventClass == null) return null;
 		ShootEvent event = null;
-		double time = getTime(sim.getGameClock().getClock(),
+		double time = getTime(sim.getGameClock().getClockSecs(),
 				sim.getScenario().getParameters().getMovementCycleTime());
 		Object object = getObject(eventClass, time, entity, sim);
 		if (object instanceof ShootEvent){

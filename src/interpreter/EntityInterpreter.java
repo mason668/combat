@@ -70,7 +70,7 @@ public class EntityInterpreter extends Interpreter{
 		} else if (command.compareToIgnoreCase("cbrtime")==0){
 			if (vector.isEmpty()) return;
 			try{
-				double time = Parser.parseTime(gameClock.getClock(), 
+				double time = Parser.parseTime(gameClock.getClockSecs(), 
 						vector.remove(0));
 				myEntity.setCBRTime(time);
 			} catch (Exception e){
@@ -85,7 +85,7 @@ public class EntityInterpreter extends Interpreter{
 		} else if (command.compareToIgnoreCase("circle_time")==0){
 			if (vector.isEmpty()) return;
 			try{
-				double time = Parser.parseTime(gameClock.getClock(), 
+				double time = Parser.parseTime(gameClock.getClockSecs(), 
 						vector.remove(0));
 				myEntity.setCircleTime(time);
 			} catch (Exception e){
@@ -105,7 +105,7 @@ public class EntityInterpreter extends Interpreter{
 		} else if (command.compareToIgnoreCase("delay")==0){
 			if (vector.isEmpty()) return;
 			try{
-				double time = Parser.parseTime(gameClock.getClock(), 
+				double time = Parser.parseTime(gameClock.getClockSecs(), 
 						vector.remove(0)); 
 				myEntity.setDelay(time);
 			} catch (Exception e){
@@ -123,7 +123,7 @@ public class EntityInterpreter extends Interpreter{
 		} else if (command.compareToIgnoreCase("fired")==0){
 			if (vector.isEmpty()) return;
 			try{
-				double time = Parser.parseTime(gameClock.getClock(), 
+				double time = Parser.parseTime(gameClock.getClockSecs(), 
 						vector.remove(0)); 
 				myEntity.setLastFire(time);
 			} catch (Exception e){
@@ -146,7 +146,7 @@ public class EntityInterpreter extends Interpreter{
 		} else if (command.compareToIgnoreCase("hold")==0){
 			if (vector.isEmpty()) return;
 			try{
-				double time = Parser.parseTime(gameClock.getClock(), 
+				double time = Parser.parseTime(gameClock.getClockSecs(), 
 						vector.remove(0)); 
 				myEntity.setHold(time);
 			} catch (Exception e){
@@ -254,7 +254,7 @@ public class EntityInterpreter extends Interpreter{
 		} else if (command.compareToIgnoreCase("upload_time")==0){
 			if (vector.isEmpty()) return;
 			try{
-				double time = Parser.parseTime(gameClock.getClock(), 
+				double time = Parser.parseTime(gameClock.getClockSecs(), 
 						vector.remove(0)); 
 				myEntity.setUploadTime(time);
 			} catch (Exception e){

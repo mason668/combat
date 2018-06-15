@@ -80,7 +80,7 @@ public class ScenarioInterpreter extends Interpreter{
 		} else if (command.compareToIgnoreCase("end_time") == 0){
 			double clock = -1.0;
 			String arg = vector.remove(0);
-			clock = Parser.parseFormattedTime(gameClock.getClock(), arg);
+			clock = Parser.parseFormattedTime(gameClock.getClockSecs(), arg);
 			if ( clock >=0 ){
 				myScenario.getParameters().setEndTime(clock);
 			} else {
