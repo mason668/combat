@@ -5,7 +5,7 @@ import sim.entity.Entity;
 import utils.Logger;
 
 /**
- * 
+ * Base class for all event child classes.
  *
  */
 public class Event {

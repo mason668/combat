@@ -9,26 +9,42 @@ import sim.Simulation;
 import sim.entity.Entity;
 import sim.entity.MoverEntity;
 import utils.Logger;
+import utils.Tracer;
 
 public class EventFactory {
 	
 	//*** movement model
 	
+	private static void error(Entity entity, String type, String eventName){
+		Logger.err(Logger.WARNING, 
+			"unable to create " + type + " event for entity " + 
+			entity.getName() + " : " + eventName);
+	}
+	
 	public static MoveEvent makeMoveEvent(Entity entity, Simulation sim){
+		String eventName = getMoveEventName(entity, sim);
 		Class<?> eventClass = makeEventClass(getMoveEventName(entity, sim));
-		if (eventClass == null) return null;
+		if (eventClass == null) {
+			error(entity, "movement", eventName);
+			return null;
+		}
 		MoveEvent event = null;
 		double time = getTime(sim.getGameClock().getClock(),
 				sim.getScenario().getParameters().getMovementCycleTime());
 		Object object = getObject(eventClass, time, entity, sim);
 		if (object instanceof MoveEvent){
 			event = (MoveEvent) object;
+		} else {
+			error(entity, "movement", eventName);
 		}
 		return event;
 	}
 	
 	private static String getMoveEventName (Entity entity, Simulation sim){
-		//Logger.log("a "+ entity.getMovementModel());
+		//TODO deal with null
+		if (entity.getMovementModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
 		if (entity.getMovementModel().compareTo("")!=0){
 			return entity.getMovementModel();
 		}
@@ -37,6 +53,13 @@ public class EventFactory {
 			return entity.getPlatform().getMovementModel();
 		}
 		*/
+		//Logger.log("reading move " + sim.getScenario().getMovementModel());
+		if (sim.getScenario().getMovementModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (sim.getScenario().getMovementModel().compareTo("")!=0){
+			return sim.getScenario().getMovementModel();
+		}
 		return "models.MoveEvent";
 	}
 	
@@ -130,6 +153,7 @@ public class EventFactory {
 	private static Class<?> makeEventClass(String modelName){
 		if (modelName == null) return null;
 		if (modelName.compareTo("")== 0) return null;
+		if (modelName.compareToIgnoreCase("null")== 0) return null;
 		Class<?> eventClass = null;
 		try{
 			eventClass = Class.forName(modelName);

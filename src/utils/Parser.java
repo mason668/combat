@@ -15,7 +15,7 @@ public class Parser {
 		}
 		return v;
 	}
-	public static Vector<String> convert (String[] s){
+	public static Vector<String> convert (String[] s){ //TODO deal with "--" prefix
 		Vector<String> v = new Vector<String>();
 		for (int i=0;i<s.length;i++){
 			v.addElement(s[i]);
@@ -80,16 +80,123 @@ public class Parser {
 	 * @return
 	 */
 	public static double parseTime(double currentTime, String string){
-		//TODO convert hh:mm format
-		//TODO allow relative time +/- need clock as input.
-		double d = 0.0;
+		double d = -1.0;
 		try{
 			d = Double.parseDouble(string);
 		} catch (Exception e){
+			d = Parser.parseFormattedTime(currentTime, string);
 		}
 		return d;
 	}
+
+	/**
+	 * 
+	 * @param string
+	 * @return
+	 */
+	public static double parseFormattedTime(double currentTime, String string){
+		// initialise return value
+		double d = -1.0;
+		
+		// validate input
+		int length = string.length();
+		if ( length <= 0) return -1;
+
+		//process offset prefix
+		String prefix = string.substring(0,1);
+		if (prefix.compareTo("+")==0){
+			string = string.substring(1);
+		} else if (prefix.compareTo("-")==0){
+			string = string.substring(1);
+		} else prefix = "";
+
+		d = parseFormattedTime(string);
+		
+		// apply offset if required
+		if (prefix.compareTo("+")==0){
+			d = currentTime + d;
+		} else if (prefix.compareTo("-")==0){
+			d = currentTime - d;
+		} 
+		
+		// return value
+		return d;
+	}
 	
+	/**
+	 * 
+	 * @param string
+	 * @return
+	 */
+	public static double parseFormattedTime(String string){
+		// initialise return value
+		double d = 0.0;
+		
+		// validate input
+		int length = string.length();
+		if ( length <= 0) return -1;
+
+		// initialise intermediate data
+		int days = 0;
+		int hours = 0;
+		int mins = 0;
+		int secs = 0;
+		
+		// extract elements of the string
+		if ( string.length()==11){
+			try{
+				days = Integer.parseInt(string.substring(0, 2));
+			} catch (Exception e){} // TODO should we return an error?
+			string = string.substring(3);
+		}
+		if ( string.length()==10){
+			try{
+				days = Integer.parseInt(string.substring(0, 1));
+			} catch (Exception e){}
+			string = string.substring(2);
+		}
+		if ( string.length()==8){
+			try{
+				hours = Integer.parseInt(string.substring(0, 2));
+			} catch (Exception e){}
+			string = string.substring(3);
+		}
+		if ( string.length()==7){
+			try{
+				hours = Integer.parseInt(string.substring(0, 1));
+			} catch (Exception e){}
+			string = string.substring(2);
+		}
+		if ( string.length()==5){
+			try{
+				mins = Integer.parseInt(string.substring(0, 2));
+			} catch (Exception e){}
+			string = string.substring(3);
+		}
+		if ( string.length()==4){
+			try{
+				mins = Integer.parseInt(string.substring(0, 1));
+			} catch (Exception e){}
+			string = string.substring(2);
+		}
+		if ( string.length()==2){
+			try{
+				secs = Integer.parseInt(string.substring(0, 2));
+			} catch (Exception e){}
+		}
+		if ( string.length()==1){
+			try{
+				secs = Integer.parseInt(string.substring(0, 1));
+			} catch (Exception e){}
+		}
+
+		// combine the elements into a single value
+		d = secs + mins*60.0 + hours * 60*60 + days * 24*60*60;
+		
+		// return value
+		return d;
+	}
+
 	public static Coordinate parseCoordinate (Coordinate reference, 
 			String xstring, String ystring){
 		Coordinate result = null;

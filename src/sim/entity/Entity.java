@@ -28,10 +28,13 @@ public class Entity implements ObserverEntity,
 	{
 	
 //	private String movementModel = "models.movement.MoveEvent";
+//	private String movementModel = "models.janus.JanusMoveEvent";
 	private String movementModel = "";
 	public String getMovementModel(){
 		return movementModel.substring(0);
 	}
+	//TODO need to be able to set model
+	//TODO add other model names
 	
 	private Platform myPlatform; // globunits.ksystyp, kcsdtyp
 	public Platform getPlatform(){return myPlatform;}
@@ -59,7 +62,9 @@ public class Entity implements ObserverEntity,
 	 */
 	private boolean trace = false; // globunits.itrack
 	public boolean isTracing(){return trace;}
-	public void setTracing(boolean b){trace = b;}
+	public void setTracing(boolean b){
+		trace = b;
+	}
 
 	private String name = "test_entity";
 	public String getName(){return name.substring(0);}

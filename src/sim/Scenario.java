@@ -15,6 +15,7 @@ import sim.entity.MoverEntity;
 import sim.entity.ObserverEntity;
 import sim.forces.Force;
 import sim.postp.PostProcessor;
+import utils.Logger;
 import view.ClockListener;
 
 public class Scenario {
@@ -85,5 +86,15 @@ public class Scenario {
 	}
 	
 	public AcquisitionMatrix getAcquisitionMatrix(){return acquisitionMatrix;}
+	
+//	private String movementModel = "models.movement.MoveEvent";
+//	private String movementModel = "models.janus.JanusMoveEvent";
+	private String movementModel = "";
+	public String getMovementModel(){
+		return movementModel.substring(0);
+	}
+	public void setMovementModel(String model){
+		movementModel = model.substring(0);
+	}
 
 }

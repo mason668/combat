@@ -3,6 +3,7 @@ package models;
 import sim.Simulation;
 import sim.entity.Entity;
 import utils.Logger;
+import utils.Parser;
 
 public class ScanEvent extends EntityEvent{
 	
@@ -11,8 +12,8 @@ public class ScanEvent extends EntityEvent{
 	}
 
 	public Event doEvent(){
-		Logger.say("entity " + myEntity.getName() + " scanning at time " + eventTime);
-		eventTime += (5.0 * Math.random()); //TODO should use right time
+		Logger.say("entity " + myEntity.getName() + " scanning at time " + Parser.formatTime(eventTime));
+		eventTime += (20.0); //TODO should use right time
 		return this;
 	}
 }

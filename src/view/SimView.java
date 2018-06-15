@@ -63,7 +63,7 @@ public class SimView implements ChangeListener{
 		controlPanel.add(commandView,BorderLayout.CENTER);
 
 		ClockView clockView = new ClockView();
-		mySimulation.getGameClock().addClockListener(clockView);
+		mySimulation.addClockListener(clockView);
 		clockView.addActionListener(mySimulation.getGameClock().getClockController());
 		controlPanel.add(clockView, BorderLayout.SOUTH);
 		

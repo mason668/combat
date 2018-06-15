@@ -6,6 +6,7 @@ import sim.Constants;
 import sim.GameClock;
 import sim.Scenario;
 import utils.Logger;
+import utils.Parser;
 import utils.Tracer;
 
 public class ScenarioInterpreter extends Interpreter{
@@ -77,11 +78,12 @@ public class ScenarioInterpreter extends Interpreter{
 				Logger.err(this,0, "invalid dismount_outer");
 			}
 		} else if (command.compareToIgnoreCase("end_time") == 0){
+			double clock = -1.0;
 			String arg = vector.remove(0);
-			try{
-				double clock = Double.parseDouble(arg); //TODO parse time
+			clock = Parser.parseFormattedTime(gameClock.getClock(), arg);
+			if ( clock >=0 ){
 				myScenario.getParameters().setEndTime(clock);
-			} catch (Exception e){
+			} else {
 				Logger.err(this,0, "invalid end_time");
 			}
 		} else if (command.compareToIgnoreCase("file") == 0){
@@ -124,6 +126,10 @@ public class ScenarioInterpreter extends Interpreter{
 			} catch (Exception e){
 				Logger.err(this,0, "invalid move_cycle");
 			}
+		} else if (command.compareToIgnoreCase("movement_model") == 0){
+			if (vector.isEmpty()) return;
+			String modelName = vector.remove(0);
+			myScenario.setMovementModel(modelName);
 		} else if (command.compareToIgnoreCase("name") == 0){
 			if (vector.isEmpty()) return;
 			String fileName = vector.remove(0);
@@ -212,11 +218,12 @@ public class ScenarioInterpreter extends Interpreter{
 				Logger.err(this,0, "invalid start_time");
 			}
 		} else if (command.compareToIgnoreCase("time_step") == 0){
+			double clock = -1.0;
 			String arg = vector.remove(0);
-			try{
-				double clock = Double.parseDouble(arg); //TODO parse time
-				myScenario.getParameters().setIncrementAmount(clock);
-			} catch (Exception e){
+			clock = Parser.parseFormattedTime(arg);
+			if ( clock >=0 ){
+				myScenario.getParameters().setClockUpdateTime(clock);
+			} else {
 				Logger.err(this,0, "invalid time_step");
 			}
 		} else if (command.compareToIgnoreCase("weather_speed") == 0){

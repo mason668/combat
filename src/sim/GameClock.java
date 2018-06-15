@@ -2,10 +2,7 @@ package sim;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
-
 import utils.Parser;
-import view.ClockListener;
 
 public class GameClock {
 
@@ -22,14 +19,13 @@ public class GameClock {
 	
 	public void setClock(double time){
 		clock = time;
-		this.updateClockListeners();
 	}
 	public double getClock(){return clock;}
 	public void incrementClock(double time){
 		if (time <= 0) return;
 		if (!clockStarted) startClock();
 		if (clockPaused) return;
-		if (myScenario.getParameters().getRealTimeSynch()){
+		if (myScenario.getParameters().getRealTimeSynch()){ //TODO make a function - see below
 			long deltaWall = System.currentTimeMillis() - then;
 			long deltaSim = (long) (time * 1000 * myScenario.getParameters().getRealTimeRatio());
 			while (deltaSim > deltaWall){
@@ -41,6 +37,26 @@ public class GameClock {
 		}
 		double newTime = clock + time;
 		setClock(newTime);
+		setSynchPoint();
+	}
+	
+	public void updateClock(double time){
+		if (time <= 0) return;
+		if (time <= clock) return;
+		if (!clockStarted) startClock();
+		if (clockPaused) return;
+		if (time > Constants.NEVER) time = Constants.NEVER;
+		if (myScenario.getParameters().getRealTimeSynch()){
+			long deltaWall = System.currentTimeMillis() - then;
+			long deltaSim = (long) (time * 1000 * myScenario.getParameters().getRealTimeRatio());
+			while (deltaSim > deltaWall){
+				try {
+					Thread.sleep(10);
+				} catch (Exception e){}
+				deltaWall = System.currentTimeMillis() - then;
+			}
+		}
+		setClock(time);
 		setSynchPoint();
 	}
 	
@@ -84,16 +100,6 @@ public class GameClock {
 	}
 	public void setSynchPoint(){
 		then = System.currentTimeMillis();
-	}
-	
-	private Vector<ClockListener> clockListeners = new Vector<ClockListener>();
-	public void addClockListener(ClockListener listener){
-		clockListeners.addElement(listener);
-	}
-	private void updateClockListeners(){
-		for (ClockListener listener : clockListeners){
-			listener.updateClock(clock);
-		}
 	}
 	
 	public String toString(){
