@@ -12,7 +12,7 @@ public class ShootEvent extends EntityEvent{
 	}
 
 	public Event doEvent(){
-		Logger.say("entity " + myEntity.getName() + 
+		Logger.log("entity " + myEntity.getName() + 
 				" shooting at time " + Parser.formatTime(eventTime));
 		eventTime += (5.0); //TODO should use right time
 		return this;

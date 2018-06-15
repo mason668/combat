@@ -12,7 +12,7 @@ public class ScanEvent extends EntityEvent{
 	}
 
 	public Event doEvent(){
-		Logger.say("entity " + myEntity.getName() + " scanning at time " + Parser.formatTime(eventTime));
+		Logger.log("entity " + myEntity.getName() + " scanning at time " + Parser.formatTime(eventTime));
 		eventTime += (20.0); //TODO should use right time
 		return this;
 	}

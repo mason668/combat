@@ -12,7 +12,7 @@ public class DetectEvent extends EntityEvent{
 	}
 
 	public Event doEvent(){
-		Logger.say("entity " + myEntity.getName() + " detecting at time " + Parser.formatTime(eventTime));
+		Logger.log("entity " + myEntity.getName() + " detecting at time " + Parser.formatTime(eventTime));
 		eventTime += (5.0); //TODO should use right time
 		return this;
 	}

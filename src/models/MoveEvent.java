@@ -12,7 +12,7 @@ public class MoveEvent extends EntityEvent{
 	}
 
 	public Event doEvent(){
-		Logger.say("entity " + myEntity.getName() + 
+		Logger.log("entity " + myEntity.getName() + 
 				" moving at time " + Parser.formatTime(eventTime));
 		eventTime += (5.0 * Math.random()); //TODO should use right time
 		return this;
