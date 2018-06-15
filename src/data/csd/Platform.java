@@ -48,6 +48,15 @@ public class Platform implements Identifiable {
 		
 	}
 	
+	private String movementModel = "";
+	public String getMovementModel(){
+		return movementModel.substring(0);
+	}
+	public void setMovementModel(String model){
+		movementModel = model.substring(0);
+	}
+	//TODO add other models
+
 	/*
 	 * Basic characteristics
 	 */

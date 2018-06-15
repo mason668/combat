@@ -580,42 +580,13 @@ public class JanusMoveEvent extends MoveEvent {
 		if (tracing){
 			Tracer.write(Tracer.MOVEMENT,3,"maximum step size due to terrain is " +
 					distmax + "km");
+			Tracer.write(Tracer.MOVEMENT,3,"estimating maximum distance to move");
 		}
-		distmax = Math.min(spd*this.myScenario.getParameters().getMovementCycleTime(), distmax);
-		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,3,"initial distance estimate is either ");
-			Tracer.write(Tracer.MOVEMENT,3,"" + this.myScenario.getParameters().getMovementCycleTime() + " sec at best speed, or half a terrain cell ");
-			Tracer.write(Tracer.MOVEMENT,3,"min(speed,cell size) = " +
-					distmax + "km");
-		}
+		calculateDistance(spd, distmax, 
+				this.myScenario.getParameters().getMovementCycleTime(), 
+				moveObjective);
 
-		double dx = moveObjective.getX() - this.myEntity.getLocation().getX();
-		double dy = moveObjective.getY() - this.myEntity.getLocation().getY();
-		this.newDistance = Math.sqrt((dx*dx)+(dy*dy));
-		if (this.newDistance > distmax){
-			double ratio = distmax/ this.newDistance;
-			dx = dx * ratio;
-			dy = dy * ratio;
-			this.newDistance = distmax;
-			moveObjective.setX(this.myEntity.getLocation().getX()+dx);
-			moveObjective.setY(this.myEntity.getLocation().getY()+dy);
-			if (tracing){
-				Tracer.write(Tracer.MOVEMENT,3,"proposed objective is too far away");
-				Tracer.write(Tracer.MOVEMENT,3,"attempting to move to "+
-						moveObjective.toString());
-			}
-		} else {
-			if (tracing){
-				Tracer.write(Tracer.MOVEMENT,3,"proposed move is within a bound ");
-				Tracer.write(Tracer.MOVEMENT,3,"***this could be the spot to reduce speed to stay in formation");
-			}
-		}
-		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,3,"actual distance to be moved " +
-					distmax + "km");
-		}
-
-		if (stuffAboutBuildings()) return false;
+		if (stuffAboutBuildings()) return false; //TODO
 		findObstacles();
 		
 		if (newDistance < 0.0){
@@ -643,6 +614,15 @@ public class JanusMoveEvent extends MoveEvent {
 			}
 			return false;
 		}
+
+		// based on actual speed, calculate distance and time again
+		// can't move more than 20m or longer than a move cycle time
+		if (tracing){
+			Tracer.write(Tracer.MOVEMENT,3,"calculating maximum distance to move");
+		}
+		distmax = 0.02;
+		calculateDistance(newSpeed/3600.0, distmax, 20.0, moveObjective);
+
 		newLocation = new Coordinate(moveObjective);
 		double elev = this.myScenario.getMap().getElevationKM(newLocation);
 		if (tracing){
@@ -656,11 +636,51 @@ public class JanusMoveEvent extends MoveEvent {
 		newLocation.setZ(elev);
 
 		if ( this.foundMines || this.foundObstacle || this.foundRiver){
-			engr();
+			engr(); //TODO
 		}
 		
 		return true;
-		
+	}
+	
+	private void calculateDistance(double spd, double distmax, double time, Coordinate moveObjective){
+		if (tracing){
+			Tracer.write(Tracer.MOVEMENT,3,"can't move further than " + distmax + "km");
+			Tracer.write(Tracer.MOVEMENT,3,"or longer than " + time + " sec");
+		}
+		distmax = Math.min(spd*time,distmax);
+		if (tracing){
+			Tracer.write(Tracer.MOVEMENT,4,"max distance = " +
+					distmax + "km");
+		}
+
+		double dx = moveObjective.getX() - this.myEntity.getLocation().getX();
+		double dy = moveObjective.getY() - this.myEntity.getLocation().getY();
+		this.newDistance = Math.sqrt((dx*dx)+(dy*dy));
+		if (tracing){
+			Tracer.write(Tracer.MOVEMENT,4,"distance to objective " + this.newDistance);
+		}
+		if (this.newDistance > distmax){
+			double ratio = distmax/ this.newDistance;
+			dx = dx * ratio;
+			dy = dy * ratio;
+			this.newDistance = distmax;
+			moveObjective.setX(this.myEntity.getLocation().getX()+dx);
+			moveObjective.setY(this.myEntity.getLocation().getY()+dy);
+			if (tracing){
+				Tracer.write(Tracer.MOVEMENT,4,"proposed objective is too far away");
+				Tracer.write(Tracer.MOVEMENT,4,"will move to "+
+						moveObjective.toString());
+			}
+		} else {
+			if (tracing){
+				Tracer.write(Tracer.MOVEMENT,4,"proposed move is within a bound ");
+				//TODO Tracer.write(Tracer.MOVEMENT,3,"***this could be the spot to reduce speed to stay in formation");
+			}
+		}
+		if (tracing){
+			Tracer.write(Tracer.MOVEMENT,4,"actual distance to be moved " +
+					distmax + "km");
+		}
 	}
 	
 	/**

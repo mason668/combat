@@ -27,13 +27,13 @@ public class Entity implements ObserverEntity,
 	DetectedEntity
 	{
 	
-//	private String movementModel = "models.movement.MoveEvent";
-//	private String movementModel = "models.janus.JanusMoveEvent";
 	private String movementModel = "";
 	public String getMovementModel(){
 		return movementModel.substring(0);
 	}
-	//TODO need to be able to set model
+	public void setMovementModel(String model){
+		movementModel = model.substring(0);
+	}
 	//TODO add other model names
 	
 	private Platform myPlatform; // globunits.ksystyp, kcsdtyp
@@ -1050,6 +1050,7 @@ c	CALL REFRESH_HF (IVIEW)
 	public boolean firedRecently(double time){
 		// from getspeed
 		// IF( (FLAST(IUNIT,ISIDE)+2.0) .GT. CLOCK )  THEN
+		if (this.lastFiredTime <=0) return false;
 		if ( (this.lastFiredTime + 120.0) > time) return true;
 		return false;
 	//FIXME should use a value from the parameter class
