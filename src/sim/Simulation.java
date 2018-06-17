@@ -50,6 +50,7 @@ public class Simulation {
 	public static void main(String[] configuration){
 		Logger.say("running Simulation.main");
 		Tracer.setEcho(true); //TODO temp so we get traces
+		Tracer.setTraceLevel(Tracer.FINEST); //TODO we need this in the interpreter
 		Simulation sim = new Simulation();
 		sim.getScenario().getParameters().setRealTimeSynch(false);
 		sim.getScenario().getParameters().setClockUpdateTime(24.0*60.0*60.0*10.0);

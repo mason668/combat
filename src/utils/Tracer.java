@@ -18,15 +18,22 @@ public class Tracer {
 	public static final int DETECTION = 2;
 	
 	//TODO not implemented in actual models
+	/*
+	 * Constants to define the level of detail in the trace reports.
+	 */
 	public static final int COURSEST = 0;
 	public static final int COURSER = 1;
 	public static final int COURSE = 2;
 	public static final int FINE = 3;
 	public static final int FINER = 4;
 	public static final int FINEST = 5;
+	
 	private static int level = FINEST;
-	public static void setLevel(int i){
-		level = i; //TODO should validate
+	
+	public static void setTraceLevel(int i){
+		if ( i<0) return;
+		if (i> FINEST) return;
+		level = i;
 	}
 	
 	private static boolean echo = false;
@@ -88,6 +95,7 @@ public class Tracer {
 	
 	/**
 	 * Write a message to the trace file.
+	 * <p>This should be replaced.
 	 * @param message
 	 */
 	public static void write(int mode, int level, String message){
@@ -124,6 +132,18 @@ public class Tracer {
 		}
 	}
 
+	public static void write(int level, String message){
+		if (level > Tracer.level) return;
+		if (level > 0){
+			String prefix="";
+			for (int i=0;i<level;i++){
+				prefix = "    " + prefix;
+			}
+			message = prefix + message;
+		}
+		write (message);
+	}
+	
 	public static void setEcho (boolean b){
 		echo = b;
 	}

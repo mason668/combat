@@ -21,12 +21,11 @@ import sim.entity.MoverEntity;
 import sim.obstacles.Obstacle;
 import sim.route.Node;
 import sim.route.Route;
-import utils.Logger;
 import utils.Parser;
 import utils.Tracer;
 
 /**
- * Perform a move event.
+ * Perform a move event using the Janus(AS) algorithm.
  */
 public class JanusMoveEvent extends MoveEvent {
 
@@ -69,7 +68,7 @@ public class JanusMoveEvent extends MoveEvent {
 	 */
 	@Override
 	public Event doEvent(){
-		myClock = gameClock.getClock();
+		myClock = gameClock.getClockSecs();
 		tracing = myEntity.isTracing(); //TODO check move is on too
 		nextMoveTime = this.getTime();
 		if (tracing){
@@ -85,7 +84,9 @@ public class JanusMoveEvent extends MoveEvent {
 			traceSummary();
 			Tracer.write(Tracer.MOVEMENT,0,"calculating move event: ");
 		}
+		
 		movement();
+		
 		if (tracing){
 			Tracer.write(Tracer.MOVEMENT,0,"completed movement calculation ");
 			Tracer.write(Tracer.MOVEMENT,0,"the entity moved " + this.didMove);
@@ -96,7 +97,11 @@ public class JanusMoveEvent extends MoveEvent {
 			traceSummary();
 		}
 		this.setTime(nextMoveTime);
-		return this;
+		if (this.didMove){
+			return this;
+		} else {
+			return null;
+		}
 	}
 	
 	/**
@@ -124,24 +129,32 @@ public class JanusMoveEvent extends MoveEvent {
 	}
 	
 	/**
-	 * Top level function form movement. It determines if the entity is able to 
+	 * Top level function for movement. It determines if the entity is able to 
 	 * move and initiates the move.
 	 */
+	//TODO what happens when an entity can't move, but later can?
 	private void movement(){
+		// Assume the entity didn't move
 		this.didMove = false;
+		
+		// Test if the entity can move. If not set return values and exit
 		if (!canMove()){
 			nextMoveTime = Constants.NEVER;
-			newSpeed = 0.0;
-			newLocation = new Coordinate (this.myEntity.getLocation());
-			newDirection = this.myEntity.getDirectionMove();
-			updateLocation(); // should not be required
+			updateLocation(
+					this.myEntity.getDirectionMove(),
+					new Coordinate (this.myEntity.getLocation()),
+					0.0,
+					this.myEntity
+			);
 		} else {
 			while (nextMoveTime < (this.myClock + 
 					this.myScenario.getParameters().getMovementCycleTime())){
 				move();
 			}
 		}
-		this.myEntity.updateMount(); //should not be required
+		// recalculate weight and volume limits and update passenger locations
+		this.myEntity.updateMount();
+		return;
 	}
 	
 	/**
@@ -149,27 +162,38 @@ public class JanusMoveEvent extends MoveEvent {
 	 */
 	private void move(){
 		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,1,"moving at time " + 
+			Tracer.write(Tracer.MOVEMENT,Tracer.COURSER,"moving at time " + 
 					Parser.formatTime(this.nextMoveTime,true) + "  " + this.nextMoveTime);
 		}
 		double elapsedTime = this.myScenario.getParameters().getMovementCycleTime();
+		// check if entity has been delayed
 		double delay = this.myEntity.getDelay();
 		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,2,"delayed until " + 
+			Tracer.write(Tracer.MOVEMENT,Tracer.COURSE,"delayed until " + 
 					Parser.formatTime(delay,true) + "  " + delay);
 		}
+		// if delayed, update delay data
 		if (delay > this.nextMoveTime){
 			elapsedTime = delayed(delay);
-		} else { // not delayed
+		// if not delayed then process the movement further
+		} else {
 			elapsedTime = notDelayed();
 		}
-		updateLocation(); // use new values
+		// update location based on movement outcome
+		updateLocation(
+				newDirection,
+				newLocation,
+				newSpeed,
+				this.myEntity
+		);
+		// update fuel
 		polUpdate(newSpeed, elapsedTime);
+		// set the new time for this event
 		this.nextMoveTime += elapsedTime;
 		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,1,"elapsed time " + 
+			Tracer.write(Tracer.MOVEMENT,Tracer.COURSER,"elapsed time " + 
 					Parser.formatTime(elapsedTime,true) + "  " + elapsedTime);
-			Tracer.write(Tracer.MOVEMENT,1,"next time " + 
+			Tracer.write(Tracer.MOVEMENT,Tracer.COURSER,"next time " + 
 					Parser.formatTime(this.nextMoveTime,true) + 
 					"  " + this.nextMoveTime);
 		}
@@ -215,13 +239,15 @@ public class JanusMoveEvent extends MoveEvent {
 	 */
 	private double notDelayed(){
 		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,2,"not delayed" );
+			Tracer.write(Tracer.MOVEMENT,Tracer.COURSER,"not delayed" );
 		}
 		double elapsedTime = this.myScenario.getParameters().getMovementCycleTime();
+		// determine where the entity is moving to
 		Coordinate objective = getObjective();
+		// if nowhere to move to, update data accordingly
 		if ( objective == null){
 			if (tracing){
-				Tracer.write(Tracer.MOVEMENT,2,"nowhere to move to" );
+				Tracer.write(Tracer.MOVEMENT,Tracer.COURSER,"nowhere to move to" );
 			}
 			newSpeed = 0.0;
 			newLocation = new Coordinate(this.myEntity.getLocation());
@@ -229,35 +255,42 @@ public class JanusMoveEvent extends MoveEvent {
 			noMove(elapsedTime);
 			return elapsedTime;
 		}
+		// if the entity is moving, calculate where it moves to
 		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,2,"moving to " + 
+			Tracer.write(Tracer.MOVEMENT,Tracer.COURSE,"moving to " + 
 					objective.toString() );
 		}
 		elapsedTime = moveStep(objective);
 		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,2,"moved to " +
+			Tracer.write(Tracer.MOVEMENT,Tracer.COURSE,"moved to " +
 					newLocation.toString() );
-			Tracer.write(Tracer.MOVEMENT,2,"speed " +
+			Tracer.write(Tracer.MOVEMENT,Tracer.COURSE,"speed " +
 					newSpeed + "kph");
-			Tracer.write(Tracer.MOVEMENT,2,"distance " +
+			Tracer.write(Tracer.MOVEMENT,Tracer.COURSE,"distance " +
 					newDistance + "km");
-			Tracer.write(Tracer.MOVEMENT,2,"elapsed time " +
+			Tracer.write(Tracer.MOVEMENT,Tracer.COURSE,"elapsed time " +
 					elapsedTime + " secs");
 		}
 		
+		// calculate the new direction of movement
 		newDirection = calculateDirection(this.myEntity.getLocation(),newLocation);
 
+		// if the entity moved, check if it needs to exit a weapon pit and 
+		// update the defilade state 
 		if ( newSpeed > 0){
 			myEntity.exitPit();
 			this.myEntity.setDefilade(Constants.DEFILADE_EXPOSED);
+		// if the entity didn't move update the defilade state
 		} else {
 			if (myEntity.getPlatform().getMoverType() == Constants.MOVER_FOOT){
 				myEntity.setDefilade(Constants.DEFILADE_PARTIAL);
 			}
 		}
-		this.didMove = true;
+		// update entity state
 		this.myEntity.setLastMoved(this.nextMoveTime);
 		this.myEntity.setEngineOn();
+		// update class variables
+		this.didMove = true;
 		return elapsedTime;
 	}
 	
@@ -488,12 +521,12 @@ public class JanusMoveEvent extends MoveEvent {
 	 */
 	private void moveGround(Coordinate objective){
 		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,3,"entity is a ground mover " );
+			Tracer.write(Tracer.MOVEMENT,Tracer.FINE,"entity is a ground mover " );
 		}
 		if (this.myEntity.atFirePort()!=null){
 			this.myEntity.clearFirePort();
 			if (tracing){
-				Tracer.write(Tracer.MOVEMENT,3,"exiting a fireport " );
+				Tracer.write(Tracer.MOVEMENT,Tracer.FINE,"exiting a fireport " );
 			}
 		}
 		Coordinate location2 = new Coordinate (objective);
@@ -530,12 +563,13 @@ public class JanusMoveEvent extends MoveEvent {
 	 */
 	private boolean doMove(Coordinate moveObjective){
 		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,2,"calculating how far to move ");
+			Tracer.write(Tracer.MOVEMENT,Tracer.COURSE,"calculating how far to move ");
 		}
 		Coordinate currentLocation = this.myEntity.getLocation();
+		// if the entity is creating an obstacle, delay it for 20 secs
 		if (this.myEntity.iamDigging()){
 			if (tracing){
-				Tracer.write(Tracer.MOVEMENT,3,"currently busy digging ");
+				Tracer.write(Tracer.MOVEMENT,Tracer.FINE,"currently busy digging ");
 			}
 			constrobs();
 			newDelay = 20.0;
@@ -543,63 +577,71 @@ public class JanusMoveEvent extends MoveEvent {
 			return false;
 		} else {
 			if (tracing){
-				Tracer.write(Tracer.MOVEMENT,3,"not digging ");
+				Tracer.write(Tracer.MOVEMENT,Tracer.FINE,"not digging ");
 			}
 		}
+		// work out if we have already reached our destination
 		double fullDistance = Coordinate.distance2D(currentLocation, moveObjective);
 		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,3,"current location " + 
+			Tracer.write(Tracer.MOVEMENT,Tracer.FINE,"current location " + 
 					currentLocation.toString());
-			Tracer.write(Tracer.MOVEMENT,3,"moving to " + 
+			Tracer.write(Tracer.MOVEMENT,Tracer.FINE,"moving to " + 
 					moveObjective.toString());
-			Tracer.write(Tracer.MOVEMENT,3,"distance " + 
+			Tracer.write(Tracer.MOVEMENT,Tracer.FINE,"distance " + 
 					fullDistance + "km");
 		}
 		if (fullDistance <= 0.0001){
 			if (tracing){
-				Tracer.write(Tracer.MOVEMENT,3,"already there ");
+				Tracer.write(Tracer.MOVEMENT,Tracer.FINE,"already there ");
 			}
 			return false;
 		}
+		// if crossing a bridge, wait for the crossing time to elapse
 		onBridge();
 		if (waitingForMyBridge(this.myEntity.getPlatform(), currentLocation)){
 			return false;
 		}
 
+		// reduce the distance it will move in this step based on terrain scale
 		double spd = this.myEntity.getPlatform().getSpeedCountry();
 		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,3,"cross country speed " +
+			Tracer.write(Tracer.MOVEMENT,Tracer.FINE,"cross country speed " +
 					spd + "kph");
 		}
 		spd = spd / 3600.0;
 		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,3,"cross country speed " +
+			Tracer.write(Tracer.MOVEMENT,Tracer.FINE,"cross country speed " +
 					spd + "kps");
 		}
 		double distmax = this.myScenario.getMap().getMaxStepSize();
 		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,3,"maximum step size due to terrain is " +
+			Tracer.write(Tracer.MOVEMENT,Tracer.FINE,"maximum step size due to terrain is " +
 					distmax + "km");
-			Tracer.write(Tracer.MOVEMENT,3,"estimating maximum distance to move");
+			Tracer.write(Tracer.MOVEMENT,Tracer.FINE,"estimating maximum distance to move");
 		}
 		calculateDistance(spd, distmax, 
 				this.myScenario.getParameters().getMovementCycleTime(), 
 				moveObjective);
 
-		if (stuffAboutBuildings()) return false; //TODO
-		findObstacles();
+		// deal with high resolution urban terrain
+		if (processUrbanTerrain()) return false;
 		
+		// search for any obstacles in the path
+		findObstacles();
+
+		// if we got stopped by an obstacle, cease movement
 		if (newDistance < 0.0){
 			return false;
 		}
-		
+
+		// calculate speed
 		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,2,"calculating speed");
+			Tracer.write(Tracer.MOVEMENT,Tracer.COURSE,"calculating speed");
 		}
 		newSpeed = getSpeed(moveObjective);
 
 		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,3,"based on actual terrain, best speed is " +
+			Tracer.write(Tracer.MOVEMENT,Tracer.FINE,"based on actual terrain, best speed is " +
 					newSpeed + "km");
 		}
 		
@@ -610,7 +652,7 @@ public class JanusMoveEvent extends MoveEvent {
 		if (newSpeed< 0.01){
 			newSpeed = 0.0;
 			if (tracing){
-				Tracer.write(Tracer.MOVEMENT,2,"not moving ");
+				Tracer.write(Tracer.MOVEMENT,Tracer.COURSE,"not moving ");
 			}
 			return false;
 		}
@@ -618,25 +660,27 @@ public class JanusMoveEvent extends MoveEvent {
 		// based on actual speed, calculate distance and time again
 		// can't move more than 20m or longer than a move cycle time
 		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,3,"calculating maximum distance to move");
+			Tracer.write(Tracer.MOVEMENT,Tracer.FINE,"calculating maximum distance to move");
 		}
 		distmax = 0.02;
 		calculateDistance(newSpeed/3600.0, distmax, 20.0, moveObjective);
 
+		// determine where we moved to this step
 		newLocation = new Coordinate(moveObjective);
 		double elev = this.myScenario.getMap().getElevationKM(newLocation);
 		if (tracing){
-			Tracer.write(Tracer.MOVEMENT,3,"elevation at new location " +
+			Tracer.write(Tracer.MOVEMENT,Tracer.FINE,"elevation at new location " +
 					elev + "km" );
-			Tracer.write(Tracer.MOVEMENT,3,"entity height " +
+			Tracer.write(Tracer.MOVEMENT,Tracer.FINE,"entity height " +
 					this.myEntity.getBaseHeight()*1000 + "m" );
 		}
 		elev += this.myEntity.getBaseHeight();
 
 		newLocation.setZ(elev);
 
+		// if required conduct 
 		if ( this.foundMines || this.foundObstacle || this.foundRiver){
-			engr(); //TODO
+			engr();
 		}
 		
 		return true;
@@ -824,19 +868,24 @@ public class JanusMoveEvent extends MoveEvent {
 	/**
 	 * Update the entity's location and other related settings.
 	 */
-	private void updateLocation(){
+	private void updateLocation(
+			double direction, 
+			Coordinate location, 
+			double speed,
+			MoverEntity entity
+		){
 		if (tracing){
 			Tracer.write(Tracer.MOVEMENT,2,"updating location " );
 		}
 		
-		this.myEntity.setDirectionMove(newDirection);
+		this.myEntity.setDirectionMove(direction);
 		this.myEntity.updateDirectionView(); 
 		this.myEntity.updateDirectionFace(); 
 
-		this.myEntity.setLocation(newLocation);
-		this.myEntity.setCurrentSpeed(newSpeed);
-		this.myScenario.updateEntity(myEntity);
-		this.myScenario.getPostProcessor().writeMove(myEntity);
+		this.myEntity.setLocation(location);
+		this.myEntity.setCurrentSpeed(speed);
+		this.myScenario.updateEntity(entity);
+		this.myScenario.getPostProcessor().writeMove(entity);
 	}
 	
 	/**
@@ -2314,7 +2363,7 @@ C ----- RETURN to calling routine.
 	 * <p> TODO buildings not yet implemented.
 	 * @return True if stopped by a building.
 	 */
-	private boolean stuffAboutBuildings(){ // from domove
+	private boolean processUrbanTerrain(){ // from domove
 		/*
 	IBUILD1 = ON_ROOF(IUNIT, ISIDE)
 	IF ( IBUILD1 .LE. 0 ) THEN
