@@ -55,6 +55,27 @@ public class Platform implements Identifiable {
 	public void setMovementModel(String model){
 		movementModel = model.substring(0);
 	}
+	private String scanModel = "";
+	public String getScanModel(){
+		return scanModel.substring(0);
+	}
+	public void setScanModel(String model){
+		scanModel = model.substring(0);
+	}
+	private String detectModel = "";
+	public String getDetectModel(){
+		return detectModel.substring(0);
+	}
+	public void setDetectModel(String model){
+		detectModel = model.substring(0);
+	}
+	private String shootModel = "";
+	public String getShootModel(){
+		return shootModel.substring(0);
+	}
+	public void setShootModel(String model){
+		shootModel = model.substring(0);
+	}
 	//TODO add other models
 
 	/*

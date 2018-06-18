@@ -7,12 +7,11 @@ import sim.Scenario;
 import sim.Simulation;
 import sim.entity.Entity;
 import sim.entity.MoverEntity;
+import sim.forces.Force;
 import utils.Logger;
 import utils.Tracer;
 
 public class EventFactory {
-	
-	//*** movement model
 	
 	private static void error(Entity entity, String type, String eventName){
 		Logger.err(Logger.WARNING, 
@@ -20,8 +19,11 @@ public class EventFactory {
 			entity.getName() + " : " + eventName);
 	}
 	
+	//*** movement model
+	
 	public static MoveEvent makeMoveEvent(Entity entity, Simulation sim){
 		String eventName = getMoveEventName(entity, sim);
+		if (eventName == null) return null;
 		Class<?> eventClass = makeEventClass(getMoveEventName(entity, sim));
 		if (eventClass == null) {
 			error(entity, "movement", eventName);
@@ -40,19 +42,18 @@ public class EventFactory {
 	}
 	
 	private static String getMoveEventName (Entity entity, Simulation sim){
-		//TODO deal with null
 		if (entity.getMovementModel().compareToIgnoreCase("null")==0){
 			return null;
 		}
 		if (entity.getMovementModel().compareTo("")!=0){
 			return entity.getMovementModel();
 		}
-		/*
+		if (entity.getPlatform().getMovementModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
 		if (entity.getPlatform().getMovementModel().compareTo("")!=0){
 			return entity.getPlatform().getMovementModel();
 		}
-		*/
-		//Logger.log("reading move " + sim.getScenario().getMovementModel());
 		if (sim.getScenario().getMovementModel().compareToIgnoreCase("null")==0){
 			return null;
 		}
@@ -85,20 +86,50 @@ public class EventFactory {
 	//*** scan model
 	
 	public static ScanEvent makeScanEvent(Entity entity, Simulation sim){
+		String eventName = getScanEventName(entity, sim);
+		Logger.say(eventName);
+		if (eventName == null) return null;
 		Class<?> eventClass = makeEventClass(getScanEventName(entity, sim));
-		if (eventClass == null) return null;
+		if (eventClass == null) {
+			error(entity, "scan", eventName);
+			return null;
+		}
 		ScanEvent event = null;
-		double time = getTime(sim.getGameClock().getClockSecs(),
-				sim.getScenario().getParameters().getMovementCycleTime());
+		double time = 60.0; // default scan time 60 secs
+		Force force = entity.getForce();
+		if ( force != null){
+			time = getTime(sim.getGameClock().getClockSecs(),
+					force.getScanTime());
+		}
 		Object object = getObject(eventClass, time, entity, sim);
 		if (object instanceof ScanEvent){
 			event = (ScanEvent) object;
+		} else {
+			error(entity, "scan", eventName);
 		}
 		return event;
 	}
 	
 	private static String getScanEventName (Entity entity, Simulation sim){
-		//TODO
+		// TODO interpreters for platform and entity
+		if (entity.getScanModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (entity.getScanModel().compareTo("")!=0){
+			return entity.getScanModel();
+		}
+		if (entity.getPlatform().getScanModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (entity.getPlatform().getScanModel().compareTo("")!=0){
+			return entity.getPlatform().getScanModel();
+		}
+		if (sim.getScenario().getScanModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (sim.getScenario().getScanModel().compareTo("")!=0){
+			return sim.getScenario().getScanModel();
+		}
 		return "models.ScanEvent";
 	}
 	

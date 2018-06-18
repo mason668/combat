@@ -209,6 +209,10 @@ public class ScenarioInterpreter extends Interpreter{
 			} else if (arg.compareToIgnoreCase("batch")==0){
 				myScenario.getParameters().setRunType(Constants.RUN_TYPE_NON_INTERACTIVE_BATCH);
 			}
+		} else if (command.compareToIgnoreCase("scan_model") == 0){
+			if (vector.isEmpty()) return;
+			String modelName = vector.remove(0);
+			myScenario.setScanModel(modelName);
 		} else if (command.compareToIgnoreCase("start_time") == 0){
 			String arg = vector.remove(0);
 			try{

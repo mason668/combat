@@ -34,6 +34,14 @@ public class ForceInterpreter extends Interpreter{
 				hostilityValue = Constants.HOSTILITY_NEUTRAL;
 			}
 			myForce.setHostility(otherForce, hostilityValue);
+		} else if (command.compareToIgnoreCase("scan_cycle") == 0){
+			String arg = vector.remove(0);
+			try{
+				double clock = Double.parseDouble(arg);
+				myForce.setScanTime(clock);
+			} catch (Exception e){
+				Logger.err(this,0, "invalid scan_cycle");
+			}
 		} else if (command.compareToIgnoreCase("speed") == 0){
 			if (vector.isEmpty()) return;
 			String arg = vector.remove(0);

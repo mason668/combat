@@ -166,7 +166,7 @@ public class Simulation {
 		for (String entityName : getScenario().getEntityList().keySet()){
 			Entity entity = getScenario().getEntityList().getEntity(entityName);
 			//entity.setTracing(true);
-			//Logger.log(this, "entity " + entityName);
+			Logger.log(this, "entity " + entityName); //TODO remove
 			
 			MoveEvent m = EventFactory.makeMoveEvent(entity, this);
 			eventQueue.add(m);
