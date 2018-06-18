@@ -2,7 +2,6 @@ package models;
 
 import java.lang.reflect.Constructor;
 
-import models.movement.MoveEventOld;
 import sim.GameClock;
 import sim.Scenario;
 import sim.Simulation;
