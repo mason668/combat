@@ -6,7 +6,6 @@ import data.csd.Platform;
 import data.csd.PlatformWeapon;
 import data.csd.Sensor;
 import data.csd.Weapon;
-import data.managers.Identifiable;
 import data.map.Building;
 import data.map.Coordinate;
 import sim.Constants;
@@ -54,6 +53,27 @@ public class Entity implements ObserverEntity,
 	}
 	public void setShootModel(String model){
 		shootModel = model.substring(0);
+	}
+	private String suppressionModel = "";
+	public String getSuppressionModel(){
+		return suppressionModel.substring(0);
+	}
+	public void setSuppressionModel(String model){
+		shootModel = model.substring(0);
+	}
+	private String resupplyModel = "";
+	public String getResupplyModel(){
+		return resupplyModel.substring(0);
+	}
+	public void setResupplyModel(String model){
+		resupplyModel = model.substring(0);
+	}
+	private String casualtyModel = "";
+	public String getCasualtyModel(){
+		return casualtyModel.substring(0);
+	}
+	public void setCasualtyModel(String model){
+		casualtyModel = model.substring(0);
 	}
 	
 	private Platform myPlatform; // globunits.ksystyp, kcsdtyp

@@ -24,7 +24,7 @@ public class EventFactory {
 	public static MoveEvent makeMoveEvent(Entity entity, Simulation sim){
 		String eventName = getMoveEventName(entity, sim);
 		if (eventName == null) return null;
-		Class<?> eventClass = makeEventClass(getMoveEventName(entity, sim));
+		Class<?> eventClass = makeEventClass(eventName);
 		if (eventClass == null) {
 			error(entity, "movement", eventName);
 			return null;
@@ -66,20 +66,44 @@ public class EventFactory {
 	//*** detect model
 	
 	public static DetectEvent makeDetectEvent(Entity entity, Simulation sim){
-		Class<?> eventClass = makeEventClass(getDetectEventName(entity, sim));
-		if (eventClass == null) return null;
+		String eventName = getDetectEventName(entity, sim);
+		if (eventName == null) return null;
+		Class<?> eventClass = makeEventClass(eventName);
+		if (eventClass == null) {
+			error(entity, "detection", eventName);
+			return null;
+		}
 		DetectEvent event = null;
 		double time = getTime(sim.getGameClock().getClockSecs(),
-				sim.getScenario().getParameters().getMovementCycleTime());
+				sim.getScenario().getParameters().getMovementCycleTime()); //TODO get right time
 		Object object = getObject(eventClass, time, entity, sim);
 		if (object instanceof DetectEvent){
 			event = (DetectEvent) object;
+		} else {
+			error(entity, "detect", eventName);
 		}
 		return event;
 	}
 	
 	private static String getDetectEventName (Entity entity, Simulation sim){
-		//TODO
+		if (entity.getDetectModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (entity.getDetectModel().compareTo("")!=0){
+			return entity.getDetectModel();
+		}
+		if (entity.getPlatform().getDetectModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (entity.getPlatform().getDetectModel().compareTo("")!=0){
+			return entity.getPlatform().getDetectModel();
+		}
+		if (sim.getScenario().getDetectModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (sim.getScenario().getDetectModel().compareTo("")!=0){
+			return sim.getScenario().getDetectModel();
+		}
 		return "models.DetectEvent";
 	}
 	
@@ -87,9 +111,8 @@ public class EventFactory {
 	
 	public static ScanEvent makeScanEvent(Entity entity, Simulation sim){
 		String eventName = getScanEventName(entity, sim);
-		Logger.say(eventName);
 		if (eventName == null) return null;
-		Class<?> eventClass = makeEventClass(getScanEventName(entity, sim));
+		Class<?> eventClass = makeEventClass(eventName);
 		if (eventClass == null) {
 			error(entity, "scan", eventName);
 			return null;
@@ -111,7 +134,6 @@ public class EventFactory {
 	}
 	
 	private static String getScanEventName (Entity entity, Simulation sim){
-		// TODO interpreters for platform and entity
 		if (entity.getScanModel().compareToIgnoreCase("null")==0){
 			return null;
 		}
@@ -136,23 +158,173 @@ public class EventFactory {
 	//*** shoot model
 	
 	public static ShootEvent makeShootEvent(Entity entity, Simulation sim){
-		Class<?> eventClass = makeEventClass(getShootEventName(entity, sim));
-		if (eventClass == null) return null;
+		String eventName = getShootEventName(entity, sim);
+		if (eventName == null) return null;
+		Class<?> eventClass = makeEventClass(eventName);
+		if (eventClass == null) {
+			error(entity, "shoot", eventName);
+			return null;
+		}
 		ShootEvent event = null;
 		double time = getTime(sim.getGameClock().getClockSecs(),
-				sim.getScenario().getParameters().getMovementCycleTime());
+				sim.getScenario().getParameters().getMovementCycleTime()); //TODO get right time
 		Object object = getObject(eventClass, time, entity, sim);
 		if (object instanceof ShootEvent){
 			event = (ShootEvent) object;
+		} else {
+			error(entity, "shoot", eventName);
 		}
 		return event;
 	}
 	
 	private static String getShootEventName (Entity entity, Simulation sim){
-		//TODO
+		if (entity.getShootModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (entity.getShootModel().compareTo("")!=0){
+			return entity.getShootModel();
+		}
+		if (entity.getPlatform().getShootModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (entity.getPlatform().getShootModel().compareTo("")!=0){
+			return entity.getPlatform().getShootModel();
+		}
+		if (sim.getScenario().getShootModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (sim.getScenario().getShootModel().compareTo("")!=0){
+			return sim.getScenario().getShootModel();
+		}
 		return "models.ShootEvent";
 	}
 	
+	public static ResupplyEvent makeResupplyEvent(Entity entity, Simulation sim){
+		String eventName = getResupplyEventName(entity, sim);
+		if (eventName == null) return null;
+		Class<?> eventClass = makeEventClass(eventName);
+		if (eventClass == null) {
+			error(entity, "resupply", eventName);
+			return null;
+		}
+		ResupplyEvent event = null;
+		double time = getTime(sim.getGameClock().getClockSecs(),
+				sim.getScenario().getParameters().getMovementCycleTime()); //TODO get right time
+		Object object = getObject(eventClass, time, entity, sim);
+		if (object instanceof ResupplyEvent){
+			event = (ResupplyEvent) object;
+		} else {
+			error(entity, "resupply", eventName);
+		}
+		return event;
+	}
+	
+	private static String getResupplyEventName (Entity entity, Simulation sim){
+		if (entity.getResupplyModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (entity.getResupplyModel().compareTo("")!=0){
+			return entity.getResupplyModel();
+		}
+		if (entity.getPlatform().getResupplyModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (entity.getPlatform().getResupplyModel().compareTo("")!=0){
+			return entity.getPlatform().getResupplyModel();
+		}
+		if (sim.getScenario().getResupplyModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (sim.getScenario().getResupplyModel().compareTo("")!=0){
+			return sim.getScenario().getResupplyModel();
+		}
+		return "models.ResupplyEvent";
+	}
+	
+	public static SuppressionEvent makeSuppressionEvent(Entity entity, Simulation sim){
+		String eventName = getSuppressionEventName(entity, sim);
+		if (eventName == null) return null;
+		Class<?> eventClass = makeEventClass(eventName);
+		if (eventClass == null) {
+			error(entity, "suppression", eventName);
+			return null;
+		}
+		SuppressionEvent event = null;
+		double time = getTime(sim.getGameClock().getClockSecs(),
+				sim.getScenario().getParameters().getMovementCycleTime()); //TODO get right time
+		Object object = getObject(eventClass, time, entity, sim);
+		if (object instanceof SuppressionEvent){
+			event = (SuppressionEvent) object;
+		} else {
+			error(entity, "suppression", eventName);
+		}
+		return event;
+	}
+	
+	private static String getSuppressionEventName (Entity entity, Simulation sim){
+		if (entity.getSuppressionModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (entity.getSuppressionModel().compareTo("")!=0){
+			return entity.getResupplyModel();
+		}
+		if (entity.getPlatform().getSuppressionModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (entity.getPlatform().getSuppressionModel().compareTo("")!=0){
+			return entity.getPlatform().getSuppressionModel();
+		}
+		if (sim.getScenario().getSuppressionModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (sim.getScenario().getSuppressionModel().compareTo("")!=0){
+			return sim.getScenario().getSuppressionModel();
+		}
+		return "models.SuppressionEvent";
+	}
+
+	public static CasualtyEvent makeCasualtyEvent(Entity entity, Simulation sim){
+		String eventName = getCasualtyEventName(entity, sim);
+		if (eventName == null) return null;
+		Class<?> eventClass = makeEventClass(eventName);
+		if (eventClass == null) {
+			error(entity, "casualty", eventName);
+			return null;
+		}
+		CasualtyEvent event = null;
+		double time = getTime(sim.getGameClock().getClockSecs(),
+				sim.getScenario().getParameters().getMovementCycleTime()); //TODO get right time
+		Object object = getObject(eventClass, time, entity, sim);
+		if (object instanceof CasualtyEvent){
+			event = (CasualtyEvent) object;
+		} else {
+			error(entity, "casualty", eventName);
+		}
+		return event;
+	}
+	
+	private static String getCasualtyEventName (Entity entity, Simulation sim){
+		if (entity.getCasualtyModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (entity.getCasualtyModel().compareTo("")!=0){
+			return entity.getCasualtyModel();
+		}
+		if (entity.getPlatform().getCasualtyModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (entity.getPlatform().getCasualtyModel().compareTo("")!=0){
+			return entity.getPlatform().getCasualtyModel();
+		}
+		if (sim.getScenario().getCasualtyModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (sim.getScenario().getCasualtyModel().compareTo("")!=0){
+			return sim.getScenario().getCasualtyModel();
+		}
+		return "models.CasualtyEvent";
+	}
+
 	//*****
 
 	private static Object getObject(

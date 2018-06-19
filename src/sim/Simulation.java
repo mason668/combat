@@ -5,13 +5,16 @@ import java.util.Vector;
 
 import data.CSData;
 import interpreter.CommandInterpreter;
+import models.ChemicalUpdateEvent;
 import models.ClockUpdateEvent;
+import models.CloudUpdateEvent;
 import models.DetectEvent;
 import models.EventFactory;
 import models.EventQueue;
 import models.MoveEvent;
 import models.ScanEvent;
 import models.ShootEvent;
+import models.StatusUpdateEvent;
 import sim.entity.Entity;
 import utils.Logger;
 import utils.Parser;
@@ -158,30 +161,35 @@ public class Simulation {
 	
 	private void initQueue(){ //TODO add all the extra event types
 		Logger.log("initialising queues");
-		ClockUpdateEvent event = new ClockUpdateEvent(
+		eventQueue.add(new ClockUpdateEvent(
 				this.getScenario().getParameters().getStartTime(), 
-				this);
-		eventQueue.add(event);
+				this));
+		eventQueue.add(new CloudUpdateEvent(
+				this.getScenario().getParameters().getStartTime(), 
+				this)); // TODO need different start time
+		eventQueue.add(new ChemicalUpdateEvent(
+				this.getScenario().getParameters().getStartTime(), 
+				this)); // TODO need different start time
+		eventQueue.add(new StatusUpdateEvent(
+				this.getScenario().getParameters().getStartTime(), 
+				this)); // TODO need different start time
 		//Tracer.setEcho(true);
 		for (String entityName : getScenario().getEntityList().keySet()){
 			Entity entity = getScenario().getEntityList().getEntity(entityName);
 			//entity.setTracing(true);
 			Logger.log(this, "entity " + entityName); //TODO remove
 			
-			MoveEvent m = EventFactory.makeMoveEvent(entity, this);
-			eventQueue.add(m);
-			DetectEvent d = EventFactory.makeDetectEvent(entity, this);
-			eventQueue.add(d);
-			ScanEvent s = EventFactory.makeScanEvent(entity, this);
-			eventQueue.add(s);
-			ShootEvent f = EventFactory.makeShootEvent(entity, this);
-			eventQueue.add(f);
+			eventQueue.add(EventFactory.makeMoveEvent(entity, this));
+			eventQueue.add(EventFactory.makeDetectEvent(entity, this));
+			eventQueue.add(EventFactory.makeScanEvent(entity, this));
+			eventQueue.add(EventFactory.makeShootEvent(entity, this));
 			
 			//entity.setTracing(true);
 			
-			// supply, suppression, ,  detect enemy/ friend/ obs, 
+			// supply, suppression, ,  
 			// cas assess, 
-			// clouds, statwt, chem, firing?, impact, active sensors, doarty
+			// detect  obs, 
+			// firing?, impact, active sensors, doarty
 		}
 	}
 	

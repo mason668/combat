@@ -76,6 +76,27 @@ public class Platform implements Identifiable {
 	public void setShootModel(String model){
 		shootModel = model.substring(0);
 	}
+	private String suppressionModel = "";
+	public String getSuppressionModel(){
+		return suppressionModel.substring(0);
+	}
+	public void setSuppressionModel(String model){
+		shootModel = model.substring(0);
+	}
+	private String resupplyModel = "";
+	public String getResupplyModel(){
+		return resupplyModel.substring(0);
+	}
+	public void setResupplyModel(String model){
+		resupplyModel = model.substring(0);
+	}
+	private String casualtyModel = "";
+	public String getCasualtyModel(){
+		return casualtyModel.substring(0);
+	}
+	public void setCasualtyModel(String model){
+		casualtyModel = model.substring(0);
+	}
 	//TODO add other models
 
 	/*
