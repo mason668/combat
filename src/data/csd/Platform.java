@@ -211,7 +211,7 @@ public class Platform implements Identifiable {
 		return sensorList;
 	}
 	// visibility in km
-	private double maxVisibility = 1.0; // globsysc.maxvisc maximum
+	private double maxVisibility = 5.0; // globsysc.maxvisc maximum
 	public void setMaxVisibility(double d){maxVisibility = d;}
 	public double getMaxVisibility(){return maxVisibility;}
 	// Field of view minimum degree
@@ -231,6 +231,10 @@ public class Platform implements Identifiable {
 	private double detectionSizePit = 0.1; // globsysc.pitsizec 
 	private double recognitionThreshold = 1.0; // globsysc.system_recogc
 	private double identificationThreshold = 2.0; // globsysc.system_identc
+	private double runFactorPD = 0.1; // TODO need get/ set
+	public double getRunFactorPD(){return runFactorPD;} 
+	private double moveFactorPD = 0.5;
+	public double getMoveFactorPD(){return moveFactorPD;}
 
 	/*
 	 * Data relating to constituent classes

@@ -22,5 +22,13 @@ public interface ObserverEntity {
 	public void setTargetList(TargetList vector);
 	public boolean isDead();
 	public String getName();
+	public TargetList getTargetList();
+	public double getSuppressionAmount();
+	public boolean isSuppressed();
+	public boolean iAmRunning();
+	public boolean iAmCrawling();
+	public double getCurrentSpeed();
+	public double getTopHeightASL();
+	public double getDirectionView();
 
 }

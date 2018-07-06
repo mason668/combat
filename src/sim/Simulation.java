@@ -131,6 +131,55 @@ public class Simulation {
 	
 	private void setup(){
 		// TODO do setup stuff prior to initial planning like relocate
+		//TODO need to validate entities - on map etc.
+		relocateEntities();
+		//relocatePrepos(); // see relocate.f
+	}
+	
+	private void relocateEntities(){
+		//TODO make sure all entities are on the map.
+		for (String entityName : getScenario().getEntityList().keySet()){
+			Entity entity = getScenario().getEntityList().getEntity(entityName);
+			//Logger.log(this, "entity " + entityName); //TODO remove
+			if (!this.myScenario.getMap().onMap(entity.getLocation())){
+				relocateEntity(entity);
+			}
+		}
+	}
+	
+	private void relocateEntity(Entity entity){
+		// TODO
+		entity.setLocation(myScenario.getMap().getRandom());
+		/*
+		 * 
+		ITASK  =  KTASKFOR(IUNIT,ISIDE)
+		ICOUNT(ITASK,ISIDE)  =  ICOUNT(ITASK,ISIDE) + 1
+		ICOL  =  MOD( ICOUNT(ITASK,ISIDE) - 1, 80 )
+		IROW  =     ( ICOUNT(ITASK,ISIDE) - 1 ) / 80
+		ITASK  =  MOD( ITASK-1, NGPSPERFRC )  + 1
+	        X = XMIN + XDIST * (ICOL +10)
+	        Y = YMAX - XDIST * (ITASK *8) - XDIST * IROW
+		XUNIT(IUNIT,ISIDE)  =  X
+		YUNIT(IUNIT,ISIDE)  =  Y
+*/
+		Logger.log("entity " + entity.getName() + 
+				" relocated to " + entity.getLocation().toString());
+		entity.reset_icon();
+		entity.clrmsns();
+		entity.clrnodes();
+/*
+ * TODO
+	        IN_BUILDING(IUNIT, ISIDE) = 0 ! set not in a building
+	        ON_FLOOR(IUNIT,ISIDE) = 0
+	        AT_WALL(IUNIT,ISIDE) = 0
+	        ON_ROOF(IUNIT,ISIDE) = 0
+		  DO  IPASS = 1, NUMUNITS
+		    IF( MOUNTED(IPASS,ISIDE) .EQ. IUNIT )  THEN
+			CALL CLRNODES ( IPASS, ISIDE )
+			CALL CLRMSNS  ( IPASS, ISIDE )
+		    ENDIF
+		  ENDDO
+		 */
 	}
 	
 	private void deployMode(){
@@ -164,6 +213,7 @@ public class Simulation {
 		eventQueue.add(new ClockUpdateEvent(
 				this.getScenario().getParameters().getStartTime(), 
 				this));
+		/* TODO
 		eventQueue.add(new CloudUpdateEvent(
 				this.getScenario().getParameters().getStartTime(), 
 				this)); // TODO need different start time
@@ -173,18 +223,14 @@ public class Simulation {
 		eventQueue.add(new StatusUpdateEvent(
 				this.getScenario().getParameters().getStartTime(), 
 				this)); // TODO need different start time
-		//Tracer.setEcho(true);
+		*/
 		for (String entityName : getScenario().getEntityList().keySet()){
 			Entity entity = getScenario().getEntityList().getEntity(entityName);
-			//entity.setTracing(true);
-			Logger.log(this, "entity " + entityName); //TODO remove
-			
+			//Logger.log(this, "entity " + entityName); //TODO remove
 			eventQueue.add(EventFactory.makeMoveEvent(entity, this));
 			eventQueue.add(EventFactory.makeDetectEvent(entity, this));
 			eventQueue.add(EventFactory.makeScanEvent(entity, this));
 			eventQueue.add(EventFactory.makeShootEvent(entity, this));
-			
-			//entity.setTracing(true);
 			
 			// supply, suppression, ,  
 			// cas assess, 

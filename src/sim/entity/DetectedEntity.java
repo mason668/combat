@@ -16,5 +16,7 @@ public interface DetectedEntity {
 	public double getRealSize();
 	public int getContrastClass();
 	public double getCurrentSpeed();
+	public boolean isMounted();
+	public double getTopHeightASL();
 
 }

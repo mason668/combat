@@ -1,5 +1,6 @@
 package sim.entity;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 public class TargetList {
@@ -16,6 +17,10 @@ public class TargetList {
 			return list.get(index);
 		}
 		return null;
+	}
+	
+	public Iterator<DetectedEntity> iterator(){
+		return list.iterator();
 	}
 
 }

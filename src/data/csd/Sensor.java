@@ -13,6 +13,10 @@ public class Sensor {
 			"optical 1", "optical 2", "thermal 1", "thermal 2", "mmr",
 	};
 	
+	public static void main(String[] args){
+		System.out.println("sensor");
+	}
+
 	public Sensor(String name){
 		myName = name.substring(0);
 	}
@@ -29,7 +33,27 @@ public class Sensor {
 	public String getName(){return myName.substring(0);}
 	public void setName(String name){myName = name.substring(0);}
 	
-	public static void main(String[] args){
-		System.out.println("sensor");
+	private boolean moverOnly = false;
+	public void setMoverOnly(boolean b){moverOnly = b;}
+	public boolean onlyDetectMovers(){ return moverOnly;}
+	
+	private double minSpeed = 1.0;
+	public double getMinSpeed(){
+		return minSpeed;
 	}
+	public void setMinSpeed(double speed){
+		if (speed >= 0.0) minSpeed = speed;
+	}
+	
+	private double maxVisibility = 5.0;
+	public double getMaxVisibility(){
+		return maxVisibility;
+	}
+	public void setMaxVisibility(double range){
+		if (range >= 0.0) maxVisibility = range;
+	}
+	
+	private double fieldOfView = Math.PI / 6.0; // 30 degrees
+	public double getFov(){return fieldOfView;}
+	
 }

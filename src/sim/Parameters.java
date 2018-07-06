@@ -382,17 +382,15 @@ public class Parameters {
      *		BRIDGE_WAIT_TIME, DOPASSKILLS, DAYNIGHT
 
 	READ (IFILESCRCH, ERR=800)
-     *		RUN_PD_FACTOR
-
-	READ (IFILESCRCH, ERR=800)
-     *		RUN_PD_FACTOR
-
-	READ (IFILESCRCH, ERR=800)
      *		PIT_DET_DIMENSIONS
      *
      *
 	 * 
 	 */
+	
+	private boolean doSeeDead = false;
+	public boolean getDoSeeDead(){return doSeeDead;}
+	public void setDoSeeDead(boolean b){doSeeDead = b;}
 	
 	private double speedMOPP = 0.5;
 	public double getSpeedMOPP(){return speedMOPP;}
@@ -408,6 +406,14 @@ public class Parameters {
 		if (d > 1.0) d = 1.0;
 		if (d < 0.0) d = 0.0;
 		weatherMove = d;
+	}
+	
+	private double weatherDetect = 1.0;
+	public double getWeatherDetect(){return weatherDetect;}
+	public void setWeatherDetect(double d){
+		if (d > 1.0) d = 1.0;
+		if (d < 0.0) d = 0.0;
+		weatherDetect = d;
 	}
 	
 	private double checkPointFrequency = 0.0;

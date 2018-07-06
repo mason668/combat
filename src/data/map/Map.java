@@ -269,7 +269,7 @@ public class Map {
 	public void addRiver(River item){
 		riverList.add(item);
 	}
-	public int getNumRiverss(){
+	public int getNumRivers(){
 		return riverList.size();
 	}
 	public double getPLOS(Coordinate c){
@@ -595,28 +595,19 @@ D	ENDIF
 	public Building inBuilding(Coordinate c){
 		return null;
 	}
-	// determine if coordinate is on the map or not
+	
+	/**
+	 * Determine if a coordinate is on the map.
+	 * @param c The coordinate to test.
+	 * @return True if the coordinate is within the map boundary
+	 * False if not.
+	 */
 	public boolean onMap(Coordinate c){
-		return true; // TODO
-		/*
-		 * 
-	INTEGER*4 FUNCTION ITRRNTEST ( X,Y)
-
-	include 	'global.f'
-	include 	'globtrrn.f'
-C	include		'globscr.f'
-
-	ITRRNTEST = 0
-	IF (X .LT. XLL ) ITRRNTEST = 1
-	IF (X .GT. XLL+XWIDE ) ITRRNTEST = 1
-	IF (Y .LT. YLL ) ITRRNTEST = 1
-	IF (Y .GT. YLL+XWIDE ) ITRRNTEST = 1
-
-999	RETURN
-	END
-
-
-		 */
+		if (c.getX()< lowerLeft.getX()) return false;
+		if (c.getY()< lowerLeft.getY()) return false;
+		if (c.getX()> upperRight.getX()) return false;
+		if (c.getY()> upperRight.getY()) return false;
+		return true;
 	}
 	public String getZone(){ // trrnlib.trrnzone
 		//TODO
@@ -2723,11 +2714,22 @@ C ----- RETURN to calling routine.
 
 	RETURN
 	END
-
-
-
-
 	 */
+	
+	/**
+	 * Return a random coordinate that is somewhere on the map.
+	 * @return a coordinate on the map.
+	 */
+	public Coordinate getRandom(){
+		double xmin = lowerLeft.getX();
+		double ymin = lowerLeft.getY();
+		double xdif = upperRight.getX() - xmin;
+		double ydif = upperRight.getY() - ymin;
+		Coordinate c = new Coordinate(
+				xmin + Math.random()*xdif,
+				ymin + Math.random()*ydif);
+		return c;
+	}
 
 	/*
 	 * Test functions

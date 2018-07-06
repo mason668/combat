@@ -277,7 +277,7 @@ C------ FILENAME:  GLOBUNITS.FOR ------------------------ A.D.KELLNER, TRAC-WSMR
 	public double getCurrentSpeed(){return currentSpeed;}
 	public void setCurrentSpeed(double d){ currentSpeed = d;}
 	private boolean crawlMode = false; // globunits.icrawl
-	public boolean iAmCrawling(){return crawlMode;}
+	public boolean iAmCrawling(){return crawlMode;} //TODO check this is the one we want
 	
         /*
 
@@ -291,6 +291,9 @@ C------ FILENAME:  GLOBUNITS.FOR ------------------------ A.D.KELLNER, TRAC-WSMR
 	private double altitude = 0; // globunits.altitude should always be zero for non fliers
 	public double getAltitude(){return altitude;}
 	public void setAltitude(double d){altitude = d;}
+	public double getTopHeightASL(){
+		return altitude; // TODO should include sensor height etc
+	}
 	private boolean landed = true; // globunits.landed
 	private int defiladeState = Constants.DEFILADE_EXPOSED; // globunits.idefl
 	public int getDefilade(){return defiladeState;}
@@ -678,6 +681,7 @@ c	      WRITE (L,10002)
 		 */
 	}
 
+	// TODO use a hashmap instead
 	private Vector<EntityDetection> detectionList = new Vector<EntityDetection>();
 	public Vector<EntityDetection> getDetectionList(){return detectionList;}
 	public void updateDetection(Entity target, int level){
@@ -735,7 +739,7 @@ c	      WRITE (L,10002)
 		return elementLocations;
 	}
 
-	private double directionMove = 2.0 * Math.PI * Math.random();
+	private double directionMove = 2.0 * Math.PI * Math.random(); // TODO set to sensible default
 	public double getDirectionMove(){return directionMove;}
 	public void setDirectionMove(double direction){
 		directionMove = direction;
@@ -1477,5 +1481,9 @@ c	include		'globsetup.f'
 	public double getApparentSize(double range){return 10.0;} // see getsize.f
 	public double getRealSize(){return 10.0;}
 	public int getContrastClass(){return 1;} //TODO should use posture and platform
+	
+	public void clrnodes(){} // TODO see relocate.f
+	public void clrmsns(){} // TODO see relocate.f
+	public void reset_icon(){} // TODO see relocate.f
 
 }
