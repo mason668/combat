@@ -55,8 +55,8 @@ public class Simulation {
 		Tracer.setEcho(true); //TODO temp so we get traces
 		Tracer.setTraceLevel(Tracer.FINEST); //TODO we need this in the interpreter
 		Simulation sim = new Simulation();
-		sim.getScenario().getParameters().setRealTimeSynch(false);
-		sim.getScenario().getParameters().setClockUpdateTime(24.0*60.0*60.0*10.0);
+		//sim.getScenario().getParameters().setRealTimeSynch(false);
+		//sim.getScenario().getParameters().setClockUpdateTime(24.0*60.0*60.0*10.0);
 		//sim.getInterpreter().setTrace(true); //TODO not required
 		// if there are no arguments, set some defaults to make the test run quickly
 		
@@ -86,8 +86,12 @@ public class Simulation {
 	 * Create a simulation with a controller.
 	 * @param controller The controller controlling this simulation
 	 */
-	public Simulation (SimulationController controller){
-		simulationControl = controller;
+	public Simulation (SimulationController control){
+		simulationControl = control;
+	}
+	
+	public void addControl(SimulationController control){
+		simulationControl = control;
 	}
 	
 	/*
@@ -118,6 +122,7 @@ public class Simulation {
 	}
 
 	public void endSimulation(){
+		updateClockListeners();
 		Logger.log("simulation ended at " + gameClock.toString());
 		Logger.log("current time " + Instant.now().toString());
 		//TODO
@@ -197,14 +202,16 @@ public class Simulation {
 		if (battleMode) return;
 		planning = false;
 		Logger.log("battle mode " + getScenario().getName());
-		initQueue();
-		
 		Logger.log("current time " + Instant.now().toString());
 		Logger.log("starting simulation " + getScenario().getName());
 		Logger.log("start time " + Parser.formatTime(myScenario.getParameters().getStartTime()));
 		Logger.log("end time   " + Parser.formatTime(myScenario.getParameters().getEndTime()));
 		gameClock.setClockSecs(myScenario.getParameters().getStartTime());
+		updateClockListeners();
+		initQueue();
+		
 		battleMode = true;
+		gameClock.setSynchPoint();
 
 	}
 	

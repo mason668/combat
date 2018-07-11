@@ -32,7 +32,6 @@ public class MapPanel extends JPanel implements Runnable, MouseListener, MouseMo
 
 	private Thread animator;
 	private volatile boolean running = false;
-	private volatile boolean gameOver = false;
 	private volatile boolean visible = false;
 	private volatile boolean redraw = true;
 	private Map myMap;
@@ -54,7 +53,6 @@ public class MapPanel extends JPanel implements Runnable, MouseListener, MouseMo
 			interpreter.interpret(args);
 		}
 		MapPanel view = new MapPanel();
-		view.setMap(testMap);
 		view.setPreferredSize(new Dimension (500,500));
 		view.makeVisible(true);
 		
@@ -75,7 +73,10 @@ public class MapPanel extends JPanel implements Runnable, MouseListener, MouseMo
 	}
 	
 	public Map getMap(){return myMap;}
-	public void setMap(Map map){myMap = map;}
+	public void setMap(Map map){
+		Logger.log("MapPanel: set map " + map.getName());
+		myMap = map;
+	}
 	
 	public void makeVisible(boolean b){
 		this.visible = b;
@@ -134,7 +135,9 @@ public class MapPanel extends JPanel implements Runnable, MouseListener, MouseMo
 		int yoffset = 0;
 		if (redraw) {
 			int panelWidth = this.getWidth()-2;
+			if (panelWidth < 5) return;
 			int panelHeight = this.getHeight()-2;
+			if (panelHeight < 5) return;
 			panelGraphics.setColor(Color.LIGHT_GRAY);
 			panelGraphics.fillRect(0, 0, panelWidth, panelHeight);
 			mapCanvas = createImage(panelWidth, panelHeight);
@@ -293,6 +296,7 @@ public class MapPanel extends JPanel implements Runnable, MouseListener, MouseMo
 		if (mapListeners.size()<=0){
 			Logger.say(getReport(c));
 		} else {
+			Logger.say(getReport(c)); // TODO remove
 			for (int i=0;i<mapListeners.size();i++){
 				mapListeners.elementAt(i).selectCoordinate(c);
 			}

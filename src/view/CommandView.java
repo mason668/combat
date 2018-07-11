@@ -15,9 +15,10 @@ import data.CSData;
 import interpreter.CommandInterpreter;
 import sim.GameClock;
 import sim.Scenario;
+import sim.SimulationController;
 import utils.Tracer;
 
-public class CommandView extends JPanel {
+public class CommandView extends JPanel implements SimulationController{
 	private static final long serialVersionUID = 1L;
 	private CommandInterpreter interpreter;
 
@@ -41,7 +42,7 @@ public class CommandView extends JPanel {
 	public CommandView(){
 		JTextField text = new JTextField("                                "); //FIXME need to make this stay at its min size
 		text.setMinimumSize(new Dimension(50,10));
-		JButton testBtn = new JButton("Send");
+		SmallButton testBtn = new SmallButton("Send");
 		testBtn.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				if (interpreter != null){

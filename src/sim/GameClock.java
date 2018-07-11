@@ -2,6 +2,8 @@ package sim;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import utils.Logger;
 import utils.Parser;
 
 public class GameClock {
@@ -10,7 +12,7 @@ public class GameClock {
 	 * Class variables
 	 */
 
-	private long then = 0;
+	private long thenWall = 0;
 	
 	/**
 	 * Store the time as double seconds
@@ -91,10 +93,10 @@ public class GameClock {
 		if (time <= 0) return;
 		if (!clockStarted) startClock();
 		if (clockPaused) return;
-		synchroniseClock(time);
 		double newTime = clock + time;
+		synchroniseClock(newTime);
 		setClockSecs(newTime);
-		setSynchPoint();
+		//setSynchPoint(newTime);
 	}
 	
 	/**
@@ -108,9 +110,9 @@ public class GameClock {
 		if (!clockStarted) startClock();
 		if (clockPaused) return;
 		if (time > Constants.NEVER) time = Constants.NEVER;
-		synchroniseClock(clock - time);
+		synchroniseClock(clock);
 		setClockSecs(time);
-		setSynchPoint();
+		//setSynchPoint(time);
 	}
 	
 	/**
@@ -121,15 +123,17 @@ public class GameClock {
 	 */
 	private void synchroniseClock(double time){
 		if (myScenario.getParameters().getRealTimeSynch()){
-			long deltaWall = System.currentTimeMillis() - then;
-			long deltaSim = (long) (time * 1000 * 
+			long deltaWall = System.currentTimeMillis() - thenWall;
+			long deltaSim = (long) ((time - thenSim )* 1000 * 
 					myScenario.getParameters().getRealTimeRatio());
+			if (deltaSim < 100) return;
 			while (deltaSim > deltaWall){
 				try {
 					Thread.sleep(10);
 				} catch (Exception e){}
-				deltaWall = System.currentTimeMillis() - then;
+				deltaWall = System.currentTimeMillis() - thenWall;
 			}
+			setSynchPoint();
 		}
 	}
 	
@@ -138,8 +142,16 @@ public class GameClock {
 	 * realtime ratio.
 	 */
 	//TODO it might make sense to store the ratio and on/ off flag inside the clock
+	private double thenSim = -Constants.NEVER;
+	public void setSynchPointa(double gameTime){
+		if (gameTime > thenSim+10){
+			thenSim = gameTime;
+			thenWall = System.currentTimeMillis();
+		}
+	}
 	public void setSynchPoint(){
-		then = System.currentTimeMillis();
+		thenSim = this.clock;
+		thenWall = System.currentTimeMillis();
 	}
 	
 	/**
@@ -162,21 +174,25 @@ public class GameClock {
 				else if ( s.compareToIgnoreCase("pause") == 0){
 					if (clockStarted){
 						clockPaused = ! clockPaused;
+						setSynchPoint();
 					}
 				}
 				else if ( s.compareToIgnoreCase("fast") == 0){
+					setSynchPoint();
 					myScenario.getParameters().setRealTimeSynch(true);
 					double d = myScenario.getParameters().getRealTimeRatio();
 					d = d * 0.667;
 					myScenario.getParameters().setRealTimeRatio(d);
 				}
 				else if ( s.compareToIgnoreCase("slow") == 0){
+					setSynchPoint();
 					myScenario.getParameters().setRealTimeSynch(true);
 					double d = myScenario.getParameters().getRealTimeRatio();
 					d = d * 1.5;
 					myScenario.getParameters().setRealTimeRatio(d);
 				}
 				else if ( s.compareToIgnoreCase("1:1") == 0){
+					setSynchPoint();
 					myScenario.getParameters().setRealTimeSynch(true);
 					myScenario.getParameters().setRealTimeRatio(1.0);
 				}

@@ -23,41 +23,38 @@ public class MapView extends JPanel{
 //	private JScrollPane mapPane = new JScrollPane(mapArea);
 	private JPanel zoomArea = new JPanel();
 	private JPanel menuArea = new JPanel();
-	private MapControl mapControl = new MapControl();
+	//private MapControl mapControl = new MapControl(); TODO add zoom buttons
 	private MapInfo mapInfo;
 	private Map myMap;
+	private boolean mapLoaded = false;
 	
 	public static void main(String[] args){
 		Map map = new Map();
 		map.makeTestMap();
-		MapInterpreter interpreter = new MapInterpreter();
-		interpreter.setMap(map);
-		interpreter.interpret(args);
-		map.trace();
-		MapView view = new MapView(map);
+		MapView view = new MapView();
 		FullFrame frame = new FullFrame("MapView");
 
-		//JPanel p = new JPanel();
-		//p.add(view,BorderLayout.CENTER);
-		//frame.add(p,BorderLayout.CENTER);
-		
 		frame.add(view,BorderLayout.CENTER);
-//		frame.add(view.makeTestControler(),BorderLayout.NORTH);
 		
 		frame.setVisible(true);
 		frame.pack();
 		frame.validate();
 		view.makeVisible(true);
+		
+		Logger.setEcho(true);
+		MapInterpreter interpreter = new MapInterpreter();
+		interpreter.setMap(map);
+		interpreter.interpret(args);
+		view.setMap(map);
 	}
 	
-	public MapView(Map map){
+	public MapView(){
 		super();
-		this.setMap(map);
 		init();
 	}
 	
 	private void init(){
-		mapInfo = new MapInfo(myMap);
+		mapInfo = new MapInfo();
 		this.setLayout(new BorderLayout());
 //		JScrollPane mapPane = new JScrollPane(mapArea);
 		mapArea.setBackground(Color.WHITE);
@@ -68,14 +65,14 @@ public class MapView extends JPanel{
 //		this.add(mapPane,BorderLayout.CENTER); //TODO add scrollpane back again
 		zoomArea.setBackground(Color.WHITE);
 		zoomArea.add(mapInfo);
-		zoomArea.add(mapControl);
+		//zoomArea.add(mapControl); TODO add zom buttons
 		JScrollPane controlPane = new JScrollPane(zoomArea);
 		controlPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		controlPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 //		this.add(zoomArea, BorderLayout.SOUTH);
 		this.add(controlPane, BorderLayout.SOUTH);
-		menuArea.setBackground(Color.BLACK);
-		this.add(menuArea, BorderLayout.EAST);
+		//menuArea.setBackground(Color.BLACK);
+		//this.add(menuArea, BorderLayout.EAST);
 		mapArea.addMapListener(mapInfo);
 	}
 	
@@ -83,8 +80,10 @@ public class MapView extends JPanel{
 		myMap = map;
 		Logger.log("MapView: set map " + map.getName());
 		mapArea.setMap(myMap);
-		// TODO update mapinfo too?
+		//mapArea.setVisible(true);
+		mapInfo.setMap(myMap);
 		//drawMap();
+		mapLoaded = true;
 	}
 	
 	public void makeVisible(boolean b){
