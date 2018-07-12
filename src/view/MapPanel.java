@@ -41,6 +41,7 @@ public class MapPanel extends JPanel implements Runnable, MouseListener, MouseMo
 	private MapTransposer mapTransposer = new MapTransposer();
 	private Vector<MapListener> mapListeners = new Vector<MapListener>();
 	private boolean relief = false;
+	private SpriteManager mySpriteManager;
 
 	public static void main(String[] args){
 		
@@ -124,6 +125,7 @@ public class MapPanel extends JPanel implements Runnable, MouseListener, MouseMo
 
 		Graphics g = this.getGraphics();
 		drawMap(g);
+		drawEntities(g);
 	}
 	
 	private Image mapCanvas;
@@ -275,6 +277,15 @@ public class MapPanel extends JPanel implements Runnable, MouseListener, MouseMo
 		return p;
 	}
 
+	public void setSpriteManager(SpriteManager manager){
+		mySpriteManager = manager;
+	}
+	
+	private void drawEntities(Graphics g){
+		if (mySpriteManager == null) return;
+		mySpriteManager.drawEntities(g, mapTransposer);
+		return;
+	}
 	
 	public void addMapListener(MapListener listener){
 		if (listener == null) return;

@@ -90,4 +90,8 @@ public class MapView extends JPanel{
 		this.mapArea.makeVisible(b);
 	}
 	
+	public void setSpriteManager(SpriteManager manager){
+		mapArea.setSpriteManager(manager);
+	}
+	
 }

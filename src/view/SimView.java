@@ -41,6 +41,7 @@ public class SimView implements ChangeListener{
 	private MapPanel smallMap = new MapPanel();
 	private JButton startBtn = new SmallButton("Start");
 	private JTabbedPane tabbedPane;
+	private SpriteManager mySpriteManager;
 	private final int REPORT_PANE = 0;
 	private final int LOG_PANE = 1;
 	private final int TRACE_PANE = 2;
@@ -55,6 +56,7 @@ public class SimView implements ChangeListener{
 	public SimView(String label, String[] args) {
 		makeGUI(label);
 		mySimulation = new Simulation();
+		mySpriteManager = new SpriteManager();
 		linkGUItoSim();
 		//initialise(args);
 		initialise(new String[]{"--load", "init.txt"});
@@ -81,47 +83,6 @@ public class SimView implements ChangeListener{
 		frame.pack();
 		frame.validate();
 
-		//frame.add(statusBar,BorderLayout.SOUTH);
-		//frame.add(makeMainPanel(),BorderLayout.CENTER);
-
-
-		/*
-		JPanel controlPanel = new JPanel();
-		controlPanel.setLayout(new BorderLayout());
-
-		JButton startBtn = new JButton("Start");
-		startBtn.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent arg0) {
-				Tracer.write("hit start");
-				//myScenario.setRunabble(true);
-				mySimulation.startSimulation();
-				//Runnable runnable = new RunSim();
-				//Thread thread = new Thread(runnable);
-				//thread.start();
-			}
-		});
-		controlPanel.add(startBtn, BorderLayout.WEST);
-		frame.add(controlPanel,BorderLayout.NORTH);
-		
-		tabbedPane = new JTabbedPane();
-		tabbedPane.addChangeListener(this);
-		
-		TraceView traceView = new TraceView();
-		Tracer.addListener(traceView);
-		
-		JPanel dataView = new JPanel();
-		
-		mapView = new MapView(mySimulation.getScenario().getMap()); //TODO this appears to be done twice
-		
-		tabbedPane.insertTab("Log", null, traceView, "Display log data", TRACE_PANE);
-		tabbedPane.insertTab("Map", null, mapView, "Display map", MAP_PANE);
-		tabbedPane.insertTab("Data", null, dataView, "Display data", DATA_PANE);
-
-		frame.add(tabbedPane,BorderLayout.CENTER);
-		
-		*/
-		
-		//		frame.add(view.makeControlPanel(),BorderLayout.SOUTH);
 	}
 	
 	private void linkGUItoSim(){
@@ -139,7 +100,9 @@ public class SimView implements ChangeListener{
 			}
 		});
 		commandView.setInterpreter(mySimulation.getInterpreter());
-		
+		smallMap.setSpriteManager(mySpriteManager);
+		mapView.setSpriteManager(mySpriteManager);
+		mySpriteManager.setEntityList(mySimulation.getScenario().getEntityList());
 	}
 	
 	private void makeComponents(){

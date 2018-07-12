@@ -1,6 +1,7 @@
 package data.managers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -116,5 +117,9 @@ public class ObjectList {
 	 */
 	public Set<String> keySet(){
 		return this.list.keySet();
+	}
+	
+	public Collection<Object> values(){
+		return this.list.values();
 	}
 }
