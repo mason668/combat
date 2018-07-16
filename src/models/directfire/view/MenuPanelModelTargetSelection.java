@@ -390,7 +390,7 @@ public class MenuPanelModelTargetSelection extends MenuPanel implements ActionLi
 		e.setLastWeapon(e.getMyWeapon());
 	}
 
-	public void writeTrace(String message){
+	public void write(String message){
 		reportPanel.append(message);
 	}
 	

@@ -94,4 +94,8 @@ public class MapView extends JPanel{
 		mapArea.setSpriteManager(manager);
 	}
 	
+	public void addMapListener(MapListener listener){
+		mapArea.addMapListener(listener);
+	}
+	
 }

@@ -130,7 +130,7 @@ public class ScenarioInterpreter extends Interpreter{
 			} catch (Exception e){
 				Logger.err(this,0, "invalid move_cycle");
 			}
-		} else if (command.compareToIgnoreCase("move_model") == 0){
+		} else if (command.compareToIgnoreCase("movement_model") == 0){
 			if (vector.isEmpty()) return;
 			String modelName = vector.remove(0);
 			myScenario.setMovementModel(modelName);
@@ -246,6 +246,8 @@ public class ScenarioInterpreter extends Interpreter{
 			} catch (Exception e){
 				Logger.err(this,0, "invalid weather_speed");
 			}
+		} else {
+			Logger.err(this, Logger.WARNING, "unknown command " + command + " " + vector);
 		}
 	}
 	

@@ -34,7 +34,7 @@ public class SimpleView extends JFrame implements ActionListener, ClockListener,
 	}
 
 	@Override
-	public void writeTrace(String message) {
+	public void write(String message) {
 		t1.append(message+"\n");
 //		System.out.println("SV:" + message);
 		// TODO Auto-generated method stub

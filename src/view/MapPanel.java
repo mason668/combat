@@ -298,7 +298,7 @@ public class MapPanel extends JPanel implements Runnable, MouseListener, MouseMo
 		} else {
 			//System.out.println("sending message");
 			for (int i=0;i<mapListeners.size();i++){
-				mapListeners.elementAt(i).showCoordinate(c);
+				mapListeners.elementAt(i).moveMouse(c);
 			}
 		}
 	}
@@ -309,7 +309,7 @@ public class MapPanel extends JPanel implements Runnable, MouseListener, MouseMo
 		} else {
 			Logger.say(getReport(c)); // TODO remove
 			for (int i=0;i<mapListeners.size();i++){
-				mapListeners.elementAt(i).selectCoordinate(c);
+				mapListeners.elementAt(i).clickMap(c);
 			}
 		}
 	}

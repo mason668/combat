@@ -69,7 +69,7 @@ public class JanusMoveEvent extends MoveEvent {
 	@Override
 	public Event doEvent(){
 		myClock = gameClock.getClockSecs();
-		tracing = myEntity.isTracing(); //TODO check move is on too
+		tracing = true;//myEntity.isTracing(); //TODO check move is on too
 		nextMoveTime = this.getTime();
 		if (tracing){
 			Tracer.write(Tracer.MOVEMENT,0,"\nprocessing movement ");

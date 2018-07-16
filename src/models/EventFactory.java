@@ -23,7 +23,7 @@ public class EventFactory {
 	
 	public static MoveEvent makeMoveEvent(Entity entity, Simulation sim){
 		String eventName = getMoveEventName(entity, sim);
-		//Logger.log("move for " + entity.getName() + " " + eventName);
+		Logger.log("move for " + entity.getName() + " " + eventName);
 		if (eventName == null) return null;
 		Class<?> eventClass = makeEventClass(eventName);
 		if (eventClass == null) {

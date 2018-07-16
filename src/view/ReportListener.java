@@ -1,6 +1,6 @@
 package view;
 
-public interface TraceListener {
+public interface ReportListener {
 	
 	public void write(String message);
 

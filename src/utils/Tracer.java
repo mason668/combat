@@ -126,7 +126,7 @@ public class Tracer {
 			  traceFile.write(message+"\r\n");
 			  traceFile.flush();
 			  for (TraceListener listener: listeners){
-				  listener.writeTrace(message);
+				  listener.write(message);
 			  }
 			} catch (Exception e) {}
 		}

@@ -92,7 +92,7 @@ public class TraceView extends JPanel implements TraceListener {
 
 
 	@Override
-	public void writeTrace(String message) {
+	public void write(String message) {
 		traceArea.append(message + "\n");
 //		traceArea.update(traceArea.getGraphics());
 		traceArea.setCaretPosition(traceArea.getText().length() - 1);	

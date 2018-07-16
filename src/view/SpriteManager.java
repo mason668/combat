@@ -38,6 +38,7 @@ public class SpriteManager implements EntityListener{
 			iy = iy + (size/2);
 			g.setColor(Color.BLUE);
 			g.fillOval(ix, iy, size, size);
+			g.drawString(entity.getName(), ix, iy-(size/2));
 		}
 		return;
 	}

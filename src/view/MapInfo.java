@@ -30,7 +30,7 @@ public class MapInfo extends JPanel implements MapListener{
 	}
 
 	@Override
-	public void showCoordinate(Coordinate c) {
+	public void moveMouse(Coordinate c) {
 		if (!mapValid) return;
 		if (c == null) return;
 		txtCoordinates.setText(String.format("%.5f", c.getX()) 
@@ -38,7 +38,7 @@ public class MapInfo extends JPanel implements MapListener{
 	}
 
 	@Override
-	public void selectCoordinate(Coordinate c) {
+	public void clickMap(Coordinate c) {
 		if (!mapValid) return;
 		String message = "Pressed " + String.format("%.5f", c.getX()) 
 				+ " " + String.format("%.5f", c.getY());
