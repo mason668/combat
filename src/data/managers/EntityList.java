@@ -62,6 +62,7 @@ public class EntityList extends ObjectList {
 		if ( !( entity instanceof Entity)) return false;
 		String name = entity.getName();
 		if (super.add(name, entity)) {
+			entity.addEntityList(this);
 			this.xarray.add(entity);
 			entity.setXarrayPointer(xarray.size()-1);
 			shuffle(entity);
@@ -85,7 +86,7 @@ public class EntityList extends ObjectList {
 	 * Shuffle sort the entity through the array to its correct location.
 	 * @param entity
 	 */
-	private void shuffle(Entity entity){
+	public void shuffle(Entity entity){
 		int pointer = entity.getXarrayPointer();
 		if (xarray.get(pointer)!= entity){
 			Logger.err(Logger.WARNING, "EntityList xaray has become corrupted");
@@ -120,15 +121,14 @@ public class EntityList extends ObjectList {
 		}
 	}
 	
-	/**
-	 * Return a set of entities that are within the minimum and maximum x values (inclusive).
-	 * @param xmin The minimum value.
-	 * @param xmax The maximum value.
-	 * @return
-	 */
-	public Vector<Entity> getEntities(double xmin, double xmax){
-		Vector<Entity> set = new Vector<Entity>();
-		return set; //TODO need to do something
+	public Entity getEntity(Coordinate coordinate, double range){
+		//TODO should probably rename to nearestEntity
+		for (Entity entity: findBetween(coordinate.getX()-range,coordinate.getX()+range)){
+			if (Coordinate.distance2D(coordinate, entity.getLocation())<=range){
+				return entity;
+			}
+		}
+		return null;
 	}
 	
 	/**

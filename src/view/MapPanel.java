@@ -307,7 +307,7 @@ public class MapPanel extends JPanel implements Runnable, MouseListener, MouseMo
 		if (mapListeners.size()<=0){
 			Logger.say(getReport(c));
 		} else {
-			Logger.say(getReport(c)); // TODO remove
+			//Logger.say(getReport(c)); // TODO remove
 			for (int i=0;i<mapListeners.size();i++){
 				mapListeners.elementAt(i).clickMap(c);
 			}

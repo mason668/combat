@@ -61,6 +61,13 @@ public class Coordinate {
 		return s;
 	}
 	
+	public String toGrid(){
+		int ix = (int) (myx * 1000);
+		int iy = (int) (myy * 1000);
+		String s = "GR " + ix + " " + iy;
+		return s;
+	}
+	
 	/**
 	 * Get the x value of the coordinate. 
 	 * @return The x value.

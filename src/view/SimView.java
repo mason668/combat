@@ -89,7 +89,6 @@ public class SimView implements ChangeListener{
 		frame.setVisible(true);
 		frame.pack();
 		frame.validate();
-
 	}
 	
 	private void linkGUItoSim(){
@@ -112,8 +111,10 @@ public class SimView implements ChangeListener{
 		mapView.addMapListener(menuController);
 		mySpriteManager.setEntityList(mySimulation.getScenario().getEntityList());
 		Tracer.addListener(traceView);
-		// TODO add report listener
 		reportView.setMenuController(menuController);
+		menuController.setScenario(mySimulation.getScenario());
+		// TODO add report listener
+		menuController.addReportLitener(reportView);
 	}
 	
 	private void makeComponents(){

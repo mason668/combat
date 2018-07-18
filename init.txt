@@ -1,3 +1,4 @@
 #load data/csdata.txt
-map load data/maps/pucka_120.txt
-load tests/test_scenario.txt
+#map load data/maps/pucka_120.txt
+#load tests/test_scenario.txt
+load tests/test_move.txt

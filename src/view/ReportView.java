@@ -2,29 +2,25 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
-import utils.Tracer;
+import sim.Scenario;
+import view.menu.InfoButton;
 import view.menu.MenuButton;
 import view.menu.MenuController;
-
 
 public class ReportView extends JPanel implements ReportListener { 
 	
 	private JTextArea reportArea;
 	
-	private MenuButton infoButton;
+	private InfoButton infoButton;
 	private MenuButton dataButton;
 
 	public ReportView(){
@@ -42,7 +38,7 @@ public class ReportView extends JPanel implements ReportListener {
 		
 		JPanel buttonPanel = new JPanel();
 		
-		infoButton = new MenuButton("Info");
+		infoButton = new InfoButton();
 		dataButton = new MenuButton("Data");
 
 		JButton clearBtn = new SmallButton("Clear");
@@ -62,7 +58,7 @@ public class ReportView extends JPanel implements ReportListener {
 
 	@Override
 	public void write(String message) {
-		reportArea.append(message + "\n");
+		reportArea.setText(message + "\n");
 //		traceArea.update(traceArea.getGraphics());
 		reportArea.setCaretPosition(reportArea.getText().length() - 1);	
 	}
@@ -71,5 +67,7 @@ public class ReportView extends JPanel implements ReportListener {
 		if (controller == null) return;
 		controller.addMenuButton(infoButton);
 		controller.addMenuButton(dataButton);
+		controller.setMenuState(infoButton);
 	}
+	
 }

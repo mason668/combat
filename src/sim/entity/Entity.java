@@ -6,6 +6,7 @@ import data.csd.Platform;
 import data.csd.PlatformWeapon;
 import data.csd.Sensor;
 import data.csd.Weapon;
+import data.managers.EntityList;
 import data.map.Building;
 import data.map.Coordinate;
 import sim.Constants;
@@ -120,7 +121,14 @@ public class Entity implements ObserverEntity,
 	private int currentElements=1; // globunits.nscore
 	public int getNumberOfElements(){return currentElements;}
 	public void setNumberOfElements(int i){currentElements = i;}
-	private int orginalElements = 1; // globunits.knumele
+	
+	private int originalElements = 1; // globunits.knumele
+	public int getOriginalElements(){return originalElements;}
+	public void setOriginalElements(int i){
+		if (i> 0){
+			originalElements = i;
+		}
+	}
 
 	private int currentPersonnel = 1; // globunits.perscur
 	private int originalPersonnel = 1; // globunits.perstot
@@ -150,9 +158,17 @@ public class Entity implements ObserverEntity,
 	private int[] currentCasualties = new int[Constants.MAX_CASUALTY_TYPES]; // globunits.kastot
 	
 	private Coordinate currentLocation = new Coordinate( 1.0, 1.0, 0.0); // globunits.xunit, yunit, zunit
+	private EntityList entityList;
+	public void addEntityList(EntityList list){
+		entityList = list;
+	}
+	
 	public void setLocation(Coordinate c){
 		//update the entity's location
 		currentLocation = new Coordinate(c);
+		if (entityList != null){
+			entityList.shuffle(this);
+		}
 		// let any listeners know the entity has moved
 		for (EntityListener listener: entityListeners){
 			listener.updateLocation(this, c);
@@ -344,6 +360,14 @@ C------ FILENAME:  GLOBUNITS.FOR ------------------------ A.D.KELLNER, TRAC-WSMR
 	public Force getForce(){return myForce;}
 	public void setForce (Force force){myForce = force;} //TODO do we add to force here?
 	private int myGroup= 1; // globunits.mygroup
+	public int getGroup(){
+		return myGroup;
+	}
+	public void setGroup(int group){
+		if (group <1) return;
+		if (group > 10) return;
+		myGroup = group; // TODO do we need to update anything else? should change to "change group"
+	}
 	
 	private int inoperative = 0; // globunits.kinopstat chem/ nbc state
 	public int getNBCInoperative(){return inoperative;}
