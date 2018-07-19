@@ -9,23 +9,28 @@ import data.map.MapTransposer;
 import sim.entity.Entity;
 import sim.entity.EntityListener;
 import utils.Logger;
+import view.menu.MenuController;
 
 public class SpriteManager implements EntityListener{
 	
 	private EntityList entityList;
+	private MenuController menuController;
 	
 	public void setEntityList (EntityList list){
 		entityList = list;
+	}
+	
+	public void setmenuController(MenuController controller){
+		menuController = controller;
 	}
 
 	@Override
 	public void updateLocation(Entity entity, Coordinate location) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void drawEntities(Graphics g, MapTransposer mapTransposer){
-		int size = 20;
+		int size = 10;
 		if (entityList == null) return;
 		for (Object object : entityList.values()) {
 			Entity entity = (Entity) object;
@@ -33,16 +38,27 @@ public class SpriteManager implements EntityListener{
 			double x = c.getX();
 			double y = c.getY();
 			int ix = mapTransposer.map2screenX(x);
-			ix = ix - (size/ 2);
 			int iy = mapTransposer.map2screenY(y);
-			iy = iy + (size/2);
 			g.setColor(Color.BLUE);
-			g.fillOval(ix, iy, size, size);
-			g.drawString(entity.getName(), ix, iy-(size/2));
+			g.fillOval(ix-(size), iy-size, size*2, size*2);
+			g.drawString(entity.getName(), ix-size, iy-size*2);
+			g.setColor(Color.BLACK);
+			g.fillOval(ix-1, iy-1, 3, 3);
 		}
+		drawGraphics(g, mapTransposer);
 		return;
 	}
-	
+
+	/**
+	 * Draw the miscellaneous graphics such as view fans, based on menu selection
+	 * @param g
+	 * @param mapTransposer
+	 */
+	private void drawGraphics(Graphics g, MapTransposer mapTransposer){
+		if (menuController == null) return;
+		menuController.draw(g, mapTransposer);
+	}
+
 	
 	/*
 	private Polygon makePolygon(Iterator<Coordinate> coordinateIterator, AreaFeature area){

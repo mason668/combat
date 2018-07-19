@@ -17,7 +17,7 @@ public class SmallButton extends JButton {
 	}
 	
 	protected void setFont(){
-		this.setFont(new Font("Arial", Font.PLAIN, 8));
+		this.setFont(new Font("Arial", Font.PLAIN, 10));
 	}
 
 }

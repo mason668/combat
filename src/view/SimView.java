@@ -110,8 +110,10 @@ public class SimView implements ChangeListener{
 		mapView.setSpriteManager(mySpriteManager);
 		mapView.addMapListener(menuController);
 		mySpriteManager.setEntityList(mySimulation.getScenario().getEntityList());
+		mySpriteManager.setmenuController(menuController);
 		Tracer.addListener(traceView);
 		reportView.setMenuController(menuController);
+		menuPanel.setMenuController(menuController);
 		menuController.setScenario(mySimulation.getScenario());
 		// TODO add report listener
 		menuController.addReportLitener(reportView);

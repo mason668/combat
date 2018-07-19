@@ -5,19 +5,24 @@ import java.awt.Color;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
+import view.menu.DeployButton;
 import view.menu.MenuButton;
+import view.menu.MenuController;
+import view.menu.MoveButton;
 
 public class MenuPanel extends JPanel{
 	
+	DeployButton deployButton = new DeployButton();
+	MoveButton moveButton = new MoveButton();
+
 	public MenuPanel(){
 		super();
-		setBackground(Color.RED);
+		setBackground(Color.WHITE);
 		addButtons();
 	}
 	
 	private void addButtons(){
 		//TODO change to menubuttons
-		MenuButton deployButton = new MenuButton("Deploy");
 		
 		JPanel line1 = new JPanel();
 		line1.setBackground(Color.BLUE);
@@ -27,6 +32,7 @@ public class MenuPanel extends JPanel{
 		line3.setBackground(Color.GREEN);
 		
 		line1.add(deployButton);
+		line1.add(moveButton);
 		
 		this.setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
 		this.add(line1);
@@ -34,4 +40,9 @@ public class MenuPanel extends JPanel{
 		this.add(line3);
 	}
 
+	public void setMenuController(MenuController controller){
+		if (controller == null) return;
+		controller.addMenuButton(deployButton);
+		controller.addMenuButton(moveButton);
+	}
 }
