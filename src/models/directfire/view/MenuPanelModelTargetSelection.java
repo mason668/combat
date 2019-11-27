@@ -28,8 +28,8 @@ import sim.Scenario;
 import sim.entity.Entity;
 import sim.forces.Force;
 import utils.ReportPanel;
+import utils.TraceListener;
 import utils.Tracer;
-import view.TraceListener;
 
 public class MenuPanelModelTargetSelection extends MenuPanel implements ActionListener, TraceListener {
 
