@@ -4,8 +4,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.Vector;
 
-import view.TraceListener;
-
 public class Logger {
 
 
@@ -114,6 +112,9 @@ public class Logger {
 			  logFile.flush();
 			} catch (Exception e) {}
 		}
+		  for (LogListener listener: listeners){
+			  listener.write(message);
+		  }
 	}
 	
 	public static void log(int level, String message){
@@ -137,4 +138,8 @@ public class Logger {
 		echo = b;
 	}
 	
+	private static Vector<LogListener> listeners = new Vector<LogListener>();
+	public static void addListener(LogListener listener){
+		listeners.add(listener);
+	}
 }
