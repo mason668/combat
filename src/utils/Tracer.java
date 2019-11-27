@@ -4,8 +4,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.Vector;
 
-import view.TraceListener;
-
 public class Tracer {
 
 

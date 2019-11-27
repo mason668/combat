@@ -1,4 +1,4 @@
-package view;
+package view.map;
 
 import data.map.Coordinate;
 

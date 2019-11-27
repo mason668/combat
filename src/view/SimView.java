@@ -27,8 +27,13 @@ import utils.Tracer;
 import view.ClockView;
 import view.CommandView;
 import view.FullFrame;
-import view.TraceView;
+import view.map.MapPanel;
+import view.map.MapView;
 import view.menu.MenuController;
+import view.menu.MenuPanel;
+import view.reports.LogView;
+import view.reports.ReportView;
+import view.reports.TraceView;
 
 public class SimView implements ChangeListener{
 	
@@ -43,6 +48,7 @@ public class SimView implements ChangeListener{
 	private MenuPanel menuPanel = new MenuPanel();
 	private JButton startBtn = new SmallButton("Start");
 	private TraceView traceView;
+	private LogView logView;
 	private ReportView reportView;
 	private JTabbedPane tabbedPane;
 	private SpriteManager mySpriteManager;
@@ -57,7 +63,7 @@ public class SimView implements ChangeListener{
 		Logger.setEcho(true);
 		Tracer.setEcho(true); //TODO temp so we get traces
 		Tracer.setTraceLevel(Tracer.FINEST); //TODO we need this in the interpreter
-		SimView test = new SimView(label, args);
+		SimView test = new SimView(label, new String[]{"--load", "init.txt"});
 	}
 
 	public SimView(String label, String[] args) {
@@ -65,8 +71,7 @@ public class SimView implements ChangeListener{
 		mySimulation = new Simulation();
 		mySpriteManager = new SpriteManager();
 		linkGUItoSim();
-		//initialise(args);
-		initialise(new String[]{"--load", "init.txt"});
+		initialise(args);
 	}
 	
 	private void initialise(String[] args){
@@ -112,9 +117,10 @@ public class SimView implements ChangeListener{
 		mySpriteManager.setEntityList(mySimulation.getScenario().getEntityList());
 		mySpriteManager.setmenuController(menuController);
 		Tracer.addListener(traceView);
+		Logger.addListener(logView);
 		reportView.setMenuController(menuController);
-		menuPanel.setMenuController(menuController);
-		menuController.setScenario(mySimulation.getScenario());
+		menuPanel.setMenuGroup(menuController);
+		menuController.setSimulation(mySimulation);
 		// TODO add report listener
 		menuController.addReportLitener(reportView);
 	}
@@ -127,6 +133,7 @@ public class SimView implements ChangeListener{
 		smallMap = new MapPanel();
 		startBtn = new SmallButton("Start");
 		traceView = new TraceView();
+		logView = new LogView();
 		reportView = new ReportView();
 		menuController = new MenuController();
 	}
@@ -221,7 +228,7 @@ public class SimView implements ChangeListener{
 		//tabbedPane.addChangeListener(this);
 		
 		tabbedPane.insertTab("Report", null, reportView, "Display reports", REPORT_PANE);
-		tabbedPane.insertTab("Log", null, new JPanel(), "Display log messages", LOG_PANE);
+		tabbedPane.insertTab("Log", null, logView, "Display log messages", LOG_PANE);
 		tabbedPane.insertTab("Trace", null, traceView, "Display trace messages", TRACE_PANE);
 		
 		//panel.add(traceView, BorderLayout.CENTER);

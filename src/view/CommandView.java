@@ -16,7 +16,9 @@ import interpreter.CommandInterpreter;
 import sim.GameClock;
 import sim.Scenario;
 import sim.SimulationController;
+import utils.Logger;
 import utils.Tracer;
+import view.reports.TraceView;
 
 public class CommandView extends JPanel implements SimulationController{
 	private static final long serialVersionUID = 1L;
@@ -45,10 +47,11 @@ public class CommandView extends JPanel implements SimulationController{
 		SmallButton testBtn = new SmallButton("Send");
 		testBtn.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
+				Logger.log("CommandView: " + text.getText());
 				if (interpreter != null){
 					interpreter.interpret(text.getText());
 				}
-				text.setText("");
+				text.setText("                                  ");
 			}
 		});
 		this.add(testBtn, BorderLayout.EAST);

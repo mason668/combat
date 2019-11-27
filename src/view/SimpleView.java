@@ -15,6 +15,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
 import utils.Parser;
+import utils.TraceListener;
 
 public class SimpleView extends JFrame implements ActionListener, ClockListener, TraceListener{
 	

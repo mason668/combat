@@ -199,6 +199,7 @@ public class Parser {
 
 	public static Coordinate parseCoordinate (Coordinate reference, 
 			String xstring, String ystring){
+		//TODO should really use ints and UTM
 		Coordinate result = null;
 		if (xstring == null) return result;
 		if (ystring == null) return result;

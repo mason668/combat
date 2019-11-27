@@ -1,4 +1,4 @@
-package view;
+package view.map;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -16,6 +16,8 @@ import javax.swing.ScrollPaneConstants;
 import data.map.Map;
 import interpreter.MapInterpreter;
 import utils.Logger;
+import view.FullFrame;
+import view.SpriteManager;
 
 public class MapView extends JPanel{
 	private static final long serialVersionUID = 1L;
