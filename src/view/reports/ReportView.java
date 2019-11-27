@@ -1,4 +1,4 @@
-package view;
+package view.reports;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -12,6 +12,7 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
 import sim.Scenario;
+import view.SmallButton;
 import view.menu.InfoButton;
 import view.menu.MenuButton;
 import view.menu.MenuController;

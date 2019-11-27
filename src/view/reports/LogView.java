@@ -15,17 +15,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
-import utils.TraceListener;
+import utils.LogListener;
+import utils.Logger;
 import utils.Tracer;
 import view.SmallButton;
 
 
-public class TraceView extends JPanel implements TraceListener {
+public class LogView extends JPanel implements LogListener {
 	
-	private JTextArea traceArea = new JTextArea();
+	private JTextArea logArea = new JTextArea();
 
 	public static void main(String[] args){
-		TraceView view = new TraceView();
+		LogView view = new LogView();
 		JFrame frame = view.makeTestFrame();
 		
 		frame.add(view,BorderLayout.CENTER);
@@ -35,9 +36,9 @@ public class TraceView extends JPanel implements TraceListener {
 		frame.pack();
 		frame.validate();
 		
-		Tracer.addListener(view);
+		Logger.addListener(view);
 		
-		Tracer.write("test");
+		Logger.log("test");
 
 	}
 	
@@ -47,14 +48,14 @@ public class TraceView extends JPanel implements TraceListener {
 		panel.add(testBtn);
 		testBtn.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
-				Tracer.write("another test");
+				Logger.log("another test");
 			}
 		});
 		return panel;
 	}
 	
 	private JFrame makeTestFrame(){
-		JFrame frame = new JFrame("trace");
+		JFrame frame = new JFrame("log");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //		frame.setLocationRelativeTo(null);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -68,12 +69,12 @@ public class TraceView extends JPanel implements TraceListener {
 		return frame;
 	}
 	
-	public TraceView(){
+	public LogView(){
 		super();
-		traceArea = new JTextArea();
-		traceArea.setFont(new Font("Arial", Font.PLAIN, 10));
+		logArea = new JTextArea();
+		logArea.setFont(new Font("Arial", Font.PLAIN, 10));
 		this.setLayout(new BorderLayout());
-		JScrollPane pane = new JScrollPane(traceArea);
+		JScrollPane pane = new JScrollPane(logArea);
 		this.setBackground(Color.green);
 		//pane.setPreferredSize(new Dimension(300,200));
 		pane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -87,7 +88,7 @@ public class TraceView extends JPanel implements TraceListener {
 		this.add(panel,BorderLayout.SOUTH);
 		clearBtn.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
-				traceArea.setText("");
+				logArea.setText("");
 			}
 		});
 	}
@@ -95,8 +96,8 @@ public class TraceView extends JPanel implements TraceListener {
 
 	@Override
 	public void write(String message) {
-		traceArea.append(message + "\n");
+		logArea.append(message + "\n");
 //		traceArea.update(traceArea.getGraphics());
-		traceArea.setCaretPosition(traceArea.getText().length() - 1);	
+		logArea.setCaretPosition(logArea.getText().length() - 1);	
 	}
 }

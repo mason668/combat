@@ -1,7 +1,8 @@
-package view;
+package view.map;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -27,6 +28,8 @@ import data.map.River;
 import data.map.Road;
 import interpreter.MapInterpreter;
 import utils.Logger;
+import view.FullFrame;
+import view.SpriteManager;
 
 public class MapPanel extends JPanel implements Runnable, MouseListener, MouseMotionListener{
 
@@ -71,6 +74,7 @@ public class MapPanel extends JPanel implements Runnable, MouseListener, MouseMo
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
 		this.addComponentListener(new ResizeListener());
+		//setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 	}
 	
 	public Map getMap(){return myMap;}
