@@ -67,16 +67,15 @@ public class SimView implements ChangeListener{
 	}
 
 	public SimView(String label, String[] args) {
-		makeGUI(label);
 		mySimulation = new Simulation();
 		mySpriteManager = new SpriteManager();
+		mySimulation.initialise(args);
+		makeGUI(label);
 		linkGUItoSim();
 		initialise(args);
 	}
 	
 	private void initialise(String[] args){
-		mySimulation.getInterpreter().setTrace(true); // TODO just for testing
-		mySimulation.init(args);
 		mapView.setMap(mySimulation.getScenario().getMap());
 		mapView.makeVisible(true);
 		smallMap.setMap(mySimulation.getScenario().getMap());
@@ -97,20 +96,20 @@ public class SimView implements ChangeListener{
 	}
 	
 	private void linkGUItoSim(){
-		mySimulation.addControl(commandView);
+		// TODO check autostart mySimulation.addControl(commandView);
 		mySimulation.addClockListener(clockView);
 		clockView.addActionListener(mySimulation.getGameClock().getClockController());
 		startBtn.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				Tracer.write("hit start");
 				//myScenario.setRunabble(true);
-				mySimulation.startSimulation();
+				mySimulation.battle();
 				//Runnable runnable = new RunSim();
 				//Thread thread = new Thread(runnable);
 				//thread.start();
 			}
 		});
-		commandView.setInterpreter(mySimulation.getInterpreter());
+		// TODO need to redo this commandView.setInterpreter(mySimulation.getInterpreter());
 		smallMap.setSpriteManager(mySpriteManager);
 		mapView.setSpriteManager(mySpriteManager);
 		mapView.addMapListener(menuController);

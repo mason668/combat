@@ -43,7 +43,8 @@ public class MenuController extends MenuGroup implements ActionListener, MapList
 	}
 	public Interpreter getInterpreter(){
 		if (mySim == null) return null;
-		return mySim.getInterpreter();
+		// TODO need to redo this return mySim.getInterpreter();
+		return null;
 	}
 	
 	public Entity getEntity(Coordinate coordinate){

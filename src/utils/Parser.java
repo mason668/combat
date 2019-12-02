@@ -89,6 +89,15 @@ public class Parser {
 		return d;
 	}
 
+	public static void main(String[] args){
+		double d;
+		String time;
+		time = "3:30";
+		Logger.say("input "+ time);
+		d = parseFormattedTime (time);
+		Logger.say("time  " + d);
+	}
+
 	/**
 	 * 
 	 * @param string
@@ -97,10 +106,7 @@ public class Parser {
 	public static double parseFormattedTime(double currentTime, String string){
 		// initialise return value
 		double d = -1.0;
-		
-		// validate input
-		int length = string.length();
-		if ( length <= 0) return -1;
+		if (string.length()<=0) return d;
 
 		//process offset prefix
 		String prefix = string.substring(0,1);
@@ -129,66 +135,44 @@ public class Parser {
 	 * @return
 	 */
 	public static double parseFormattedTime(String string){
+		//TODO this needs to deal with an actual formatted time - not just assume string length
 		// initialise return value
 		double d = 0.0;
 		
-		// validate input
-		int length = string.length();
-		if ( length <= 0) return -1;
+		Vector<String> vector = new Vector<String>();
+		StringTokenizer tokenizer = new StringTokenizer(string,":");
+		while (tokenizer.hasMoreTokens()){
+			String word = tokenizer.nextToken();
+			vector.addElement(word);
+		}
 
 		// initialise intermediate data
 		int days = 0;
 		int hours = 0;
 		int mins = 0;
-		int secs = 0;
+		double secs = 0;
 		
-		// extract elements of the string
-		if ( string.length()==11){
+		if (vector.size()== 4){
 			try{
-				days = Integer.parseInt(string.substring(0, 2));
+				days = Integer.parseInt(vector.remove(0));
 			} catch (Exception e){} // TODO should we return an error?
-			string = string.substring(3);
 		}
-		if ( string.length()==10){
+		if (vector.size()== 3){
 			try{
-				days = Integer.parseInt(string.substring(0, 1));
-			} catch (Exception e){}
-			string = string.substring(2);
+				hours = Integer.parseInt(vector.remove(0));
+			} catch (Exception e){} // TODO should we return an error?
 		}
-		if ( string.length()==8){
+		if (vector.size()== 2){
 			try{
-				hours = Integer.parseInt(string.substring(0, 2));
-			} catch (Exception e){}
-			string = string.substring(3);
+				mins = Integer.parseInt(vector.remove(0));
+			} catch (Exception e){} // TODO should we return an error?
 		}
-		if ( string.length()==7){
+		if (vector.size()== 1){
 			try{
-				hours = Integer.parseInt(string.substring(0, 1));
-			} catch (Exception e){}
-			string = string.substring(2);
+				secs = Double.parseDouble(vector.remove(0));
+			} catch (Exception e){} // TODO should we return an error?
 		}
-		if ( string.length()==5){
-			try{
-				mins = Integer.parseInt(string.substring(0, 2));
-			} catch (Exception e){}
-			string = string.substring(3);
-		}
-		if ( string.length()==4){
-			try{
-				mins = Integer.parseInt(string.substring(0, 1));
-			} catch (Exception e){}
-			string = string.substring(2);
-		}
-		if ( string.length()==2){
-			try{
-				secs = Integer.parseInt(string.substring(0, 2));
-			} catch (Exception e){}
-		}
-		if ( string.length()==1){
-			try{
-				secs = Integer.parseInt(string.substring(0, 1));
-			} catch (Exception e){}
-		}
+
 
 		// combine the elements into a single value
 		d = secs + mins*60.0 + hours * 60*60 + days * 24*60*60;

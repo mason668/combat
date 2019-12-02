@@ -5,16 +5,9 @@ import java.util.Vector;
 
 import data.CSData;
 import interpreter.CommandInterpreter;
-import models.ChemicalUpdateEvent;
 import models.ClockUpdateEvent;
-import models.CloudUpdateEvent;
-import models.DetectEvent;
 import models.EventFactory;
 import models.EventQueue;
-import models.MoveEvent;
-import models.ScanEvent;
-import models.ShootEvent;
-import models.StatusUpdateEvent;
 import sim.entity.Entity;
 import utils.Logger;
 import utils.Parser;
@@ -29,15 +22,16 @@ public class Simulation {
 	 **************************************
 	 */
 	
-	private Scenario myScenario = new Scenario("simulation_test");
-	private GameClock gameClock = new GameClock(myScenario);
-	private CSData myData = new CSData();
-	private CommandInterpreter myInterpreter = new CommandInterpreter(this);
-	private boolean planning = false;
-	private boolean battleMode = false;
-	private boolean running = false;
-	private EventQueue eventQueue = new EventQueue();
-	private SimulationController simulationControl = null;
+	private boolean planning = false; // flag in planning mode
+	private boolean fighting = false; // flag in battle mode
+	private boolean threadRunning = false; // flag sim thread is running
+	
+	private Scenario myScenario;
+	private GameClock gameClock;
+	private CSData myData;
+	private EventQueue eventQueue;
+
+	private boolean autoStart = false; // should sim go straight to battle mode
 	private Runnable simThread;
 
 	/*
@@ -51,15 +45,12 @@ public class Simulation {
 	 * @param configuration arguments that may be used to configure the test. 
 	 */
 	public static void main(String[] configuration){
-		Logger.say("running Simulation.main");
-		Tracer.setEcho(true); //TODO temp so we get traces
-		Tracer.setTraceLevel(Tracer.FINEST); //TODO we need this in the interpreter
-		Simulation sim = new Simulation();
-		//sim.getScenario().getParameters().setRealTimeSynch(false);
-		//sim.getScenario().getParameters().setClockUpdateTime(24.0*60.0*60.0*10.0);
-		//sim.getInterpreter().setTrace(true); //TODO not required
-		// if there are no arguments, set some defaults to make the test run quickly
+		// example command line args
+		// --load tests/test_scan_event.txt
+		//
 		
+		Logger.say("running Simulation.main");
+		Simulation sim = new Simulation();
 		// add a clock listener to report the time for the test
 		sim.addClockListener(new ClockListener(){
 			public void updateClock(double clock) {
@@ -67,7 +58,29 @@ public class Simulation {
 			}
 		});
 		
-		sim.init(configuration);
+		// if there are no arguments, set some defaults to make the test run quickly
+		if (configuration.length<=0){
+			configuration = defaultConfiguration();
+		}
+		sim.initialise(configuration);
+	}
+	
+	private static String[] defaultConfiguration(){ 
+		String temp[] = {
+				"--scenario", 
+				"start_time", 
+				"0:00", 
+				"--scenario", 
+				"end_time", 
+				"10:00", 
+				"--scenario", 
+				"time_step",
+				"1:00",
+				"--scenario",
+				"real_time",
+				"no"
+				};
+		return temp;
 	}
 	
 	/*
@@ -80,18 +93,16 @@ public class Simulation {
 	 * Create a simulation without a controller.
 	 */
 	public Simulation(){
+		autoStart = true;
 	}
 	
 	/**
 	 * Create a simulation with a controller.
-	 * @param controller The controller controlling this simulation
+	 * @param start True if the simulation should automatically
+	 * go straight from planning mode to running.
 	 */
-	public Simulation (SimulationController control){
-		simulationControl = control;
-	}
-	
-	public void addControl(SimulationController control){
-		simulationControl = control;
+	public Simulation (boolean start){
+		autoStart = start;
 	}
 	
 	/*
@@ -99,33 +110,33 @@ public class Simulation {
 	 * public methods
 	 **************************************
 	 */
-
-	public void init(String[] args){
-		if (running) return;
+	
+	public void initialise(String[] args){
+		if (threadRunning) return;
 		Logger.log("initialising data ");
-		planning = true;
-		getInterpreter().interpret(args);
+		
+		myScenario = new Scenario("simulation_test");
+		gameClock = new GameClock(myScenario);
+		myData = new CSData();
+		myInterpreter = new CommandInterpreter(this);
+		eventQueue = new EventQueue();
+		interpret(args);
 		
 		setup();
-
-		simThread = new RunSim();
-		Thread thread = new Thread(simThread);
-		thread.start();
-		Logger.say("scenario name " + this.myScenario.getName());
 
 		deployMode();
 	}
 	
-	public void startSimulation(){
+	public void battle(){
 		if (!planning ) return;
+		if (fighting) return;
 		battleMode();
 	}
 
-	public void endSimulation(){
+	public void end(){
 		updateClockListeners();
 		Logger.log("simulation ended at " + gameClock.toString());
 		Logger.log("current time " + Instant.now().toString());
-		//TODO
 	}
 	
 	/*
@@ -134,15 +145,16 @@ public class Simulation {
 	 **************************************
 	 */
 	
+	/*
+	 * do setup stuff prior to initial planning like relocate
+	 */
 	private void setup(){
-		// TODO do setup stuff prior to initial planning like relocate
-		//TODO need to validate entities - on map etc.
 		relocateEntities();
 		//relocatePrepos(); // see relocate.f
 	}
 	
 	private void relocateEntities(){
-		//TODO make sure all entities are on the map.
+		//make sure all entities are on the map.
 		for (String entityName : getScenario().getEntityList().keySet()){
 			Entity entity = getScenario().getEntityList().getEntity(entityName);
 			//Logger.log(this, "entity " + entityName); //TODO remove
@@ -173,7 +185,6 @@ public class Simulation {
 		entity.clrmsns();
 		entity.clrnodes();
 /*
- * TODO
 	        IN_BUILDING(IUNIT, ISIDE) = 0 ! set not in a building
 	        ON_FLOOR(IUNIT,ISIDE) = 0
 	        AT_WALL(IUNIT,ISIDE) = 0
@@ -188,18 +199,25 @@ public class Simulation {
 	}
 	
 	private void deployMode(){
+		Logger.say("scenario name " + this.myScenario.getName());
+		
+		planning = true;
+
+		simThread = new RunSim();
+		Thread thread = new Thread(simThread);
+		thread.start();
+
 		Logger.log("deploy mode " + getScenario().getName());
 		Logger.log("current time " + Instant.now().toString());
 
-		//TODO check for start command
-		if ( simulationControl == null){
-			Logger.log("no simulation control defined ");
+		if ( autoStart){
+			Logger.log("automatically entering battle mode ");
 			battleMode();
 		}
 	}
 
 	private void battleMode(){
-		if (battleMode) return;
+		if (fighting) return;
 		planning = false;
 		Logger.log("battle mode " + getScenario().getName());
 		Logger.log("current time " + Instant.now().toString());
@@ -210,9 +228,8 @@ public class Simulation {
 		updateClockListeners();
 		initQueue();
 		
-		battleMode = true;
+		fighting = true;
 		gameClock.setSynchPoint();
-
 	}
 	
 	private void initQueue(){ //TODO add all the extra event types
@@ -220,20 +237,19 @@ public class Simulation {
 		eventQueue.add(new ClockUpdateEvent(
 				this.getScenario().getParameters().getStartTime(), 
 				this));
-		/* TODO
+		/*
 		eventQueue.add(new CloudUpdateEvent(
 				this.getScenario().getParameters().getStartTime(), 
-				this)); // TODO need different start time
+				this)); //  need different start time
 		eventQueue.add(new ChemicalUpdateEvent(
 				this.getScenario().getParameters().getStartTime(), 
-				this)); // TODO need different start time
+				this)); //  need different start time
 		eventQueue.add(new StatusUpdateEvent(
 				this.getScenario().getParameters().getStartTime(), 
-				this)); // TODO need different start time
+				this)); //  need different start time
 		*/
 		for (String entityName : getScenario().getEntityList().keySet()){
 			Entity entity = getScenario().getEntityList().getEntity(entityName);
-			//Logger.log(this, "entity " + entityName); //TODO remove
 			eventQueue.add(EventFactory.makeMoveEvent(entity, this));
 			eventQueue.add(EventFactory.makeDetectEvent(entity, this));
 			eventQueue.add(EventFactory.makeScanEvent(entity, this));
@@ -247,7 +263,6 @@ public class Simulation {
 	}
 	
 	private void doUserEvents(){
-		
 	}
 	
 	private void doSimEvents(){
@@ -266,25 +281,33 @@ public class Simulation {
 		
 		// if we have reached the end of the simulation, signal a stop
 		if (gameClock.getClockSecs() >= myScenario.getParameters().getEndTime()){
-			running = false;
+			threadRunning = false;
 		}
 	}
 
-	/*
-	 * simple accessors and mutators
+	/**
+	 * Define an interpreter create a facade
 	 */
-
-	public EventQueue getEventQueue(){return eventQueue;}
-	public CommandInterpreter getInterpreter() {return myInterpreter;}
-	public Scenario getScenario(){return myScenario;}
-	public CSData getCSData(){return myData;}
-	public GameClock getGameClock(){return gameClock;}
+	private CommandInterpreter myInterpreter;
+	public void interpret(String command){
+		myInterpreter.interpret(command);
+	}
+	public void interpret(String[] command){
+		myInterpreter.interpret(command);
+	}
+	public void interpret(Vector<String> command){
+		myInterpreter.interpret(command);
+	}
+	
+	public Scenario getScenario(){return myScenario;} 
+	public CSData getCSData(){return myData;} 
+	public GameClock getGameClock(){return gameClock;} 
 	
 	private Vector<ClockListener> clockListeners = new Vector<ClockListener>();
 	public void addClockListener(ClockListener listener){
 		clockListeners.addElement(listener);
 	}
-	public void updateClockListeners(){
+	public void updateClockListeners(){ 
 		for (ClockListener listener : clockListeners){
 			double clock = this.gameClock.getClockSecs();
 			listener.updateClock(clock);
@@ -292,19 +315,23 @@ public class Simulation {
 	}
 
 	
+	/*
+	 * run the simulation in a thread
+	 */
+
 	class RunSim implements Runnable{
 		@Override
 		public void run() {
 			if (myScenario == null) return;
 			if (eventQueue == null) return;
-			running = true;
-			while ( running){
+			threadRunning = true;
+			while ( threadRunning){
 				doUserEvents();
-				if (battleMode){
+				if (fighting){
 					doSimEvents();
 				}
 			}
-			endSimulation();
+			end();
 		}
 	}
 	

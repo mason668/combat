@@ -222,11 +222,12 @@ public class ScenarioInterpreter extends Interpreter{
 			String modelName = vector.remove(0);
 			myScenario.setShootModel(modelName);
 		} else if (command.compareToIgnoreCase("start_time") == 0){
+			double clock = -1.0;
 			String arg = vector.remove(0);
-			try{
-				double clock = Double.parseDouble(arg); //TODO parse time
+			clock = Parser.parseFormattedTime(gameClock.getClockSecs(), arg);
+			if ( clock >=0 ){
 				myScenario.getParameters().setStartTime(clock);
-			} catch (Exception e){
+			} else {
 				Logger.err(this,0, "invalid start_time");
 			}
 		} else if (command.compareToIgnoreCase("time_step") == 0){

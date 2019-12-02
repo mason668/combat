@@ -172,35 +172,55 @@ public class GameClock {
 				if ( s.compareToIgnoreCase("") == 0){
 				}
 				else if ( s.compareToIgnoreCase("pause") == 0){
-					if (clockStarted){
-						clockPaused = ! clockPaused;
-						setSynchPoint();
-					}
+					pause();
 				}
 				else if ( s.compareToIgnoreCase("fast") == 0){
-					setSynchPoint();
-					myScenario.getParameters().setRealTimeSynch(true);
-					double d = myScenario.getParameters().getRealTimeRatio();
-					d = d * 0.667;
-					myScenario.getParameters().setRealTimeRatio(d);
+					fast();
 				}
 				else if ( s.compareToIgnoreCase("slow") == 0){
-					setSynchPoint();
-					myScenario.getParameters().setRealTimeSynch(true);
-					double d = myScenario.getParameters().getRealTimeRatio();
-					d = d * 1.5;
-					myScenario.getParameters().setRealTimeRatio(d);
+					slow();
 				}
 				else if ( s.compareToIgnoreCase("1:1") == 0){
-					setSynchPoint();
-					myScenario.getParameters().setRealTimeSynch(true);
-					myScenario.getParameters().setRealTimeRatio(1.0);
+					setOneToOne();
 				}
 				else if ( s.compareToIgnoreCase("no synch") == 0){
-					myScenario.getParameters().setRealTimeSynch(false);
+					noSynch();
 				}
 			}
 		};
+	}
+
+	private void pause(){
+		if (clockStarted){
+			clockPaused = ! clockPaused;
+			setSynchPoint();
+		}
+	}
+	
+	private void setOneToOne(){
+		setSynchPoint();
+		myScenario.getParameters().setRealTimeSynch(true);
+		myScenario.getParameters().setRealTimeRatio(1.0);
+	}
+	
+	private void fast(){
+		setSynchPoint();
+		myScenario.getParameters().setRealTimeSynch(true);
+		double d = myScenario.getParameters().getRealTimeRatio();
+		d = d * 0.667;
+		myScenario.getParameters().setRealTimeRatio(d);
+	}
+	
+	private void slow(){
+		setSynchPoint();
+		myScenario.getParameters().setRealTimeSynch(true);
+		double d = myScenario.getParameters().getRealTimeRatio();
+		d = d * 1.5;
+		myScenario.getParameters().setRealTimeRatio(d);
+	}
+	
+	private void noSynch(){
+		myScenario.getParameters().setRealTimeSynch(false);
 	}
 
 }
