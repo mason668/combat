@@ -49,11 +49,11 @@ public class Parameters {
 	
 	private double startTime = 0;
 	public double getStartTime(){return startTime;}
-	public void setStartTime(double time){startTime = time;} // TODO format time
+	public void setStartTime(double time){startTime = time;}
 	
 	private double endTime = Constants.NEVER;
 	public double getEndTime(){return endTime;}
-	public void setEndTime(double time){endTime = time;} // TODO format time
+	public void setEndTime(double time){endTime = time;}
 	
 	// time to increment clock each time through the loop
 	private double clockUpdateTime = 0.1; // seconds
@@ -486,5 +486,29 @@ public class Parameters {
 
 
 	 */
+	
+	/**
+	 * Suppression cycle time
+	 */
+	private double suppressionCycleTime = 20.0;
+	public double getSuppressionCycleTime(){return suppressionCycleTime;}
+	public void setSuppressionCycleTime(double time){suppressionCycleTime = time;}
+	
+	/**
+	 * resupply cycle time
+	 */
+	private double resupplyCycleTime = 20.0;
+	public double getResupplyCycleTime(){return resupplyCycleTime;}
+	public void setResupplyCycleTime(double time){resupplyCycleTime = time;}
+	
+	/**
+	 * detect obstacle cycle time
+	 */
+	private double detectObstacleCycleTime = 60.0;
+	public double getDetectObstacleCycleTime(){return detectObstacleCycleTime;}
+	public void setDetectObstacleCycleTime(double time){detectObstacleCycleTime = time;}
+	
+
+
 	
 }

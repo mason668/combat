@@ -48,6 +48,13 @@ public class Entity implements ObserverEntity,
 	public void setDetectModel(String model){
 		detectModel = model.substring(0);
 	}
+	private String detectObstacleModel = "";
+	public String getDetectObstacleModel(){
+		return detectObstacleModel.substring(0);
+	}
+	public void setDetectObstacleModel(String model){
+		detectObstacleModel = model.substring(0);
+	}
 	private String shootModel = "";
 	public String getShootModel(){
 		return shootModel.substring(0);

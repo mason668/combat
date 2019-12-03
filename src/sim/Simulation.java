@@ -47,7 +47,7 @@ public class Simulation {
 	public static void main(String[] configuration){
 		// example command line args
 		// --load tests/test_scan_event.txt
-		//
+		//--load tests/test_sim_01_default_entity_events.txt
 		
 		Logger.say("running Simulation.main");
 		Simulation sim = new Simulation();
@@ -157,7 +157,6 @@ public class Simulation {
 		//make sure all entities are on the map.
 		for (String entityName : getScenario().getEntityList().keySet()){
 			Entity entity = getScenario().getEntityList().getEntity(entityName);
-			//Logger.log(this, "entity " + entityName); //TODO remove
 			if (!this.myScenario.getMap().onMap(entity.getLocation())){
 				relocateEntity(entity);
 			}
@@ -234,31 +233,33 @@ public class Simulation {
 	
 	private void initQueue(){ //TODO add all the extra event types
 		Logger.log("initialising queues");
-		eventQueue.add(new ClockUpdateEvent(
+		eventQueue.add(EventFactory.makeClockUpdateEvent(
 				this.getScenario().getParameters().getStartTime(), 
 				this));
-		/*
-		eventQueue.add(new CloudUpdateEvent(
+		eventQueue.add(EventFactory.makeCloudUpdateEvent(
 				this.getScenario().getParameters().getStartTime(), 
-				this)); //  need different start time
-		eventQueue.add(new ChemicalUpdateEvent(
+				this));
+		eventQueue.add(EventFactory.makeChemicalUpdateEvent(
 				this.getScenario().getParameters().getStartTime(), 
-				this)); //  need different start time
-		eventQueue.add(new StatusUpdateEvent(
+				this));
+		eventQueue.add(EventFactory.makeStatusUpdateEvent(
 				this.getScenario().getParameters().getStartTime(), 
-				this)); //  need different start time
-		*/
+				this));
+		eventQueue.add(EventFactory.makeSaveEvent(
+				this.getScenario().getParameters().getStartTime(), 
+				this));
 		for (String entityName : getScenario().getEntityList().keySet()){
 			Entity entity = getScenario().getEntityList().getEntity(entityName);
 			eventQueue.add(EventFactory.makeMoveEvent(entity, this));
 			eventQueue.add(EventFactory.makeDetectEvent(entity, this));
 			eventQueue.add(EventFactory.makeScanEvent(entity, this));
 			eventQueue.add(EventFactory.makeShootEvent(entity, this));
+			eventQueue.add(EventFactory.makeSuppressionEvent(entity, this));
+			eventQueue.add(EventFactory.makeResupplyEvent(entity, this));
+			eventQueue.add(EventFactory.makeCasualtyEvent(entity, this));
+			eventQueue.add(EventFactory.makeDetectObstacleEvent(entity, this));
 			
-			// supply, suppression, ,  
-			// cas assess, 
-			// detect  obs, 
-			// firing?, impact, active sensors, doarty
+			// firing?, impact, active sensors/ radar, doarty
 		}
 	}
 	

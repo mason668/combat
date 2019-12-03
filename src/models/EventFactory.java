@@ -2,15 +2,16 @@ package models;
 
 import java.lang.reflect.Constructor;
 
-import sim.GameClock;
-import sim.Scenario;
 import sim.Simulation;
 import sim.entity.Entity;
-import sim.entity.MoverEntity;
 import sim.forces.Force;
 import utils.Logger;
-import utils.Tracer;
-
+/**
+ * This is a utility class principally comprised of static methods.
+ * <p>
+ * The methods are used to create event objects. 
+ *
+ */
 public class EventFactory {
 	
 	private static void error(Entity entity, String type, String eventName){
@@ -20,10 +21,15 @@ public class EventFactory {
 	}
 	
 	//*** movement model
-	
+	/**
+	 * Creates a MoveEvent for the given entity.
+	 * @param entity The entity to associate with the MoveEvent
+	 * @param sim A pointer to the simulation.
+	 * @return A MoveEvent or null if one was not created.
+	 */
 	public static MoveEvent makeMoveEvent(Entity entity, Simulation sim){
 		String eventName = getMoveEventName(entity, sim);
-		Logger.log("move for " + entity.getName() + " " + eventName);
+		//Logger.log("move for " + entity.getName() + " " + eventName);
 		if (eventName == null) return null;
 		Class<?> eventClass = makeEventClass(eventName);
 		if (eventClass == null) {
@@ -31,7 +37,7 @@ public class EventFactory {
 			return null;
 		}
 		MoveEvent event = null;
-		double time = getTime(sim.getGameClock().getClockSecs(),
+		double time = makeRandomTime(sim.getGameClock().getClockSecs(),
 				sim.getScenario().getParameters().getMovementCycleTime());
 		Object object = getObject(eventClass, time, entity, sim);
 		if (object instanceof MoveEvent){
@@ -68,7 +74,7 @@ public class EventFactory {
 	
 	public static DetectEvent makeDetectEvent(Entity entity, Simulation sim){
 		String eventName = getDetectEventName(entity, sim);
-		Logger.log("detect for " + entity.getName() + " " + eventName);
+		//Logger.log("detect for " + entity.getName() + " " + eventName);
 		if (eventName == null) return null;
 		Class<?> eventClass = makeEventClass(eventName);
 		if (eventClass == null) {
@@ -76,8 +82,13 @@ public class EventFactory {
 			return null;
 		}
 		DetectEvent event = null;
-		double time = getTime(sim.getGameClock().getClockSecs(),
-				sim.getScenario().getParameters().getMovementCycleTime()); //TODO get right time
+		// default epoch time in case force not defined
+		double time = 5.0;
+		Force force = entity.getForce();
+		if ( force != null){
+			time = makeRandomTime(sim.getGameClock().getClockSecs(),
+					force.getSearchTime());
+		}
 		Object object = getObject(eventClass, time, entity, sim);
 		if (object instanceof DetectEvent){
 			event = (DetectEvent) object;
@@ -113,6 +124,7 @@ public class EventFactory {
 	
 	public static ScanEvent makeScanEvent(Entity entity, Simulation sim){
 		String eventName = getScanEventName(entity, sim);
+		//Logger.log("scan for " + entity.getName() + " " + eventName);
 		if (eventName == null) return null;
 		Class<?> eventClass = makeEventClass(eventName);
 		if (eventClass == null) {
@@ -120,11 +132,11 @@ public class EventFactory {
 			return null;
 		}
 		ScanEvent event = null;
-		double time = 60.0; // default scan time 60 secs
+		double time = 5.0; 
 		Force force = entity.getForce();
 		if ( force != null){
-			time = getTime(sim.getGameClock().getClockSecs(),
-					force.getScanTime());
+			time = makeRandomTime(sim.getGameClock().getClockSecs(),
+					force.getSearchTime()); // first scan must be soon after game start
 		}
 		Object object = getObject(eventClass, time, entity, sim);
 		if (object instanceof ScanEvent){
@@ -161,6 +173,7 @@ public class EventFactory {
 	
 	public static ShootEvent makeShootEvent(Entity entity, Simulation sim){
 		String eventName = getShootEventName(entity, sim);
+		//Logger.log("shoot for " + entity.getName() + " " + eventName);
 		if (eventName == null) return null;
 		Class<?> eventClass = makeEventClass(eventName);
 		if (eventClass == null) {
@@ -168,8 +181,8 @@ public class EventFactory {
 			return null;
 		}
 		ShootEvent event = null;
-		double time = getTime(sim.getGameClock().getClockSecs(),
-				sim.getScenario().getParameters().getMovementCycleTime()); //TODO get right time
+		double time = makeRandomTime(sim.getGameClock().getClockSecs(),
+				sim.getScenario().getParameters().getDirectFireCycleTime());
 		Object object = getObject(eventClass, time, entity, sim);
 		if (object instanceof ShootEvent){
 			event = (ShootEvent) object;
@@ -203,6 +216,7 @@ public class EventFactory {
 	
 	public static ResupplyEvent makeResupplyEvent(Entity entity, Simulation sim){
 		String eventName = getResupplyEventName(entity, sim);
+		//Logger.log("resupply for " + entity.getName() + " " + eventName);
 		if (eventName == null) return null;
 		Class<?> eventClass = makeEventClass(eventName);
 		if (eventClass == null) {
@@ -210,8 +224,8 @@ public class EventFactory {
 			return null;
 		}
 		ResupplyEvent event = null;
-		double time = getTime(sim.getGameClock().getClockSecs(),
-				sim.getScenario().getParameters().getMovementCycleTime()); //TODO get right time
+		double time = makeRandomTime(sim.getGameClock().getClockSecs(),
+				sim.getScenario().getParameters().getResupplyCycleTime());
 		Object object = getObject(eventClass, time, entity, sim);
 		if (object instanceof ResupplyEvent){
 			event = (ResupplyEvent) object;
@@ -245,6 +259,7 @@ public class EventFactory {
 	
 	public static SuppressionEvent makeSuppressionEvent(Entity entity, Simulation sim){
 		String eventName = getSuppressionEventName(entity, sim);
+		//Logger.log("suppression for " + entity.getName() + " " + eventName);
 		if (eventName == null) return null;
 		Class<?> eventClass = makeEventClass(eventName);
 		if (eventClass == null) {
@@ -252,8 +267,8 @@ public class EventFactory {
 			return null;
 		}
 		SuppressionEvent event = null;
-		double time = getTime(sim.getGameClock().getClockSecs(),
-				sim.getScenario().getParameters().getMovementCycleTime()); //TODO get right time
+		double time = makeRandomTime(sim.getGameClock().getClockSecs(),
+				sim.getScenario().getParameters().getSuppressionCycleTime());
 		Object object = getObject(eventClass, time, entity, sim);
 		if (object instanceof SuppressionEvent){
 			event = (SuppressionEvent) object;
@@ -287,6 +302,7 @@ public class EventFactory {
 
 	public static CasualtyEvent makeCasualtyEvent(Entity entity, Simulation sim){
 		String eventName = getCasualtyEventName(entity, sim);
+		//Logger.log("casualty for " + entity.getName() + " " + eventName);
 		if (eventName == null) return null;
 		Class<?> eventClass = makeEventClass(eventName);
 		if (eventClass == null) {
@@ -294,8 +310,8 @@ public class EventFactory {
 			return null;
 		}
 		CasualtyEvent event = null;
-		double time = getTime(sim.getGameClock().getClockSecs(),
-				sim.getScenario().getParameters().getMovementCycleTime()); //TODO get right time
+		double time = makeRandomTime(sim.getGameClock().getClockSecs(),
+				sim.getScenario().getParameters().getCasualtyCycleTime());
 		Object object = getObject(eventClass, time, entity, sim);
 		if (object instanceof CasualtyEvent){
 			event = (CasualtyEvent) object;
@@ -326,6 +342,82 @@ public class EventFactory {
 		}
 		return "models.CasualtyEvent";
 	}
+	
+	public static DetectObstacleEvent makeDetectObstacleEvent(Entity entity, Simulation sim){
+		String eventName = getDetectObstacleEventName(entity, sim);
+		//Logger.log("obstacle for " + entity.getName() + " " + eventName);
+		if (eventName == null) return null;
+		Class<?> eventClass = makeEventClass(eventName);
+		if (eventClass == null) {
+			error(entity, "detect_obstacle", eventName);
+			return null;
+		}
+		DetectObstacleEvent event = null;
+		double time = makeRandomTime(sim.getGameClock().getClockSecs(),
+				sim.getScenario().getParameters().getDetectObstacleCycleTime());
+		Object object = getObject(eventClass, time, entity, sim);
+		if (object instanceof DetectObstacleEvent){
+			event = (DetectObstacleEvent) object;
+		} else {
+			error(entity, "detect obstacle", eventName);
+		}
+		return event;
+	}
+	
+	private static String getDetectObstacleEventName (Entity entity, Simulation sim){
+		if (entity.getDetectObstacleModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (entity.getDetectObstacleModel().compareTo("")!=0){
+			return entity.getDetectObstacleModel();
+		}
+		if (entity.getPlatform().getDetectObstacleModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (entity.getPlatform().getDetectObstacleModel().compareTo("")!=0){
+			return entity.getPlatform().getDetectObstacleModel();
+		}
+		if (sim.getScenario().getDetectObstacleModel().compareToIgnoreCase("null")==0){
+			return null;
+		}
+		if (sim.getScenario().getDetectObstacleModel().compareTo("")!=0){
+			return sim.getScenario().getDetectObstacleModel();
+		}
+		return "models.DetectObstacleEvent";
+	}
+	
+	// supply, suppression, ,  
+	// cas assess, 
+	// detect  obs, 
+	// firing?, impact, active sensors, doarty
+
+	/**
+	 * Create a new clock update event
+	 * @param time The time the event is to run in seconds
+	 * @param sim A pointer to the simulation
+	 * @return A ClockUpdateEvent or null if one was not created.
+	 */
+	public static ClockUpdateEvent makeClockUpdateEvent(
+			double time, Simulation sim){
+		return new ClockUpdateEvent(time, sim);
+	}
+
+	public static CloudUpdateEvent makeCloudUpdateEvent(
+			double time, Simulation sim){
+		return null; //TODO make actual event
+	}
+	public static CloudUpdateEvent makeChemicalUpdateEvent(
+			double time, Simulation sim){
+		return null; //TODO make actual event
+	}
+	public static CloudUpdateEvent makeStatusUpdateEvent(
+			double time, Simulation sim){
+		return null; //TODO make actual event
+	}
+	public static SaveEvent makeSaveEvent(
+			double time, Simulation sim){
+		return null; //TODO make actual event
+	}
 
 	//*****
 
@@ -350,7 +442,7 @@ public class EventFactory {
 		return null;
 	}
 	
-	private static double getTime(double start, double epoch){
+	private static double makeRandomTime(double start, double epoch){
 		return start + (Math.random() * epoch);
 	}
 	

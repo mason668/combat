@@ -13,8 +13,9 @@ public class MoveEvent extends EntityEvent{
 
 	public Event doEvent(){
 		Logger.log("entity " + myEntity.getName() + 
-				" default moving at time " + Parser.formatTime(eventTime));
-		eventTime += (5.0 * Math.random()); //TODO should use right time
+				" moving at time " + Parser.formatTime(eventTime));
+		eventTime += 
+				this.mySimulation.getScenario().getParameters().getMovementCycleTime();
 		return this;
 	}
 }

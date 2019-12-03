@@ -28,28 +28,31 @@ public class ScenarioInterpreter extends Interpreter{
 		if (myScenario == null) return;
 		if (command.compareToIgnoreCase("") == 0){
 		} else if (command.compareToIgnoreCase("casualty_cycle") == 0){
+			double clock = -1.0;
 			String arg = vector.remove(0);
-			try{
-				double clock = Double.parseDouble(arg);
+			clock = Parser.parseFormattedTime(arg);
+			if ( clock >=0 ){
 				myScenario.getParameters().setCasualtyCycleTime(clock);
-			} catch (Exception e){
+			} else {
 				Logger.err(this,0, "invalid casualty_cycle");
 			}
-		} else if (command.compareToIgnoreCase("checkpoint") == 0){
+		} else if (command.compareToIgnoreCase("auto_save") == 0){
+			double clock = -1.0;
 			String arg = vector.remove(0);
-			try{
-				double value = Double.parseDouble(arg);
-				myScenario.getParameters().setCheckPointFrequency(value);
-			} catch (Exception e){
-				Logger.err(this,0, "invalid checkpoint time");
+			clock = Parser.parseFormattedTime(arg);
+			if ( clock >=0 ){
+				myScenario.getParameters().setCheckPointFrequency(clock);
+			} else {
+				Logger.err(this,0, "invalid auto_save time");
 			}
 		} else if (command.compareToIgnoreCase("defilade_time") == 0){
+			double clock = -1.0;
 			String arg = vector.remove(0);
-			try{
-				double clock = Double.parseDouble(arg); //TODO parse time
+			clock = Parser.parseFormattedTime(arg);
+			if ( clock >=0 ){
 				myScenario.getParameters().setDefiladeTime(clock);
-			} catch (Exception e){
-				Logger.err(this,0, "invalid defilade_time");
+			} else {
+				Logger.err(this,0, "invalid defilade time");
 			}
 		} else if (command.compareToIgnoreCase("detect_friends") == 0){
 			if (vector.isEmpty()) return;
@@ -95,12 +98,13 @@ public class ScenarioInterpreter extends Interpreter{
 			String fileName = vector.remove(0);
 			read(fileName);
 		} else if (command.compareToIgnoreCase("fire_cycle") == 0){
+			double clock = -1.0;
 			String arg = vector.remove(0);
-			try{
-				double clock = Double.parseDouble(arg);
+			clock = Parser.parseFormattedTime(arg);
+			if ( clock >=0 ){
 				myScenario.getParameters().setDirectFireCycleTime(clock);
-			} catch (Exception e){
-				Logger.err(this,0, "invalid fire_cycle");
+			} else {
+				Logger.err(this,0, "invalid fire_cycle time");
 			}
 		} else if (command.compareToIgnoreCase("map") == 0){
 			if (vector.isEmpty()) return;
@@ -123,12 +127,13 @@ public class ScenarioInterpreter extends Interpreter{
 				Logger.err(this,0, "invalid mount_outer");
 			}
 		} else if (command.compareToIgnoreCase("move_cycle") == 0){
+			double clock = -1.0;
 			String arg = vector.remove(0);
-			try{
-				double clock = Double.parseDouble(arg);
+			clock = Parser.parseFormattedTime(arg);
+			if ( clock >=0 ){
 				myScenario.getParameters().setMovementCycleTime(clock);
-			} catch (Exception e){
-				Logger.err(this,0, "invalid move_cycle");
+			} else {
+				Logger.err(this,0, "invalid move_cycle time");
 			}
 		} else if (command.compareToIgnoreCase("movement_model") == 0){
 			if (vector.isEmpty()) return;
@@ -171,11 +176,12 @@ public class ScenarioInterpreter extends Interpreter{
 				Logger.err(this,0, "invalid pit_outer");
 			}
 		} else if (command.compareToIgnoreCase("radar_time") == 0){
+			double clock = -1.0;
 			String arg = vector.remove(0);
-			try{
-				double clock = Double.parseDouble(arg); //TODO parse time
+			clock = Parser.parseFormattedTime(arg);
+			if ( clock >=0 ){
 				myScenario.getParameters().setRadarUpdateTime(clock);
-			} catch (Exception e){
+			} else {
 				Logger.err(this,0, "invalid radar_time");
 			}
 		} else if (command.compareToIgnoreCase("real_time") == 0){
@@ -221,6 +227,8 @@ public class ScenarioInterpreter extends Interpreter{
 			if (vector.isEmpty()) return;
 			String modelName = vector.remove(0);
 			myScenario.setShootModel(modelName);
+		} else if (command.compareToIgnoreCase("start") == 0){
+			//TODO should implement yes/ no [default yes] and set param in sim accordingly
 		} else if (command.compareToIgnoreCase("start_time") == 0){
 			double clock = -1.0;
 			String arg = vector.remove(0);
