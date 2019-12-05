@@ -14,85 +14,56 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
+import sim.Simulation;
 import utils.Parser;
 import utils.TraceListener;
 
-public class SimpleView extends JFrame implements ActionListener, ClockListener, TraceListener{
+public class SimpleView extends JPanel {
 	
 	JPanel p1 = new JPanel();
 	JTextArea t1 = new JTextArea();
 	JTextArea t2 = new JTextArea();
 
+	public static void main(String[] args){
+		// make a frame for the GUI
+		FullFrame frame = new FullFrame("SimpleView");
+
+		// make a clock view and add to the frame
+		ClockView clockView = new ClockView();
+		frame.add(clockView,BorderLayout.NORTH);
+		
+		// Make a control and report panel and add to the frame
+		JPanel reportPanel = new JPanel();
+		reportPanel.setLayout(new BorderLayout());
+
+		TabView tab = new TabView();
+		StartView startPanel = new StartView();
+		
+		reportPanel.add(tab, BorderLayout.CENTER);
+		reportPanel.add(startPanel, BorderLayout.NORTH);
+
+		frame.add(reportPanel,BorderLayout.CENTER);
+		
+		CommandView command = new CommandView();
+		frame.add(command,BorderLayout.SOUTH);
+		
+		// make the frame visible etc
+		frame.setVisible(true);
+		frame.pack();
+		frame.validate();
+
+		// instantiate a simulation and link the GUI components
+		Simulation mySimulation = new Simulation(false);
+		mySimulation.initialise(args);
+
+		mySimulation.addClockListener(clockView);
+		clockView.addActionListener(mySimulation.getGameClock().getClockController());
+		startPanel.setSimulation(mySimulation);
+		command.setSimulation(mySimulation);
+	}
+
 	public SimpleView(){
-		super("Simple View");
-		registerEventHandlers();
-		this.setSize(800, 600);
-		this.setVisible(true);
-		this.add(new StatusBar(), BorderLayout.SOUTH);
-		this.add(new GamePanel(), BorderLayout.CENTER);
-		this.validate();
-	
+		this.setLayout(new BorderLayout());
 	}
-
-	@Override
-	public void write(String message) {
-		t1.append(message+"\n");
-//		System.out.println("SV:" + message);
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void updateClock(double clock) {
-		t2.setText(Parser.formatTime(clock));
-		// TODO Auto-generated method stub
-		
-	}
-	
-	private void registerEventHandlers(){
-		this.addWindowListener(
-				new WindowAdapter(){
-					public void windowClosing(WindowEvent event){
-						System.exit(0);;
-					}
-				}
-		);
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-class StatusBar extends JPanel {
-	public StatusBar(){
-		this.setBackground(Color.red);
-	}
-}
-
-class GamePanel extends JPanel{
-	public GamePanel(){
-		this.setBackground(Color.green);
-		JTabbedPane tabs = new JTabbedPane();
-		this.add(tabs, BorderLayout.CENTER);
-		tabs.addTab("map", new MapPanel());
-		tabs.addTab("data", new TablePanel());
-		
-	}
-}
-
-class MapPanel extends JPanel{
-	public MapPanel(){
-		this.setBackground(Color.blue);
-//		this.setPreferredSize(new Dimension(1000,1000));
-	}
-}
-
-class TablePanel extends JPanel{
-	public TablePanel(){
-		this.setBackground(Color.CYAN);
-	}
-}
 
 }

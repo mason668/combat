@@ -15,6 +15,7 @@ import data.CSData;
 import interpreter.CommandInterpreter;
 import sim.GameClock;
 import sim.Scenario;
+import sim.Simulation;
 import sim.SimulationController;
 import utils.Logger;
 import utils.Tracer;
@@ -22,45 +23,37 @@ import view.reports.TraceView;
 
 public class CommandView extends JPanel implements SimulationController{
 	private static final long serialVersionUID = 1L;
-	private CommandInterpreter interpreter;
+	private Simulation mySimulation; 
+	private SmallButton sendBtn = new SmallButton("Send");
+	JTextField textFld = new JTextField("                                "); 
 
 	public static void main(String[] args){
-		CommandView view = new CommandView();
-		Scenario scenario = new Scenario();
-		CommandInterpreter i = new CommandInterpreter(null); //FIXME
-		i.setTrace(true);
-		view.setInterpreter(i);
 		FullFrame frame = new FullFrame("CommandView");
+		CommandView view = new CommandView();
 		frame.add(view,BorderLayout.NORTH);
-		TraceView trace = new TraceView();
-		Tracer.addListener(trace);
-		frame.add(trace,BorderLayout.CENTER);
-//		frame.add(view.makeControlPanel(),BorderLayout.SOUTH);
 		frame.setVisible(true);
 		frame.pack();
 		frame.validate();
 	}
 	
 	public CommandView(){
-		JTextField text = new JTextField("                                "); //FIXME need to make this stay at its min size
-		text.setMinimumSize(new Dimension(50,10));
-		SmallButton testBtn = new SmallButton("Send");
-		testBtn.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent arg0) {
-				Logger.log("CommandView: " + text.getText());
-				if (interpreter != null){
-					interpreter.interpret(text.getText());
-				}
-				text.setText("                                  ");
-			}
-		});
-		this.add(testBtn, BorderLayout.EAST);
-		this.add(text, BorderLayout.CENTER);
+		textFld = new JTextField(""); 
+		textFld.setColumns(60);
+		this.setLayout(new BorderLayout());
+		textFld.setMinimumSize(new Dimension(50,10));
+		this.add(sendBtn, BorderLayout.EAST);
+		this.add(textFld, BorderLayout.CENTER);
 		return;
 	}
 	
-	public void setInterpreter(CommandInterpreter commandInterpreter){
-		this.interpreter = commandInterpreter;
+	public void setSimulation(Simulation sim){
+		if ( sim == null) return;
+		mySimulation = sim;
+		sendBtn.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				mySimulation.interpret(textFld.getText());
+				textFld.setText("                                  ");
+			}
+		});
 	}
-
 }

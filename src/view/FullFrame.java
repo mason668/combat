@@ -5,6 +5,10 @@ import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
+/**
+ * This class does the basic work of creating a Frame to contain GUI components.
+ *
+ */
 public class FullFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
