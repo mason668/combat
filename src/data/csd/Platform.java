@@ -281,13 +281,21 @@ public class Platform implements Identifiable {
 	// fuel capacity in litres
 	private double fuelCapacity = 100.0; // globsysc.ckapacity 
 	public double getFuelCapapcity(){return fuelCapacity;}
-	public void setFuelCapacity(double capapcity){fuelCapacity = capapcity;}
-	// fuel consumption per hr while moving
-	private double fuelConsumptionMoving = 1.0; // globsysc.ckonsumptn 
+	public void setFuelCapacity(double capapcity){
+		if (capapcity >=0.0) fuelCapacity = capapcity;
+	}
+	// fuel consumption litre per sec while moving
+	private double fuelConsumptionMoving = 1.0/3600.0; // globsysc.ckonsumptn
 	public double getFuelConsumptionMoving(){return fuelConsumptionMoving;}
-	// fuel consumption per hr while stationary
-	private double fuelConsumptionStationary = 1.0; // globsysc.ckonsumptn
+	public void setFuelConsumptionMoving(double d){
+		if (d>=0.0) fuelConsumptionMoving = d;
+	}
+	// fuel consumption per sec while stationary
+	private double fuelConsumptionStationary = 0.8/3600.0; // globsysc.ckonsumptn
 	public double getFuelConsumptionStationary(){return fuelConsumptionStationary;}
+	public void setFuelConsumptionStationary(double d){
+		if (d>=0.0) fuelConsumptionStationary = d;
+	}
 	// fuel type
 	private int fuelType = Constants.NO_FUEL; // globsysc.ckfueltype 
 	// time after entity stops moving to turn off engine

@@ -35,12 +35,36 @@ public class PlatformInterpreter extends Interpreter{
 			if (vector.isEmpty()) return;
 			try{
 				double d = Double.parseDouble(vector.remove(0)); 
-				myPlatform.setSpeedCrawling(d);
+				if (d>=0) myPlatform.setSpeedCrawling(d);
 			} catch (Exception e){
 				Logger.err(this,0, "invalid platform crawl speed " + myPlatform.getName());
 			}
 		} else if (command.compareToIgnoreCase("foot") == 0){
 			myPlatform.setMoverType(Constants.MOVER_FOOT);
+		} else if (command.compareToIgnoreCase("fuel_capacity") == 0){
+			if (vector.isEmpty()) return;
+			try{
+				double d = Double.parseDouble(vector.remove(0)); 
+				if (d>=0) myPlatform.setFuelCapacity(d);
+			} catch (Exception e){
+				Logger.err(this,0, "invalid platform road_speed " + myPlatform.getName());
+			}
+		} else if (command.compareToIgnoreCase("fuel_moving") == 0){
+			if (vector.isEmpty()) return;
+			try{
+				double d = Double.parseDouble(vector.remove(0)); 
+				if (d>=0) myPlatform.setFuelConsumptionMoving(d);
+			} catch (Exception e){
+				Logger.err(this,0, "invalid platform road_speed " + myPlatform.getName());
+			}
+		} else if (command.compareToIgnoreCase("fuel_stationary") == 0){
+			if (vector.isEmpty()) return;
+			try{
+				double d = Double.parseDouble(vector.remove(0)); 
+				if (d>=0) myPlatform.setFuelConsumptionStationary(d);
+			} catch (Exception e){
+				Logger.err(this,0, "invalid platform road_speed " + myPlatform.getName());
+			}
 		} else if (command.compareToIgnoreCase("load") == 0){
 			if (vector.isEmpty()) return;
 			String fileName = vector.remove(0);
@@ -49,7 +73,7 @@ public class PlatformInterpreter extends Interpreter{
 			if (vector.isEmpty()) return;
 			try{
 				double d = Double.parseDouble(vector.remove(0)); 
-				myPlatform.setSpeedReverse(d);
+				if (d>=0) myPlatform.setSpeedReverse(d);
 			} catch (Exception e){
 				Logger.err(this,0, "invalid platform reverse speed " + myPlatform.getName());
 			}
@@ -57,7 +81,7 @@ public class PlatformInterpreter extends Interpreter{
 			if (vector.isEmpty()) return;
 			try{
 				double d = Double.parseDouble(vector.remove(0)); 
-				myPlatform.setSpeedRoad(d);
+				if (d>=0) myPlatform.setSpeedRoad(d);
 			} catch (Exception e){
 				Logger.err(this,0, "invalid platform road_speed " + myPlatform.getName());
 			}
@@ -65,7 +89,7 @@ public class PlatformInterpreter extends Interpreter{
 			if (vector.isEmpty()) return;
 			try{
 				double d = Double.parseDouble(vector.remove(0)); 
-				myPlatform.setSpeedRunning(d);
+				if (d>=0) myPlatform.setSpeedRunning(d);
 			} catch (Exception e){
 				Logger.err(this,0, "invalid platform run speed " + myPlatform.getName());
 			}
@@ -79,7 +103,7 @@ public class PlatformInterpreter extends Interpreter{
 			if (vector.isEmpty()) return;
 			try{
 				double d = Double.parseDouble(vector.remove(0)); 
-				myPlatform.setSpeedCountry(d);
+				if (d>=0) myPlatform.setSpeedCountry(d);
 			} catch (Exception e){
 				Logger.err(this,0, "invalid platform speed " + myPlatform.getName());
 			}
@@ -87,7 +111,7 @@ public class PlatformInterpreter extends Interpreter{
 			if (vector.isEmpty()) return;
 			try{
 				double d = Double.parseDouble(vector.remove(0)); 
-				myPlatform.setSuppressionFactorMove(d);
+				myPlatform.setSuppressionFactorMove(d); //TODO validate?
 			} catch (Exception e){
 				Logger.err(this,0, "invalid suppression speed");
 			}

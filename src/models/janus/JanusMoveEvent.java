@@ -31,6 +31,7 @@ public class JanusMoveEvent extends MoveEvent {
 
 	// class variables to keep hold of the firing entity and 
 	// the current simulation time
+	private Simulation mySimulation;
 	private Scenario myScenario;
 	private MoverEntity myEntity;
 	private GameClock gameClock;
@@ -58,6 +59,7 @@ public class JanusMoveEvent extends MoveEvent {
 	 */
 	public JanusMoveEvent(double eventTime, Entity entity, Simulation sim){
 		super(eventTime, entity, sim);
+		mySimulation = sim;
 		myScenario = sim.getScenario();
 		myEntity = (MoverEntity) entity;
 		gameClock = sim.getGameClock();
@@ -69,7 +71,7 @@ public class JanusMoveEvent extends MoveEvent {
 	@Override
 	public Event doEvent(){
 		myClock = gameClock.getClockSecs();
-		tracing = true;//myEntity.isTracing(); //TODO check move is on too
+		tracing = myEntity.isTracing() && Tracer.getMovement(); //TODO check move is on too
 		nextMoveTime = this.getTime();
 		if (tracing){
 			Tracer.write(Tracer.MOVEMENT,0,"\nprocessing movement ");
@@ -97,11 +99,7 @@ public class JanusMoveEvent extends MoveEvent {
 			traceSummary();
 		}
 		this.setTime(nextMoveTime);
-		if (this.didMove){
-			return this;
-		} else {
-			return null;
-		}
+		return this; //TODO could do something about not able to move
 	}
 	
 	/**
@@ -243,11 +241,11 @@ public class JanusMoveEvent extends MoveEvent {
 		}
 		double elapsedTime = this.myScenario.getParameters().getMovementCycleTime();
 		// determine where the entity is moving to
-		Coordinate objective = getObjective();
+		Coordinate objective = whereTo();
 		// if nowhere to move to, update data accordingly
-		if ( objective == null){
+		if ( objective == null || isStalled()){
 			if (tracing){
-				Tracer.write(Tracer.MOVEMENT,Tracer.COURSER,"nowhere to move to" );
+				Tracer.write(Tracer.MOVEMENT,Tracer.COURSER,"not moving for now" );
 			}
 			newSpeed = 0.0;
 			newLocation = new Coordinate(this.myEntity.getLocation());
@@ -272,12 +270,13 @@ public class JanusMoveEvent extends MoveEvent {
 					elapsedTime + " secs");
 		}
 		
+		// if the entity moved, 
 		// calculate the new direction of movement
-		newDirection = calculateDirection(this.myEntity.getLocation(),newLocation);
-
-		// if the entity moved, check if it needs to exit a weapon pit and 
+		//check if it needs to exit a weapon pit and 
 		// update the defilade state 
 		if ( newSpeed > 0){
+			newDirection = calculateDirection(this.myEntity.getLocation(),newLocation);
+
 			myEntity.exitPit();
 			this.myEntity.setDefilade(Constants.DEFILADE_EXPOSED);
 		// if the entity didn't move update the defilade state
@@ -299,7 +298,7 @@ public class JanusMoveEvent extends MoveEvent {
 	 * @return A coordinate identifying where the entity is trying to 
 	 * move, or null if the entity has no objective.
 	 */
-	private Coordinate getObjective(){
+	private boolean isStalled(){
 		if (this.myEntity.getPlatform().getCBRType() != null){
 			if (tracing){
 				Tracer.write(Tracer.MOVEMENT,3,"entity is a cbr ");
@@ -312,10 +311,10 @@ public class JanusMoveEvent extends MoveEvent {
 						"  " + this.myEntity.getCBRTime());
 			}
 			if (this.myEntity.getCBRStatus() != Constants.CBR_PACKED){
-				return null;
+				return true;
 			}
 			if (this.myEntity.getCBRTime()>this.myClock){
-				return null;
+				return true;
 			}
 		}
 		if ( this.myEntity.getMoveMode() == Constants.MOVE_ASSAULT){
@@ -326,7 +325,7 @@ public class JanusMoveEvent extends MoveEvent {
 				if (tracing){
 					Tracer.write(Tracer.MOVEMENT,3,"stationary this turn " );
 				}
-				return null;
+				return true;
 			}
 		}
 		if ( this.myEntity.getMoveMode() == Constants.MOVE_RUSH){
@@ -337,7 +336,7 @@ public class JanusMoveEvent extends MoveEvent {
 				if (tracing){
 					Tracer.write(Tracer.MOVEMENT,3,"stationary this turn " );
 				}
-				return null;
+				return true;
 			}
 		}
 		if ( this.myEntity.getMoveMode() == Constants.MOVE_CAUTIOUS){
@@ -348,7 +347,7 @@ public class JanusMoveEvent extends MoveEvent {
 				if (tracing){
 					Tracer.write(Tracer.MOVEMENT,3,"stationary this turn " );
 				}
-				return null;
+				return true;
 			}
 		}
 		if ( this.myEntity.getMoveMode() == Constants.MOVE_ADVANCE){
@@ -359,12 +358,12 @@ public class JanusMoveEvent extends MoveEvent {
 				if (tracing){
 					Tracer.write(Tracer.MOVEMENT,3,"stationary this turn " );
 				}
-				return null;
+				return true;
 			}
 		}
-		if (changeFloors()) return null;
+		if (changeFloors()) return true;
 		
-		return whereTo();
+		return false;
 	}
 	
 	/**
@@ -716,6 +715,7 @@ public class JanusMoveEvent extends MoveEvent {
 						moveObjective.toString());
 			}
 		} else {
+			distmax = this.newDistance;
 			if (tracing){
 				Tracer.write(Tracer.MOVEMENT,4,"proposed move is within a bound ");
 				//TODO Tracer.write(Tracer.MOVEMENT,3,"***this could be the spot to reduce speed to stay in formation");
@@ -756,9 +756,9 @@ public class JanusMoveEvent extends MoveEvent {
 	 * @param objective The location the entity is trying to reach.
 	 * @return The time it takes to actually move.
 	 */
-	private double moveStep(Coordinate objective){	
+	private double moveStep(Coordinate objective){
 		newSpeed = 0.0;
-		newDirection = 0;
+		newDirection = this.myEntity.getDirectionMove();
 		newDistance = 0;
 		newDelay = 0.0;
 		newLocation = new Coordinate (this.myEntity.getLocation());
@@ -835,8 +835,8 @@ public class JanusMoveEvent extends MoveEvent {
 		if (!this.myEntity.isEngineOn()){
 			if (tracing){
 				Tracer.write(Tracer.MOVEMENT,3,"engine is off ");
-				return;
 			}
+			return;
 		}
 		if (tracing){
 			Tracer.write(Tracer.MOVEMENT,3,"engine is running ");
@@ -856,8 +856,11 @@ public class JanusMoveEvent extends MoveEvent {
 		}
 		double used = rate * elapsedTime;
 		if (tracing){
+			Tracer.write(Tracer.MOVEMENT,3,"consumption rate " + rate);
+			Tracer.write(Tracer.MOVEMENT,3,"elapsed time " + elapsedTime);
 			Tracer.write(Tracer.MOVEMENT,3,"fuel used " + used);
 		}
+		// note, at this point it is possible to have -ve fuel
 		this.myEntity.consumeFuel(used);
 		if (tracing){
 			Tracer.write(Tracer.MOVEMENT,3,"remaining fuel " + this.myEntity.getCurrentFuel());
@@ -881,11 +884,11 @@ public class JanusMoveEvent extends MoveEvent {
 		this.myEntity.setDirectionMove(direction);
 		this.myEntity.updateDirectionView(); 
 		this.myEntity.updateDirectionFace(); 
-
 		this.myEntity.setLocation(location);
 		this.myEntity.setCurrentSpeed(speed);
 		this.myScenario.updateEntity(entity);
-		this.myScenario.getPostProcessor().writeMove(entity);
+		
+		mySimulation.updateMovementListeners(myEntity);
 	}
 	
 	/**
@@ -1526,6 +1529,7 @@ public class JanusMoveEvent extends MoveEvent {
 		if (objective != null) return objective;
 		if (tracing){
 			Tracer.write(Tracer.MOVEMENT,3,"no valid move orders");
+			Tracer.write(Tracer.MOVEMENT,Tracer.COURSER,"nowhere to move to" );
 		}
 		return null;
 	}

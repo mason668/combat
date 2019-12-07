@@ -35,8 +35,8 @@ public class Tracer {
 	}
 	
 	private static boolean echo = false;
-	private static boolean traceDirectFire = true;
-	private static boolean traceMovement = true;
+	private static boolean traceDirectFire = false;
+	private static boolean traceMovement = false;
 	
 	/**
 	 * Code to test the class
@@ -148,6 +148,12 @@ public class Tracer {
 	
 	public static void setDirectFire(boolean b){
 		traceDirectFire = b;
+	}
+	public static boolean getMovement(){
+		return traceMovement;
+	}
+	public static void setMovement(boolean b){
+		traceMovement = b;
 	}
 	
 	private static Vector<TraceListener> listeners = new Vector<TraceListener>();

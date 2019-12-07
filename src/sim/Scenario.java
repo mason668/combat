@@ -122,7 +122,7 @@ public class Scenario {
 		return suppressionModel.substring(0);
 	}
 	public void setSuppressionModel(String model){
-		shootModel = model.substring(0);
+		suppressionModel = model.substring(0);
 	}
 	private String resupplyModel = "";
 	public String getResupplyModel(){

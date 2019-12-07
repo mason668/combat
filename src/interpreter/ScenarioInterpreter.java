@@ -27,15 +27,6 @@ public class ScenarioInterpreter extends Interpreter{
 		}
 		if (myScenario == null) return;
 		if (command.compareToIgnoreCase("") == 0){
-		} else if (command.compareToIgnoreCase("casualty_cycle") == 0){
-			double clock = -1.0;
-			String arg = vector.remove(0);
-			clock = Parser.parseFormattedTime(arg);
-			if ( clock >=0 ){
-				myScenario.getParameters().setCasualtyCycleTime(clock);
-			} else {
-				Logger.err(this,0, "invalid casualty_cycle");
-			}
 		} else if (command.compareToIgnoreCase("auto_save") == 0){
 			double clock = -1.0;
 			String arg = vector.remove(0);
@@ -45,6 +36,19 @@ public class ScenarioInterpreter extends Interpreter{
 			} else {
 				Logger.err(this,0, "invalid auto_save time");
 			}
+		} else if (command.compareToIgnoreCase("casualty_cycle") == 0){
+			double clock = -1.0;
+			String arg = vector.remove(0);
+			clock = Parser.parseFormattedTime(arg);
+			if ( clock >=0 ){
+				myScenario.getParameters().setCasualtyCycleTime(clock);
+			} else {
+				Logger.err(this,0, "invalid casualty_cycle");
+			}
+		} else if (command.compareToIgnoreCase("casualty_model") == 0){
+			if (vector.isEmpty()) return;
+			String modelName = vector.remove(0);
+			myScenario.setCasualtyModel(modelName);
 		} else if (command.compareToIgnoreCase("defilade_time") == 0){
 			double clock = -1.0;
 			String arg = vector.remove(0);
@@ -54,6 +58,10 @@ public class ScenarioInterpreter extends Interpreter{
 			} else {
 				Logger.err(this,0, "invalid defilade time");
 			}
+		} else if (command.compareToIgnoreCase("detect_obstacle_model") == 0){
+			if (vector.isEmpty()) return;
+			String modelName = vector.remove(0);
+			myScenario.setDetectObstacleModel(modelName);
 		} else if (command.compareToIgnoreCase("detect_friends") == 0){
 			if (vector.isEmpty()) return;
 			String arg = vector.remove(0);
@@ -203,6 +211,10 @@ public class ScenarioInterpreter extends Interpreter{
 					Logger.err(this,0, "invalid real_time");
 				}
 			}
+		} else if (command.compareToIgnoreCase("resupply_model") == 0){
+			if (vector.isEmpty()) return;
+			String modelName = vector.remove(0);
+			myScenario.setResupplyModel(modelName);
 		} else if (command.compareToIgnoreCase("run_type") == 0){
 			if (vector.isEmpty()) return;
 			String arg = vector.remove(0);
@@ -247,6 +259,10 @@ public class ScenarioInterpreter extends Interpreter{
 			} else {
 				Logger.err(this,0, "invalid time_step");
 			}
+		} else if (command.compareToIgnoreCase("suppression_model") == 0){
+			if (vector.isEmpty()) return;
+			String modelName = vector.remove(0);
+			myScenario.setSuppressionModel(modelName);
 		} else if (command.compareToIgnoreCase("weather_speed") == 0){
 			String arg = vector.remove(0);
 			try{

@@ -100,6 +100,8 @@ public class CommandInterpreter extends Interpreter{
 			doScenario(vector);
 		} else if (command.compareToIgnoreCase("sensor")== 0){
 			doSensor(vector);
+		} else if (command.compareToIgnoreCase("trace")== 0){
+			doTrace(vector);
 		} else if (command.compareToIgnoreCase("weapon")== 0){
 			doWeapon(vector);
 		} else if (command.compareToIgnoreCase("map")== 0){
@@ -217,6 +219,22 @@ public class CommandInterpreter extends Interpreter{
 		if (map == null) return;
 		String command = vector.remove(0);
 		myMapInterpreter.doCommand(map, command, vector);
+	}
+
+	private void doTrace(Vector<String> vector){
+		if (vector.size()<1) return;
+		String command = vector.remove(0);
+		if (command.compareToIgnoreCase("")==0){
+		} else if (command.compareToIgnoreCase("movement")== 0){
+			if (vector.size()<1) return;
+			String option = vector.remove(0);
+			if (option.compareToIgnoreCase("")==0){
+			} else if (option.compareToIgnoreCase("on")== 0){
+				Tracer.setMovement(true);
+			} else if (option.compareToIgnoreCase("off")== 0){
+				Tracer.setMovement(false);
+			}
+		}
 	}
 
 }

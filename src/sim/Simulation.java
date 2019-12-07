@@ -9,6 +9,8 @@ import models.ClockUpdateEvent;
 import models.EventFactory;
 import models.EventQueue;
 import sim.entity.Entity;
+import sim.entity.MoverEntity;
+import sim.listeners.MovementListener;
 import utils.Logger;
 import utils.Parser;
 import utils.Tracer;
@@ -114,6 +116,7 @@ public class Simulation {
 	public void initialise(String[] args){
 		if (threadRunning) return;
 		Logger.log("initialising data ");
+		Tracer.setEcho(true);
 		
 		myScenario = new Scenario("simulation_test");
 		gameClock = new GameClock(myScenario);
@@ -155,8 +158,14 @@ public class Simulation {
 	
 	private void relocateEntities(){
 		//make sure all entities are on the map.
+		Logger.log("map " + myScenario.getMap().getLL() );
+		Logger.log("map " + myScenario.getMap().getUR() );
 		for (String entityName : getScenario().getEntityList().keySet()){
 			Entity entity = getScenario().getEntityList().getEntity(entityName);
+			Logger.log("entity " + entity.getID());
+			Logger.log("entity location " + entity.getLocation().toGrid());
+			Logger.log("entity location " + entity.getLocation());
+
 			if (!this.myScenario.getMap().onMap(entity.getLocation())){
 				relocateEntity(entity);
 			}
@@ -312,6 +321,18 @@ public class Simulation {
 		for (ClockListener listener : clockListeners){
 			double clock = this.gameClock.getClockSecs();
 			listener.updateClock(clock);
+		}
+	}
+	
+	private Vector <MovementListener> movementListeners = new Vector<MovementListener>();
+	public void addMovementListener(MovementListener listener){
+		if (listener != null) {
+			movementListeners.add(listener);
+		}
+	}
+	public void updateMovementListeners(MoverEntity entity){
+		for (MovementListener listener : movementListeners){
+			listener.update(entity);
 		}
 	}
 
