@@ -211,13 +211,39 @@ public class Parser {
 	}
 	
 	public static double rad2deg(double radians){
+		//TODO think about whether -ve radians is ok or we want to limit at zero
+		while (radians>(2*Math.PI)) radians = radians - (2*Math.PI);
+		while (radians<(-2*Math.PI)) radians = radians + (2*Math.PI);
 		double degrees = radians * 180 / Math.PI;
 		return degrees;
 	}
 	
+	/**
+	 * This converts cartesian degrees (counter clockwise from E) to compass degrees
+	 * (clockwise from N).
+	 * To convert from radians, use rad2deg first
+	 * @param cartesianDegrees
+	 * @return
+	 */
 	public static double degreesFromNorth(double cartesianDegrees){
-		return 90-cartesianDegrees;
+		double d = 90-cartesianDegrees;
+		while (d>=360) d=d-360;
+		while (d<0) d=d+360;
+		return d;
 	}
 
+	/**
+	 * This converts from radians (counter clockwise from E) to compass bearing
+	 * as a String.
+	 * @param radians
+	 * @return
+	 */
+	public static String bearing(double radians){
+		double d = rad2deg(radians);
+		d = 90-d;
+		while (d>=360) d=d-360;
+		while (d<0) d=d+360;
+		return String.format("%6.2f", d);
+	}
 
 }
